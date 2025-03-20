@@ -1,0 +1,13 @@
+{% for finding in findings.data %}
+    {% include "pages/product/component/findingRow.html" %}
+{% endfor %}
+{% if findings.page + 1 <= findings.total_page %}
+    <tr hx-get="{{ product_id }}/findings/?page={{ findings.page + 1 }}"
+        hx-indicator="#spinner"
+        hx-trigger="revealed"
+        hx-swap="outerHTML">
+        <td colspan="6">
+            <div id="spinner" class="htmx-indicator">Loading...</div>
+        </td>
+    </tr>
+{% endif %}

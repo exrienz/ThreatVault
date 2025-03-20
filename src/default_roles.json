@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Admin",
+    "super_admin": true,
+    "required_project_access": false
+  },
+  {
+    "name": "ITSE",
+    "required_project_access": false
+  },
+  {
+    "name": "Management",
+    "required_project_access": false
+  },
+  {
+    "name": "Audit"
+  },
+  {
+    "name": "Owner"
+  }
+]

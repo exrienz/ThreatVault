@@ -1,0 +1,44 @@
+<tr>
+    <td class="text-bold-500">
+        <a href="/finding/{{ finding.finding_name_id }}">
+            {{ finding.name }} &nbsp;
+            {% if finding.severity.value == "CRITICAL" %}
+                <i class="fas fa-biohazard" title="High-Priority" style="color: red"></i>&nbsp;</a>
+        {% endif %}
+    </td>
+    <td class="text-bold-500">Nessus</td>
+    <td class="text-bold-500">{{ finding.status.value | title }}</td>
+    <td align="center">
+        <span class="badge"
+              style="background-color: {{ finding.severity | findingSeverityMap }}">
+            <i class="bi bi-exclamation-octagon me-1 text-white"></i>
+            {{ finding.severity.value }}
+            <span class="badge rounded-pill bg-white text-dark">{{ sla.get(finding.finding_name_id) }}</span>
+        </span>
+    </td>
+    <td>
+        <pre style=" white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; border: 0px solid #ccc; ">
+        {{ finding.remark if finding.remark else ""}}
+    </pre>
+    </td>
+    <td align="center">
+        <div class="modal-danger me-1 mb-1 d-inline-block">
+            <!-- Button with Icon -->
+            {#
+                    hx-target="#danger"
+                    hx-trigger="click"
+                    hx-get="finding/modal/{{ finding.finding_name_id }}"
+            #}
+            <button type="button"
+                    style="border: none;
+                           background: none;
+                           padding: 0;
+                           cursor: pointer"
+                    onclick="setChoices({{ finding.hosts }}, `{{ finding.finding_name_id }}`)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#danger">
+                <i class="fa-regular fa-circle-xmark"></i>
+            </button>
+        </div>
+    </td>
+</tr>

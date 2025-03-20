@@ -1,0 +1,80 @@
+[
+  {
+    "name": "Menu",
+    "isTitle": true
+  },
+  {
+    "name": "VAPT Dashboard",
+    "key": "vapt",
+    "url": "index.html",
+    "icon": "grid-fill"
+  },
+  {
+    "name": "Hardening Dashboard",
+    "key": "hardening",
+    "icon": "shield-shaded",
+    "url": "hardeningIndex.html"
+  },
+  {
+    "name": "Threat Intelligence",
+    "key": "threat-intel",
+    "icon": "fingerprint",
+    "url": "TIindex.html"
+  },
+  {
+    "name": "User Management",
+    "key": "user",
+    "icon": "people-fill",
+    "submenu": [
+      {
+        "name": "Manage User",
+        "url": "/manage-user"
+      },
+      {
+        "name": "Manage Owner",
+        "url": "/manage-owner"
+      }
+    ]
+  },
+  {
+    "name": "Project Management",
+    "key": "project",
+    "icon": "briefcase-fill",
+    "submenu": [
+      {
+        "name": "VAPT",
+        "url": "/project-management"
+      },
+      {
+        "name": "Hardening",
+        "url": "manageHardening.html"
+      }
+    ]
+  },
+  {
+    "name": "Site Configuration",
+    "key": "system",
+    "icon": "tools",
+    "submenu": [
+      {
+        "name": "Email Setting",
+        "url": "/email-setting"
+      },
+      {
+        "name": "Site Setting",
+        "url": "/site-setting"
+      }
+    ]
+  },
+  {
+    "name": "Audit Log",
+    "key": "system",
+    "icon": "unlock-fill",
+    "submenu": [
+      {
+        "name": "Assessment Log",
+        "url": "manageProject.html"
+      }
+    ]
+  }
+]

@@ -1,0 +1,31 @@
+<form id="create_product_id"
+      class="row g-3"
+      hx-post="product"
+      hx-swap="none"
+      hx-on::after-request="document.querySelector('#create_product_id').reset()">
+    <div class="col-md-4">
+        <input name="name"
+               type="text"
+               class="form-control"
+               placeholder="Product Name" />
+    </div>
+    <div class="col-md-4">
+        <select name="project_id" class="form-select">
+            <option id="id_cr_prod_default" selected="">Choose Project</option>
+            {% for project in projects %}
+                <option id="id_cr_prod_{{ project.id }}" value="{{ project.id }}">{{ project.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4">
+        <select name="environment_name" class="form-select">
+            <option selected="">Choose Environment</option>
+            <option value="production">Production</option>
+            <option value="non-production">Non-Production</option>
+        </select>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+</form>

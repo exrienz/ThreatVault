@@ -1,0 +1,10 @@
+fileignoreconfig:
+- filename: alembic/env.py
+  checksum: 11f90329bccacb20aa65d7df9e616e1b43df1c843bb3d211778cceca9e36ebc2
+- filename: app/models.py
+  checksum: 923189f6394bda69948350f7eb0df55dbde2626ad2b508adf91960f4ab39d8db
+- filename: alembic.ini
+  checksum: 1e7a9982f2323cffa82605bbd45ca9d8e5d5cfb1f25f3e27328b21671a3ae616
+- filename: app/config.py
+  checksum: 99a6244bc08d81a2639d6dafadf6e3ade5eb63c38280298127a9f47ff3ccb1b5
+version: "01"

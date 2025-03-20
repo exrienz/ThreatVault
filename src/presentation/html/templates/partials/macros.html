@@ -1,0 +1,16 @@
+{% macro dashboard_card(name, navLink) -%}
+    <div class="col-3">
+        <div class="card">
+            <div class="card-header">
+                <h4>{{ name }}</h4>
+            </div>
+            <div class="card-body">
+                <div id="radialGradient"></div>
+                <div class="buttons" align="right">
+                    <a href={{ navLink }} class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        </div>
+        <script>console.log("TEST 1")</script>
+    </div>
+{% endmacro %}

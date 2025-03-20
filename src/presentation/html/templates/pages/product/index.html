@@ -1,0 +1,380 @@
+{% set title = "Product" %}
+{% set filename = "product" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<!--<link rel="stylesheet" href="/assets/extensions/choices.js/public/assets/styles/choices.css">-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css" />-->
+<style>
+  .htmx-indicator {
+    display: none;
+  }
+
+  .htmx-request .htmx-indicator {
+    display: inline;
+  }
+
+  .htmx-request.htmx-indicator {
+    display: inline;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>
+    {{ product.name }} Findings Dashboard
+    <span class="badge bg-success">{{ product.environment.name | title }}</span>
+  </h3>
+  <div id="finding_header_id">
+    Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs.log_date is defined else 'DD-MM-YYYY' }}
+    <code>|</code>
+    Muzaffar Mohamed
+  </div>
+</div>
+<div class="page-content">
+  <!--Row1-->
+  <section class="row">
+    <!-- Card 1 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon red mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fas fa-frown"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">New Vulnerability</h6>
+              <h6 id="log_new_id" class="font-extrabold mb-0">{{logs.tNew | default(0)}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon red mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fas fa-grimace"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">Aging Vulnerability</h6>
+              <h6 id="log_open_id" class="font-extrabold mb-0">{{ logs.tOpen | default(0) }}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card 3 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon black mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fas fa-grin-beam-sweat"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">Exempted Vulnerability</h6>
+              <h6 id="log_examption_id" class="font-extrabold mb-0">{{logs.tExamption | default(0)}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card 4 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon black mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">Total Vulnerability</h6>
+              <h6 id="log_total_id" class="font-extrabold mb-0">
+                {{logs.tNew | default(0) + logs.tOpen | default(0) + logs.tExamption | default(0)}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--E1 Row-->
+  <!--Row2-->
+  <section class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Upload New Scan</h4>
+        </div>
+        <div class="card-body">{% include "pages/product/form/fileupload.html" %}</div>
+        <hr>
+        <div class="card-header">
+          <h4>Advance Setting</h4>
+        </div>
+        <div class="card-body">
+          <div class="col-md-12 mb-1">
+            <br />
+            <div class="form-group" align="left">
+              <label for="name" class="form-label">Escalation Points</label>
+              <select class="choices form-select multiple-remove" multiple="multiple">
+                <optgroup label="Select affected host">
+                  <option value="Rahmat">CISO Office</option>
+                  <option value="Mega">Tuan Sau Wern</option>
+                  <option value="Abu">Lewis Low</option>
+                  <option value="Ali">Liew Yin Fong</option>
+                  <option value="Ali">Bala Murugan</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-12 mb-1">
+            <br />
+            <p>Please select the frequency at which you would like to send the SLA breach report to the escalation
+              point:</p>
+            <ul class="list-unstyled mb-0">
+              <li class="d-inline-block me-2 mb-1">
+                <div class="form-check">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="form-check-input form-check-primary" checked name="customCheck"
+                      id="customColorCheck1">
+                    <label class="form-check-label" for="customColorCheck1">Weekly</label>
+                  </div>
+                </div>
+              </li>
+              <li class="d-inline-block me-2 mb-1">
+                <div class="form-check">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="form-check-input form-check-primary" checked name="customCheck"
+                      id="customColorCheck1">
+                    <label class="form-check-label" for="customColorCheck1">Monthly</label>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-12 mb-1">
+            <br />
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-laptop-code"></i></span>
+              <input type="text" class="form-control" placeholder="d657fgg7rd67f8g7td6rfr@$e6g87hyguhi"
+                aria-label="API Key" aria-describedby="button-addon2">
+              <button class="btn btn-outline-secondary" type="button" id="button-addon2">Generate API Key</button>
+            </div>
+          </div>
+          <div class="col-md-12 mb-1">
+            <br />
+            <button type="submit" class="btn btn-primary btn btn-primary w-100">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--EO Row2-->
+  <!--Row3-->
+  <section class="row">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-header">
+          <h4>Vulnerability Chart</h4>
+        </div>
+        <div class="card-body">
+          <div id="risk"></div><br>
+        </div>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <div class="card-header">
+          <h4>Aging Finding</h4>
+        </div>
+        <div class="card-body">
+          <div id="aging"></div>
+          <div display:None hx-get="{{product.id}}/aging-finding-chart" hx-trigger="load"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--EO Row3-->
+  <!--Row4-->
+  <section class="row">
+    <!-- Card 1 -->
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="col-12">
+            <h6>Select View</h6>
+            <div class="input-group mb-3">
+              <select class="form-select" id="inputGroupSelect01">
+                <option selected="">Choose Action</option>
+                <!--<option value="fip">By Host</option>-->
+                <option value="fn">View : Simplified</option>
+                <option value="frisk">View : Detailed</option>
+                <!--<option value="fr">Download Remarks</option>-->
+                <option value="fsla">Filter by SLA Breach</option>
+                <option value="fia">Filter by Asset</option>
+                <option value="fiep">Filter by Exception (Process)</option>
+                <option value="fiem">Filter by Exception (Manual Close)</option>
+                <option value="fie">Filter by Exception (All)</option>
+              </select>
+              <label class="input-group-text" for="inputGroupSelect01">Confirm</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="col-12">
+            <h6>Download Report</h6>
+            <div class="input-group mb-3">
+              <select class="form-select" id="inputGroupSelect01">
+                <option selected="">Compare Date...</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+              <label class="input-group-text" for="inputGroupSelect01">Download</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--EO Row4-->
+  <!--Row3-->
+  <section class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Findings</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Source</th>
+                  <th>Status</th>
+                  <th style="text-align: center;">Severity</th>
+                  <th>ITSE Remark</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="findings_table" hx-get="{{ product.id if product is defined else product_id }}/findings"
+                hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
+                <tr>
+                  <td colspan="6">
+                    <div id="spinner" class="htmx-indicator">
+                      Loading...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
+                <form id="finding_action_form" class="modal-content" hx-post="finding/action">
+                  <div class="modal-header bg-danger">
+                    <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                      <i data-feather="x"></i>
+                    </button>
+                  </div>
+                  <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
+                  <div class="modal-body">
+                    <div class="form-group" align="left">
+                      <label for="name" class="form-label">Host (default: all)</label>
+                      <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
+                        <optgroup label="Select affected host">
+                        </optgroup>
+                      </select>
+                    </div>
+                    <div class="form-group" align="left">
+                      <div class="form-group">
+                        <label for="selectOption">Action</label>
+                        <select name="action" class="form-control" id="selectOptionz" required>
+                          <option value="" disabled selected>Select an action</option>
+                          <option value="Examption">Examption</option>
+                          <option value="Not Applicable">Not Applicable</option>
+                          <option value="Invalid">Invalid</option>
+                          <option value="Duplicate">Duplicate</option>
+                        </select>
+                      </div>
+                      <div class="form-group" align="left">
+                        <label for="birthday" class="form-label">Action valid until</label>
+                        <input type="date" name="delayUntill" class="form-control"
+                          placeholder="Target Remediation Date">
+                      </div>
+                      <div class="form-group" align="left">
+                        <label for="birthday" class="form-label">Remarks</label>
+                        <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                      </button>
+                      <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
+                        <i class="bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Confirm</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+  <!--EO Row3-->
+</div>
+{% endblock %}
+{% block js %}
+<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="/assets/static/js/pages/ui-apexchart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
+<script src="/assets/static/js/pages/ckeditor.js"></script>
+
+<!--<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+
+<script src="/assets/static/js/pages/form-element-select.js"></script>
+
+<script id="update_script_id">
+  {% if logs %}
+  risk.updateSeries([
+    {{(logs.tCritical | default(0) / totalSeverity * 100) | round }},
+    {{(logs.tHigh | default(0) / totalSeverity * 100) | round }},
+    {{(logs.tMedium | default(0) / totalSeverity * 100) | round}},
+    {{(logs.tLow | default(0) / totalSeverity * 100) | round}}
+  ])
+  {% endif %}
+</script>
+<script>
+  var el = document.querySelector("#choices");
+  var hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
+  function mapHostChoice(value, idx, el) {
+    return {value: value, label: value}
+  }
+  function setChoices(hosts, finding_name_id) {
+    mapped = hosts.map(mapHostChoice);
+    hostChoices.setChoices(mapped, "value", "label", true);
+    fm = document.querySelector("#fn_name_action_id")
+    fm.setAttribute("value", `${finding_name_id}`)
+  }
+</script>
+{% endblock %}

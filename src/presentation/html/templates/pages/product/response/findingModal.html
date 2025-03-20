@@ -1,0 +1,71 @@
+<div class="modal-dialog modal-dialog-left modal-dialog-scrollable"
+     role="document">
+    <form class="modal-content" hx-post="finding/action/{{ finding_name_id }}">
+        <div class="modal-header bg-danger">
+            <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
+            <button type="button"
+                    class="close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                <i data-feather="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group" align="left">
+                <label for="name" class="form-label">Host (default: all)</label>
+                <select id="choices"
+                        name="choices"
+                        class="form-select multiple-remove"
+                        multiple="multiple">
+                    <optgroup label="Select affected host">
+                        {% for finding in findings %}
+                            <option value={{ finding }}>
+                                {{ finding }}
+                            </option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group" align="left">
+                <div class="form-group">
+                    <label for="selectOption">Action</label>
+                    <select name="action" class="form-control" id="selectOptionz" required>
+                        <option value="" disabled selected>Select an action</option>
+                        <option value="Examption">Examption</option>
+                        <option value="Not Applicable">Not Applicable</option>
+                        <option value="Invalid">Invalid</option>
+                        <option value="Duplicate">Duplicate</option>
+                    </select>
+                </div>
+                <div class="form-group" align="left">
+                    <label for="birthday" class="form-label">Action valid until</label>
+                    <input type="date"
+                           name="delayUntill"
+                           class="form-control"
+                           placeholder="Target Remediation Date">
+                </div>
+                <div class="form-group" align="left">
+                    <label for="birthday" class="form-label">Remarks</label>
+                    <input type="text"
+                           class="form-control"
+                           name="remarks"
+                           placeholder="Remarks, evidence URL">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                    <i class="bx bx-x d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Close</span>
+                </button>
+                <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
+                    <i class="bx bx-check d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Confirm</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+  el = document.querySelector("#choices");
+  hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
+</script>

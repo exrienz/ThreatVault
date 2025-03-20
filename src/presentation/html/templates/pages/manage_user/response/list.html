@@ -1,0 +1,26 @@
+{% for user in users.data %}
+    <tr>
+        <td>{{ loop.index + (users.page - 1) * users.size }}</td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ 'Active' if user.active else 'Inactive'}}</td>
+        <td>{{ user.role.name }}</td>
+        <td>
+            <a href="user?id={{ user.id }}"><i class="fas fa-solid fa-user-pen"></i></a>
+        </td>
+    </tr>
+{% endfor %}
+<tbody id="user_table_id"
+       hx-get="list"
+       hx-trigger="load, reload-user-list from:body"
+       hx-indicator="#spinner">
+    {% if users.page + 1 <= users.total_page %}
+        <tr hx-get="list?page={{ users.page + 1 }}"
+            hx-indicator="#spinner"
+            hx-trigger="revealed"
+            hx-swap="outerHTML">
+            <td colspan="6">
+                <div id="spinner" class="htmx-indicator">Loading...</div>
+            </td>
+        </tr>
+    {% endif %}

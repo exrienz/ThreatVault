@@ -1,0 +1,286 @@
+{% set title = "Findings" %}
+{% set filename = "findings.html" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<link rel="stylesheet" href="/assets/scss/iconly.scss">
+<link rel="stylesheet" href="assets/extensions/choices.js/public/assets/styles/choices.css">
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>KB5048661: Windows 10 version 1809 / Windows Server 2019 Security Update (December 2024)</h3>
+  Last Scan Date : 04-01-2025
+</div>
+<div class="page-content">
+  <!--Row1-->
+  <section class="row">
+    <!-- Card 1 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon blue mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">App A</h6>
+              <h6 class="font-extrabold mb-0">
+                <a href="/product/{{product.id}}">{{product.environment.name | title }}</a>
+              </h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card 1 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon red mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fa-solid fa-shield"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">Severity</h6>
+              <h6 class="font-extrabold mb-0">{{data.findings.0.severity.value | title }}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon red mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">Nessus VPR Score</h6>
+              <h6 class="font-extrabold mb-0">{{data.findings.0.vpr_score}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stats-icon black mb-2 me-3">
+              <!-- Added margin-right -->
+              <i class="fa-solid fa-spinner"></i>
+            </div>
+            <div>
+              <h6 class="text-muted font-semibold">Status</h6>
+              <h6 class="font-extrabold mb-0">{{data.findings.0.status.value | title}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--Eo Row1-->
+  <!-- Row2 -->
+  <section class="row">
+    <div class="col-8">
+      <!-- Description Card -->
+      <div class="card">
+        <div class="card-header">
+          <h4>Description</h4>
+        </div>
+        <div class="card-body">
+          <p>{{data.description | safe}}</p>
+        </div>
+      </div>
+      <!-- Solution Card -->
+      <div class="card">
+        <div class="card-header">
+          <h4>Solution</h4>
+        </div>
+        <div class="card-body">
+          {{data.findings.0.remediation}}
+        </div>
+      </div>
+      <!-- Help Button Card -->
+      <div class="card">
+        <div class="card-body">
+          <div class="buttons">
+            <a href="#" class="btn icon icon-left btn-primary">
+              <i class="fa-solid fa-robot"></i>&nbsp;&nbsp;Unclear? Ask AI for help!
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- Affected Hosts -->
+      <div class="card">
+        <div class="card-header">
+          <b>Affected Host: #TODO
+            <br />
+            <br />
+          </b><span class="badge bg-secondary">vbgrfirsftp01p.infra.paynet.my:0 <span
+              class="badge rounded-pill bg-danger">34</span></span> <span
+            class="badge bg-secondary">vbgrfirsftp02p.infra.paynet.my:0 <span
+              class="badge rounded-pill bg-danger">34</span></span>
+        </div>
+        <div class="card-body">
+          <pre style="background-color: #f0f0f0;;">
+            <br> Remote package installed : bpftool-4.18.0-553.30.1.el8_10 <br> Should be :
+            bpftool-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed : kernel-4.18.0-553.30.1.el8_10 <br>
+            Should be : kernel-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            kernel-core-4.18.0-553.30.1.el8_10 <br> Should be : kernel-core-4.18.0-553.32.1.el8_10 <br> <br> Remote
+            package installed : kernel-modules-4.18.0-553.30.1.el8_10 <br> Should be :
+            kernel-modules-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            kernel-tools-4.18.0-553.30.1.el8_10 <br> Should be : kernel-tools-4.18.0-553.32.1.el8_10 <br> <br> Remote
+            package installed : kernel-tools-libs-4.18.0-553.30.1.el8_10 <br> Should be :
+            kernel-tools-libs-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            python3-perf-4.18.0-553.30.1.el8_10 <br> Should be : python3-perf-4.18.0-553.32.1.el8_10 <br> <br> NOTE: The
+            vulnerability information above was derived by checking the <br> package versions of the affected packages
+            from this advisory. This <br> scan would normally rely on checking for the presence of specific <br>
+            installed and enabled Red Hat repositories, but either no repositories <br> were found in the repository
+            directory, the repository files were empty <br> or missing, or the scan account lacked permissions to access
+            them. <br> Please ensure that the repository files are populated and the scanning <br> account has
+            permissions to examine the files in /etc/yum.repos.d/.
+          </pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <b>Affected Host:
+            <br />
+            <br />
+          </b><span class="badge bg-secondary">10.226.57.34:0 <span
+              class="badge rounded-pill bg-danger">34</span></span> <span class="badge bg-secondary">10.226.57.35:0
+            <span class="badge rounded-pill bg-danger">34</span></span>
+        </div>
+        <br>
+        <div class="card-body">
+          <pre style="background-color: #f0f0f0;;"> <br> Remote package installed : bpftool-4.18.0-553.30.1.el8_10 <br>
+            Should be : bpftool-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            kernel-4.18.0-553.30.1.el8_10 <br> Should be : kernel-4.18.0-553.32.1.el8_10 <br> <br> Remote package
+            installed : kernel-core-4.18.0-553.30.1.el8_10 <br> Should be : kernel-core-4.18.0-553.32.1.el8_10 <br> <br>
+            Remote package installed : kernel-debug-devel-4.18.0-553.30.1.el8_10 <br> Should be :
+            kernel-debug-devel-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            kernel-devel-4.18.0-553.30.1.el8_10 <br> Should be : kernel-devel-4.18.0-553.32.1.el8_10 <br> <br> Remote
+            package installed : kernel-headers-4.18.0-553.30.1.el8_10 <br> Should be :
+            kernel-headers-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            kernel-modules-4.18.0-553.30.1.el8_10 <br> Should be : kernel-modules-4.18.0-553.32.1.el8_10 <br> <br>
+            Remote package installed : kernel-tools-4.18.0-553.30.1.el8_10 <br> Should be :
+            kernel-tools-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
+            kernel-tools-libs-4.18.0-553.30.1.el8_10 <br> Should be : kernel-tools-libs-4.18.0-553.32.1.el8_10 <br> <br>
+            Remote package installed : python3-perf-4.18.0-553.30.1.el8_10 <br> Should be :
+            python3-perf-4.18.0-553.32.1.el8_10 <br> <br> </pre>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <!-- ITS Remarks -->
+      <div class="card">
+        <div class="card-header">
+          <h4>ITS Remarks</h4>
+        </div>
+        <div class="card-body">
+          <form action="#" method="get">
+            <div class="form-group">
+              <label for="name" class="form-label">PIC</label>
+              <select class="choices form-select multiple-remove" multiple="multiple">
+                <optgroup label="Person in Charge">
+                  <option value="Rahmat">Rahmat</option>
+                  <option value="Mega">Mega</option>
+                  <option value="Abu">Abu</option>
+                  <option value="Ali">Ali</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="birthday" class="form-label">Target Remediation Date</label>
+              <input type="date" name="target_date" id="target_date" class="form-control"
+                placeholder="Target Remediation Date">
+            </div>
+            <div class="form-group">
+              <label for="birthday" class="form-label">Delay reason</label>
+              <input type="text" class="form-control" id="basicInput" placeholder="Delay Reason">
+            </div>
+            <div class="form-group">
+              <label for="birthday" class="form-label">ITS Remark</label>
+              <input type="text" class="form-control" id="basicInput" placeholder="Delay Reason">
+            </div>
+            <div class="form-group" align="right">
+              <button type="submit" class="btn btn-primary">Save Remarks</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Latest Comments -->
+      <div class="card">
+        <div class="card-header">
+          <h4>Latest Comments</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped mb-0">
+              <tbody>
+                <tr>
+                  <td class="col-auto">
+                    <p class="mb-0">
+                      We already raised for exemption before <small style="color: blue;">- Rasyid
+                        Sidek@12/3/2024</small>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-auto">
+                    <p class="mb-0">
+                      Can't fix, too many things in my bucket now <small style="color: blue;">- Norman
+                        Sidek@12/3/2024</small>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-auto">
+                    <p class="mb-0">
+                      Target middle of May <small style="color: blue;">- Taib Sidek@12/3/2024</small>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-auto">
+                    <p class="mb-0">
+                      Invalid findings! <small style="color: blue;">- Hamzah Sidek@12/3/2024</small>
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div id="editor2">
+              <p>This is some sample comment.</p>
+            </div>
+            <br />
+            <div class="form-group" align="right">
+              <button type="submit" class="btn btn-primary">Post Comment</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End of Row2 -->
+</div>
+{% endblock %}
+{% block js %}
+<script src="assets/extensions/dayjs/dayjs.min.js"></script>
+<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="assets/static/js/pages/ui-apexchart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
+<script src="assets/static/js/pages/ckeditor.js"></script>
+<script src="assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
+<script src="assets/static/js/pages/form-element-select.js"></script>
+{% endblock %}

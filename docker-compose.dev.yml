@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17.0-alpine3.20
+    container_name: db
+    env_file:
+      - .env
+    networks:
+      - sentinel-network
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    volumes:
+      - ./src:/src
+    networks:
+      - sentinel-network
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+networks:
+  sentinel-network:
+
+volumes:
+  db_data:

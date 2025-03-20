@@ -1,0 +1,11 @@
+<!--{# Update Remove Project #}-->
+<div id="id_rm_proj_default" hx-swap-oob="afterend">
+  <option id="id_rm_proj_{{ project.id }}" value="{{ project.id }}">{{ project.name }}</option>
+</div>
+<!--{# Update Create Product #}-->
+<div id="id_cr_prod_default" hx-swap-oob="afterend">
+  <option id="id_cr_prod_{{ project.id }}" value="{{ project.id }}">{{ project.name }}</option>
+</div>
+{% import 'pages/project_management/macros.html' as macros %}
+<div id="project_accordion" hx-swap-oob="afterbegin">{{ macros.project_accordion(project, project.id) }}</div>
+<script id="pm_script" hx-swap-oob>ToastSuccessCustom("Created");</script>

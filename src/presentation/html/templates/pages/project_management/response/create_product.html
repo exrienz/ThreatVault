@@ -1,0 +1,7 @@
+<div id="id_env_accordion_{{ product.environment_id }}" hx-swap-oob="afterend">
+  <li id="id_prod_accordion_{{ product.id }}" class="list-group-item">
+    <a href="/product/{{ product.id }}">{{ product.name }}</a>
+  </li>
+</div>
+{# Update Remove Project #}
+<script id="pm_script" hx-swap-oob>ToastSuccessCustom("Created Product: {{product.name}}");</script>
