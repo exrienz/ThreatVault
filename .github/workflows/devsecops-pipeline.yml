@@ -86,8 +86,4 @@ jobs:
         output: artifacts/sbom.spdx.json
       continue-on-error: true
 
-    - name: Save Scan Artifacts
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: scan-reports
-        path: artifacts
+
