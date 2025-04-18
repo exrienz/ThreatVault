@@ -76,12 +76,12 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/python-web:${{ steps.tagger.outputs.tag }}
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:${{ steps.tagger.outputs.tag }}
 
     - name: Generate SBOM with Trivy
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/python-web:${{ steps.tagger.outputs.tag }}
+        image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:${{ steps.tagger.outputs.tag }}
         format: spdx-json
         output: artifacts/sbom.spdx.json
       continue-on-error: true
