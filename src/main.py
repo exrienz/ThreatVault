@@ -1,12 +1,11 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from src.application.middlewares import RequestMiddleware
 from src.application.utils import startup_db
 from src.presentation.html.exception_handler import exception_handlers
 from src.routes import router
-
-# from fastapi.middleware.cors import CORSMiddleware
 
 # from starlette.middleware.sessions import SessionMiddleware
 
@@ -15,6 +14,14 @@ app = FastAPI(
 )
 
 app.add_middleware(RequestMiddleware)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/assets", StaticFiles(directory="public/assets"), name="assets")
 
