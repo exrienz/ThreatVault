@@ -9,7 +9,7 @@ select = [
     # isort
     "I",
 ]
-ignore = ["F401"]
+# ignore = ["F401"]
 
 [tool.bandit]
 exclude_dirs = ["./src/__pycache__/", ".ruff_cache", ".venv", ".venv_linux"]

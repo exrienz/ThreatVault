@@ -10,3 +10,5 @@ psycopg2-binary==2.9.*
 polars==1.24.*
 pandas==2.2.*
 pyarrow==19.*
+pyjwt==2.10.*
+passlib[bcrypt]==1.7.*

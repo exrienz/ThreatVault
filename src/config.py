@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 
 from pydantic import AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,6 +13,10 @@ class Settings(BaseSettings):
     DB_URL: AnyUrl = AnyUrl("user:pass@localhost:5432/foobar")
     SYNC_DB_DRIVER: str = "postgresql+psycopg2"
     ASYNC_DB_DRIVER: str = "postgresql+asyncpg"
+    JWT_SECRET: str = ""
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRED_MINUTES: int = 30
+    JWT_EXPIRED_DELTA: timedelta = timedelta(minutes=JWT_EXPIRED_MINUTES)
 
 
 settings = Settings()

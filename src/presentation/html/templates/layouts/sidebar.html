@@ -2,7 +2,7 @@
     <div class="sidebar-header position-relative">
         <div class="d-flex justify-content-between align-items-center">
             <div class="logo">
-                <a href="/index.html">
+                <a href="/">
                     <img src="/assets/static/images/logo/logo.svg" alt="Logo" srcset="" />
                 </a>
             </div>
@@ -60,7 +60,7 @@
                         <li class="sidebar-title">{{ sidebarItem.name }}</li>
                     {% else %}
                         <li class="sidebar-item {{ 'active' if (sidebarItem.url == filename or filename|startsWith(sidebarItem.key) ) }} {{'has-sub' if sidebarItem.submenu is defined }}">
-                            <a href="{{ sidebarItem.url if sidebarItem.url is not defined else '#' }}"
+                            <a href="{{ sidebarItem.url if sidebarItem.url is defined else '#' }}"
                                class="sidebar-link">
                                 <i class="bi bi-{{ sidebarItem.icon }}"></i>
                                 <span>{{ sidebarItem.name }}</span>

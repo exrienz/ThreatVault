@@ -44,9 +44,7 @@ async def delete_project(
     request: Request,
     project_id: UUID,
     service: projectService,
-    # service: ProjectManagementService = Depends(),
 ):
-    # TODO: Fix this
     projects = await service.delete_project(project_id)
     return templates.TemplateResponse(
         request,
@@ -66,7 +64,22 @@ async def get_environments(
     return templates.TemplateResponse(
         request,
         "pages/project_management/component/environment_select.html",
-        context={"envs": envs},
+        {"envs": envs},
+    )
+
+
+@router.get("/products")
+async def get_products(
+    request: Request,
+    service: projectService,
+    project_id: UUID | None = None,
+    environment_id: UUID | None = None,
+):
+    products = await service.get_product_by_project_id(project_id, environment_id)
+    return templates.TemplateResponse(
+        request,
+        "pages/project_management/component/product_select.html",
+        {"products": products},
     )
 
 
@@ -86,23 +99,8 @@ async def create_product(
     )
 
 
-@router.get("/products")
-async def get_products(
-    request: Request,
-    service: projectService,
-    project_id: UUID | None = None,
-    environment_id: UUID | None = None,
-):
-    products = await service.get_product_by_project_id(project_id, environment_id)
-    return templates.TemplateResponse(
-        request,
-        "pages/project_management/component/product_select.html",
-        context={"products": products},
-    )
-
-
 @router.delete("/product")
-async def del_product(
+async def delete_product(
     request: Request,
     product_id,
     # service: ProjectManagementService = Depends()

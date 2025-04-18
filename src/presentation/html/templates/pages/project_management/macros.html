@@ -20,11 +20,9 @@
                         <ul class="list-group">
                             <li id="id_env_accordion_{{ env.id }}" class="list-group-item active">{{ env.name | title }}</li>
                             {% for product in env.products %}
-                                {% if product.deleted_at is none %}
-                                    <li id="id_prod_accordion_{{ product.id }}" class="list-group-item">
-                                        <a href="/product/{{ product.id }}">{{ product.name }}</a>
-                                    </li>
-                                {% endif %}
+                                <li id="id_prod_accordion_{{ product.id }}" class="list-group-item">
+                                    <a href="/product/{{ product.id }}">{{ product.name }}</a>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>

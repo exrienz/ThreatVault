@@ -1,0 +1,63 @@
+<div class="modal fade text-left"
+     id="danger"
+     tabindex="-1"
+     role="dialog"
+     style="display: none"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-left modal-dialog-scrollable"
+         role="document">
+        <form class="modal-content"
+              hx-post="create"
+              hx-encoding="multipart/form-data">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title white">Add New Plugin</h5>
+                <button type="button"
+                        class="close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="formFile" class="form-label">Upload File</label>
+                    <input class="form-control" type="file" id="file" name="file">
+                </div>
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text"
+                           id="description"
+                           name="description"
+                           class="form-control"
+                           placeholder="Description"
+                           value="{{ plugin.description if plugin }}">
+                </div>
+                <div class="form-group">
+                    <label for="config" class="form-label">Config</label>
+                    <input type="text"
+                           id="config"
+                           name="config"
+                           class="form-control"
+                           placeholder="Configuration"
+                           value="{{ plugin.config  if plugin }}">
+                </div>
+                <div class="form-check">
+                    <div class="checkbox">
+                        <input type="checkbox" id="active" name="active" class="form-check-input">
+                        <label for="active">Activate?</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
+                    <button type="submit" class="btn btn-success ms-1" data-bs-dismiss="modal">
+                        <i class="bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Confirm</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

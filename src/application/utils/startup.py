@@ -5,6 +5,8 @@ from src.config import default_roles
 from src.domain.entity import Base, GlobalConfig, Role
 from src.infrastructure.database import SyncSessionFactory, sync_db_conn, sync_engine
 
+from .plugin import upload_builtin_plugin
+
 
 def startup_db():
     print("Creating DB")
@@ -16,6 +18,7 @@ def startup_db():
 
     create_default_roles()
     default_global_setting()
+    upload_builtin_plugin()
 
 
 def create_default_roles():

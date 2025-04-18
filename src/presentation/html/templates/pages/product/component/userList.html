@@ -1,0 +1,50 @@
+{#
+
+<div class="row mt-2">
+    <div class="input-group">
+        <span class="input-group-text">Search User:</span>
+        <input type="text" class="form-control" name="search" placeholder="Search" aria-label="Username" aria-describedby="basic-addon1">
+    </div>
+</div>
+#}
+<div class="table-responsive mt-2">
+    <table class="table table-striped mb-0">
+        <thead>
+            <tr>
+                <th>NAME</th>
+                <th>EMAIL</th>
+                <th>ROLE</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr id="row_{{ user.id }}">
+                    <td class="text-bold-500">{{ user.username | title }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role.name }}</td>
+                    <td>
+                        {% if allowed %}
+                            <a hx-post="{{ product_id }}/user-permission"
+                               hx-vals='{"user_id": "{{ user.id }}", "granted": false}'
+                               hx-target="#row_{{ user.id }}"
+                               hx-swap="delete"
+                               hx-confirm="Remove this user {{ user.username }}"><i class="fas fa-solid fa-trash text-danger"></i></a>
+                        {% else %}
+                            <a hx-post="{{ product_id }}/user-permission"
+                               hx-vals='{"user_id": "{{ user.id }}", "granted": true}'
+                               hx-target="#row_{{ user.id }}"
+                               hx-swap="delete"
+                               hx-confirm="Add this user {{ user.username }}"><i class="fas fa-solid fa-user-plus text-success"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% if not users %}
+                <tr>
+                    <td colspan="4">No user in this list</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,16 @@
+<tr>
+    <td class="text-bold-500">{{ api.name }}</td>
+    <td>
+        <button class="btn btn-sm btn-primary"
+                hx-get="manage-api/{{ api.id }}"
+                hx-swap="outerHTML">SHOW</button>
+    </td>
+    <td>
+        <button class="btn icon btn-sm btn-danger"
+                hx-delete="manage-api/{{ api.id }}"
+                hx-swap="delete"
+                hx-target="closest tr">
+            <i class="fas fa-solid fa-trash"></i>
+        </button>
+    </td>
+</tr>

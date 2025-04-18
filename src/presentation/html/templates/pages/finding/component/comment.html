@@ -1,0 +1,9 @@
+<tr>
+    <td class="col-auto">
+        <div>
+            <small style="color: blue;">
+            {{ comment.commentor.username | title }}@{{ comment.created_at | datetime_format("%d/%m/%Y") }}</small>
+            {{ comment.comment }}
+        </div>
+    </td>
+</tr>

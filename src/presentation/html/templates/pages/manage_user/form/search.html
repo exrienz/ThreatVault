@@ -1,0 +1,30 @@
+<div class="row"
+     hx-get="list"
+     hx-trigger="input changed delay:500ms from:#userSearchID, input changed delay:500ms from:#roleSearchID, change from:#statusSearchID"
+     hx-vals="js:{email: document.querySelector('#userSearchID').value, role: document.querySelector('#roleSearchID').value, active: document.querySelector('#statusSearchID').value}"
+     hx-target="#user_table_id">
+    <div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <h5 class="card-title">Search Email</h5>
+                        <input type="search" name="email" id="userSearchID" class="form-control">
+                    </div>
+                    <div class="col-3">
+                        <h5>Role</h5>
+                        <input type="text" name="role" id="roleSearchID" class="form-control">
+                    </div>
+                    <div class="col-3">
+                        <h5>Status</h5>
+                        <select class="form-select" name="active" id="statusSearchID">
+                            <option value="">Any</option>
+                            <option value=true>Active</option>
+                            <option value=false>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

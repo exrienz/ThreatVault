@@ -3,7 +3,7 @@
 <div id="log_examption_id" hx-swap-oob="innerHTML">{{ logs.tExamption | default(0) }}</div>
 <div id="log_total_id">{{ logs.tNew | default(0) + logs.tOpen | default(0) + logs.tExamption | default(0) }}</div>
 <div id="finding_header_id" hx-swap-oob="innerHTML">
-    Last Update : {{ logs.log_date.strftime("%d-%m-%Y") }} <code>|</code> Muzaffar Mohamed
+    Last Update : {{ logs.log_date.strftime("%d-%m-%Y") }} <code>|</code> {{ user.username | title }}
 </div>
 <script id="update_script_id" hx-swap-oob="outerHTML">
   {% if logs %}

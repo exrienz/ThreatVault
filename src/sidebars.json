@@ -6,7 +6,7 @@
   {
     "name": "VAPT Dashboard",
     "key": "vapt",
-    "url": "index.html",
+    "url": "/",
     "icon": "grid-fill"
   },
   {
@@ -23,7 +23,7 @@
   },
   {
     "name": "User Management",
-    "key": "user",
+    "key": "/manage",
     "icon": "people-fill",
     "submenu": [
       {
@@ -33,12 +33,16 @@
       {
         "name": "Manage Owner",
         "url": "/manage-owner"
+      },
+      {
+        "name": "Manage API",
+        "url": "/manage-api"
       }
     ]
   },
   {
     "name": "Project Management",
-    "key": "project",
+    "key": "/project",
     "icon": "briefcase-fill",
     "submenu": [
       {
@@ -53,16 +57,16 @@
   },
   {
     "name": "Site Configuration",
-    "key": "system",
+    "key": "/setting",
     "icon": "tools",
     "submenu": [
       {
-        "name": "Email Setting",
-        "url": "/email-setting"
+        "name": "Site Setting",
+        "url": "/setting"
       },
       {
-        "name": "Site Setting",
-        "url": "/site-setting"
+        "name": "Plugin Management",
+        "url": "/setting/plugin"
       }
     ]
   },
@@ -76,5 +80,11 @@
         "url": "manageProject.html"
       }
     ]
+  },
+  {
+    "name": "Self-Service",
+    "key": "/self-service",
+    "url": "/self-service",
+    "icon": "wrench"
   }
 ]

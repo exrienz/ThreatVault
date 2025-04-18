@@ -7,8 +7,8 @@
 {% endblock %}
 {% block content %}
 <div class="page-heading">
-  <h3>KB5048661: Windows 10 version 1809 / Windows Server 2019 Security Update (December 2024)</h3>
-  Last Scan Date : 04-01-2025
+  <h3>{{data.name}}</h3>
+  Last Scan Date : {{data.findings.0.last_update | datetime_format("%d-%m-%Y")}}
 </div>
 <div class="page-content">
   <!--Row1-->
@@ -23,7 +23,7 @@
               <i class="fa-solid fa-folder-open"></i>
             </div>
             <div>
-              <h6 class="text-muted font-semibold">App A</h6>
+              <h6 class="text-muted font-semibold">{{product.name}}</h6>
               <h6 class="font-extrabold mb-0">
                 <a href="/product/{{product.id}}">{{product.environment.name | title }}</a>
               </h6>
@@ -115,66 +115,9 @@
           </div>
         </div>
       </div>
-      <!-- Affected Hosts -->
-      <div class="card">
-        <div class="card-header">
-          <b>Affected Host: #TODO
-            <br />
-            <br />
-          </b><span class="badge bg-secondary">vbgrfirsftp01p.infra.paynet.my:0 <span
-              class="badge rounded-pill bg-danger">34</span></span> <span
-            class="badge bg-secondary">vbgrfirsftp02p.infra.paynet.my:0 <span
-              class="badge rounded-pill bg-danger">34</span></span>
-        </div>
-        <div class="card-body">
-          <pre style="background-color: #f0f0f0;;">
-            <br> Remote package installed : bpftool-4.18.0-553.30.1.el8_10 <br> Should be :
-            bpftool-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed : kernel-4.18.0-553.30.1.el8_10 <br>
-            Should be : kernel-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            kernel-core-4.18.0-553.30.1.el8_10 <br> Should be : kernel-core-4.18.0-553.32.1.el8_10 <br> <br> Remote
-            package installed : kernel-modules-4.18.0-553.30.1.el8_10 <br> Should be :
-            kernel-modules-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            kernel-tools-4.18.0-553.30.1.el8_10 <br> Should be : kernel-tools-4.18.0-553.32.1.el8_10 <br> <br> Remote
-            package installed : kernel-tools-libs-4.18.0-553.30.1.el8_10 <br> Should be :
-            kernel-tools-libs-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            python3-perf-4.18.0-553.30.1.el8_10 <br> Should be : python3-perf-4.18.0-553.32.1.el8_10 <br> <br> NOTE: The
-            vulnerability information above was derived by checking the <br> package versions of the affected packages
-            from this advisory. This <br> scan would normally rely on checking for the presence of specific <br>
-            installed and enabled Red Hat repositories, but either no repositories <br> were found in the repository
-            directory, the repository files were empty <br> or missing, or the scan account lacked permissions to access
-            them. <br> Please ensure that the repository files are populated and the scanning <br> account has
-            permissions to examine the files in /etc/yum.repos.d/.
-          </pre>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <b>Affected Host:
-            <br />
-            <br />
-          </b><span class="badge bg-secondary">10.226.57.34:0 <span
-              class="badge rounded-pill bg-danger">34</span></span> <span class="badge bg-secondary">10.226.57.35:0
-            <span class="badge rounded-pill bg-danger">34</span></span>
-        </div>
-        <br>
-        <div class="card-body">
-          <pre style="background-color: #f0f0f0;;"> <br> Remote package installed : bpftool-4.18.0-553.30.1.el8_10 <br>
-            Should be : bpftool-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            kernel-4.18.0-553.30.1.el8_10 <br> Should be : kernel-4.18.0-553.32.1.el8_10 <br> <br> Remote package
-            installed : kernel-core-4.18.0-553.30.1.el8_10 <br> Should be : kernel-core-4.18.0-553.32.1.el8_10 <br> <br>
-            Remote package installed : kernel-debug-devel-4.18.0-553.30.1.el8_10 <br> Should be :
-            kernel-debug-devel-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            kernel-devel-4.18.0-553.30.1.el8_10 <br> Should be : kernel-devel-4.18.0-553.32.1.el8_10 <br> <br> Remote
-            package installed : kernel-headers-4.18.0-553.30.1.el8_10 <br> Should be :
-            kernel-headers-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            kernel-modules-4.18.0-553.30.1.el8_10 <br> Should be : kernel-modules-4.18.0-553.32.1.el8_10 <br> <br>
-            Remote package installed : kernel-tools-4.18.0-553.30.1.el8_10 <br> Should be :
-            kernel-tools-4.18.0-553.32.1.el8_10 <br> <br> Remote package installed :
-            kernel-tools-libs-4.18.0-553.30.1.el8_10 <br> Should be : kernel-tools-libs-4.18.0-553.32.1.el8_10 <br> <br>
-            Remote package installed : python3-perf-4.18.0-553.30.1.el8_10 <br> Should be :
-            python3-perf-4.18.0-553.32.1.el8_10 <br> <br> </pre>
-        </div>
-      </div>
+      {% for host,findings in findings_dict.items() %}
+      {% include "pages/finding/component/affected_host.html" %}
+      {% endfor %}
     </div>
     <div class="col-4">
       <!-- ITS Remarks -->
@@ -214,73 +157,37 @@
           </form>
         </div>
       </div>
-      <!-- Latest Comments -->
+      <!-- Start: Comments -->
       <div class="card">
-        <div class="card-header">
-          <h4>Latest Comments</h4>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-striped mb-0">
-              <tbody>
-                <tr>
-                  <td class="col-auto">
-                    <p class="mb-0">
-                      We already raised for exemption before <small style="color: blue;">- Rasyid
-                        Sidek@12/3/2024</small>
-                    </p>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="col-auto">
-                    <p class="mb-0">
-                      Can't fix, too many things in my bucket now <small style="color: blue;">- Norman
-                        Sidek@12/3/2024</small>
-                    </p>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="col-auto">
-                    <p class="mb-0">
-                      Target middle of May <small style="color: blue;">- Taib Sidek@12/3/2024</small>
-                    </p>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="col-auto">
-                    <p class="mb-0">
-                      Invalid findings! <small style="color: blue;">- Hamzah Sidek@12/3/2024</small>
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div hx-get="{{data.id}}/comments" hx-indicator="#spinner" hx-trigger="load">
+          {% include "pages/finding/component/comments.html" %}
         </div>
         <div class="card">
-          <div class="card-body">
-            <div id="editor2">
-              <p>This is some sample comment.</p>
+          <form hx-post="{{ data.id }}/comment" hx-swap="beforeend" hx-target="#comments_table_id">
+            <div class="card-body">
+              <div class="form-group mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Comment:</label>
+                <textarea class="form-control" id="comment_post" name="comment" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Post Comment
+              </button>
             </div>
-            <br />
-            <div class="form-group" align="right">
-              <button type="submit" class="btn btn-primary">Post Comment</button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
-    </div>
+      <!-- End: Comments -->
   </section>
   <!-- End of Row2 -->
 </div>
 {% endblock %}
 {% block js %}
-<script src="assets/extensions/dayjs/dayjs.min.js"></script>
-<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="assets/static/js/pages/ui-apexchart.js"></script>
+<script src="/assets/extensions/dayjs/dayjs.min.js"></script>
+<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="/assets/static/js/pages/ui-apexchart.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
-<script src="assets/static/js/pages/ckeditor.js"></script>
-<script src="assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
-<script src="assets/static/js/pages/form-element-select.js"></script>
+<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
+<script src="/assets/static/js/pages/ckeditor.js"></script>
+<script src="/assets/static/js/pages/form-element-select.js"></script>
 {% endblock %}

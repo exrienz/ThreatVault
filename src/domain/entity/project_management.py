@@ -14,7 +14,11 @@ class Project(Base):
     type_: Mapped[str] = mapped_column("type")
     creator_id: Mapped[UUID]
 
-    environment = relationship("Environment", back_populates="project")
+    environment = relationship(
+        "Environment",
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )
 
 
 class Environment(Base):
@@ -39,6 +43,8 @@ class Product(Base):
 
     environment_id: Mapped[UUID] = mapped_column(ForeignKey("environment.id"))
     environment = relationship("Environment", back_populates="products")
+
+    accesses = relationship("ProductUserAccess", back_populates="products")
 
 
 #

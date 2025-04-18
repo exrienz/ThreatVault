@@ -6,14 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.constant import SeverityEnum
 from src.domain.entity import Finding, FindingName, Product
 from src.infrastructure.database import get_session
+from src.persistence.base import BaseRepository
 
 
-class FindingNameRepository:
+class FindingNameRepository(BaseRepository[FindingName]):
     def __init__(self, session: AsyncSession = Depends(get_session)):
-        self.session = session
+        super().__init__(FindingName, session)
 
     async def updateFindingName(self, finding_name: str, product_id: UUID):
         try:
@@ -24,9 +24,7 @@ class FindingNameRepository:
         except IntegrityError:
             pass
 
-    async def get_by_filter(
-        self, finding_name_id: UUID | None = None, severity: SeverityEnum | None = None
-    ):
+    async def get_by_filter(self, filters: dict) -> FindingName | None:
         stmt = (
             select(FindingName)
             .join(Finding)
@@ -36,9 +34,9 @@ class FindingNameRepository:
             )
         )
 
-        if finding_name_id:
+        if finding_name_id := filters.get("finding_name_id"):
             stmt = stmt.where(FindingName.id == finding_name_id)
-        if severity:
+        if severity := filters.get("severity"):
             stmt = stmt.where(Finding.severity == severity)
         query = await self.session.execute(stmt)
         return query.scalars().first()

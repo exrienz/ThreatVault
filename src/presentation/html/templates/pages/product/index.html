@@ -5,6 +5,7 @@
 <!--<link rel="stylesheet" href="/assets/extensions/choices.js/public/assets/styles/choices.css">-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css" />-->
+<link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
 <style>
   .htmx-indicator {
     display: none;
@@ -28,7 +29,7 @@
   <div id="finding_header_id">
     Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs.log_date is defined else 'DD-MM-YYYY' }}
     <code>|</code>
-    Muzaffar Mohamed
+    {{logs.uploader.username | title if logs.uploader is defined}}
   </div>
 </div>
 <div class="page-content">
@@ -114,64 +115,7 @@
         </div>
         <div class="card-body">{% include "pages/product/form/fileupload.html" %}</div>
         <hr>
-        <div class="card-header">
-          <h4>Advance Setting</h4>
-        </div>
-        <div class="card-body">
-          <div class="col-md-12 mb-1">
-            <br />
-            <div class="form-group" align="left">
-              <label for="name" class="form-label">Escalation Points</label>
-              <select class="choices form-select multiple-remove" multiple="multiple">
-                <optgroup label="Select affected host">
-                  <option value="Rahmat">CISO Office</option>
-                  <option value="Mega">Tuan Sau Wern</option>
-                  <option value="Abu">Lewis Low</option>
-                  <option value="Ali">Liew Yin Fong</option>
-                  <option value="Ali">Bala Murugan</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-12 mb-1">
-            <br />
-            <p>Please select the frequency at which you would like to send the SLA breach report to the escalation
-              point:</p>
-            <ul class="list-unstyled mb-0">
-              <li class="d-inline-block me-2 mb-1">
-                <div class="form-check">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="form-check-input form-check-primary" checked name="customCheck"
-                      id="customColorCheck1">
-                    <label class="form-check-label" for="customColorCheck1">Weekly</label>
-                  </div>
-                </div>
-              </li>
-              <li class="d-inline-block me-2 mb-1">
-                <div class="form-check">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="form-check-input form-check-primary" checked name="customCheck"
-                      id="customColorCheck1">
-                    <label class="form-check-label" for="customColorCheck1">Monthly</label>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div class="col-md-12 mb-1">
-            <br />
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="basic-addon1"><i class="fa fa-laptop-code"></i></span>
-              <input type="text" class="form-control" placeholder="d657fgg7rd67f8g7td6rfr@$e6g87hyguhi"
-                aria-label="API Key" aria-describedby="button-addon2">
-              <button class="btn btn-outline-secondary" type="button" id="button-addon2">Generate API Key</button>
-            </div>
-          </div>
-          <div class="col-md-12 mb-1">
-            <br />
-            <button type="submit" class="btn btn-primary btn btn-primary w-100">Save</button>
-          </div>
-        </div>
+        {%include "pages/product/component/advancedSetting.html"%}
       </div>
     </div>
   </section>
@@ -346,8 +290,6 @@
 <script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
 <script src="/assets/static/js/pages/ui-apexchart.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
-<script src="/assets/static/js/pages/ckeditor.js"></script>
 
 <!--<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
@@ -364,6 +306,7 @@
   ])
   {% endif %}
 </script>
+<script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
 <script>
   var el = document.querySelector("#choices");
   var hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
@@ -376,5 +319,20 @@
     fm = document.querySelector("#fn_name_action_id")
     fm.setAttribute("value", `${finding_name_id}`)
   }
+
+  document.addEventListener("htmx:confirm", function (e) {
+    if (!e.detail.elt.hasAttribute('hx-confirm')) return
+
+    e.preventDefault()
+    Swal.fire({
+      title: "Are you sure?",
+      text: `${e.detail.question}`
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        // If the user confirms, we manually issue the request
+        e.detail.issueRequest(true); // true to skip the built-in window.confirm()
+      }
+    })
+  })
 </script>
 {% endblock %}

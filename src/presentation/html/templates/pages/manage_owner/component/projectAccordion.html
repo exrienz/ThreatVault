@@ -1,0 +1,27 @@
+{% for project in projects %}
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#child-{{ project.id }}"
+                    aria-expanded="false">{{ project.name }}</button>
+        </h2>
+        <div id="child-{{ project.id }}"
+             class="accordion-collapse collapse"
+             aria-labelledby="flush-headingOne"
+             data-bs-parent="#accordionProjectList">
+            <div class="accordion-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        {% for environment in project.environment %}
+                            {% for product in environment.products %}
+                                {% include "pages/manage_owner/component/productCard.html" %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

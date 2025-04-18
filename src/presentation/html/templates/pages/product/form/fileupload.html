@@ -19,9 +19,11 @@
                 <label for="plugin" class="form-label">Plugin Source</label>
                 <select name="plugin" id="plugin_id" class="form-control">
                     <option selected="">Select source...</option>
-                    <option value="manual">Manual (Pentest)</option>
-                    <option value="nessus">Nessus</option>
-                    <option value="crowdstrike">Crowdstrike</option>
+                    {% for pl in plugins %}
+                        <option value={{ pl.type }}/{{ pl.name }}>
+                            {{ pl.name | title if pl.name != "manual" else "Manual (Pentest)" }}
+                        </option>
+                    {% endfor %}
                 </select>
             </div>
         </div>

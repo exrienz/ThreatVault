@@ -1,0 +1,23 @@
+{% for plugin in plugins %}
+    <tr>
+        <td>{{ plugin.name }}</td>
+        <td>{{ plugin.type | title }}</td>
+        <td>{{ plugin.env }}</td>
+        <td>{{ plugin.description }}</td>
+        <td>{{ 'Active' if plugin.is_active else 'Inactive'}}</td>
+        <td>{{ plugin.config }}</td>
+        <td>{{ plugin.verified }}</td>
+        <td>
+            <a hx-get="verify/{{ plugin.id }}"
+               hx-target="#verify"
+               hx-trigger="click"
+               data-bs-toggle="modal"
+               data-bs-target="#verify"><i class="fas fa-solid fa-flask"></i></a>
+            <a hx-get="edit/{{ plugin.id }}"
+               hx-target="#verify"
+               hx-trigger="click"
+               data-bs-toggle="modal"
+               data-bs-target="#verify"><i class="fas fa-solid fa-pen"></i></a>
+        </td>
+    </tr>
+{% endfor %}

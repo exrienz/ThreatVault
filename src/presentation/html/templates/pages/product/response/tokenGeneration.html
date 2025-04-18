@@ -1,0 +1,12 @@
+<div class="input-group mb-3">
+    <span class="input-group-text"><i class="fa fa-laptop-code"></i></span>
+    <input type="text"
+           id="api_token"
+           class="form-control"
+           placeholder="d657fgg7rd67f8g7td6rfr@$e6g87hyguhi"
+           aria-label="API Key"
+           {% if product.apiKey %}value={{ product.apiKey }}{% endif %}
+           aria-describedby="button-addon2"
+           readonly>
+    <button class="btn btn-outline-secondary" type="submit">Generate API Key</button>
+</div>

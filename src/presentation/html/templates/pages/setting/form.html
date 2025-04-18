@@ -1,0 +1,202 @@
+<form hx-post>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Site Setting</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Site Name</span>
+                    <input type="text"
+                           name="site_name"
+                           value="{{ data.site_name }}"
+                           class="form-control"
+                           aria-describedby="inputGroup-sizing-default">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Site Domain</span>
+                    <input type="text"
+                           name="site_domain"
+                           value="{{ data.site_domain }}"
+                           class="form-control"
+                           aria-describedby="inputGroup-sizing-default">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Site Logo URL</span>
+                    <input type="text"
+                           name="site_logo_url"
+                           value="{{ data.site_logo_url }}"
+                           class="form-control"
+                           aria-describedby="inputGroup-sizing-default">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">SLA Setting</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Critical</span>
+                            <input type="text"
+                                   name="sla_critical"
+                                   value="{{ data.sla_critical }}"
+                                   class="form-control"
+                                   aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">High</span>
+                            <input type="text"
+                                   name="sla_high"
+                                   value="{{ data.sla_high }}"
+                                   class="form-control"
+                                   aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Medium</span>
+                            <input type="text"
+                                   name="sla_medium"
+                                   value="{{ data.sla_medium }}"
+                                   class="form-control"
+                                   aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Low</span>
+                            <input type="text"
+                                   name="sla_low"
+                                   value="{{ data.sla_low }}"
+                                   class="form-control"
+                                   aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Security Setting</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Login Via Email</h6>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Enable</span>
+                        <div class="input-group-text">
+                            <input class="form-check-input"
+                                   name="login_via_email"
+                                   type="checkbox"
+                                   {% if data.login_via_email %}checked{% endif %}>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <h6 class="card-title">OKTA Config</h6>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Enable OKTA</span>
+                        <div class="input-group-text">
+                            <input class="form-check-input"
+                                   name="okta_enabled"
+                                   type="checkbox"
+                                   {% if data.okta_enabled %}checked{% endif %}>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Domain</span>
+                        <input type="text"
+                               name="okta_domain"
+                               value="{{ data.okta_domain }}"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Client ID</span>
+                        <input type="password"
+                               name="okta_client_id"
+                               value="{{ data.okta_client_id }}"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Client Secret</span>
+                        <input type="password"
+                               name="okta_client_secret"
+                               value="{{ data.okta_client_secret }}"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Redirect URL</span>
+                        <input type="text"
+                               name="okta_redirect_url"
+                               value="{{ data.okta_redirect_url }}"
+                               class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">SMTP Setting</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Server</span>
+                        <input type="text"
+                               name="smtp_server"
+                               value="{{ data.smtp_server }}"
+                               class="form-control"
+                               aria-describedby="inputGroup-sizing-default">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Port</span>
+                        <input type="text"
+                               name="smtp_port"
+                               value="{{ data.smtp_port }}"
+                               class="form-control"
+                               aria-describedby="inputGroup-sizing-default">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Username</span>
+                        <input type="text"
+                               name="smtp_username"
+                               value="{{ data.smtp_username }}"
+                               class="form-control"
+                               aria-describedby="inputGroup-sizing-default">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Password</span>
+                        <input type="password"
+                               name="smtp_password"
+                               value="{{ data.smtp_password }}"
+                               class="form-control"
+                               aria-describedby="inputGroup-sizing-default">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group my-2 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>

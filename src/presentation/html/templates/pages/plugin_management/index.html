@@ -1,0 +1,78 @@
+{% set title = "Plugin" %}
+{% set filename = "/setting/plugin" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<link rel="stylesheet" href="/assets/scss/iconly.scss">
+<link rel="stylesheet" href="assets/extensions/choices.js/public/assets/styles/choices.css">
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>Plugin Configuration Dashboard</h3>
+</div>
+<div class="page-content">
+  <!--Row-->
+  <!-- Row -->
+  <section class="row">
+    <div class="row">
+      <!-- Middle side columns -->
+      <div class="col-12 col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4>Plugin List</h4>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-end">
+              <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#danger">
+                Add Plugin
+              </a>
+              {% include "pages/plugin_management/form/create.html" %}
+            </div>
+            <!-- Table with stripped rows -->
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Environment</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Config</th>
+                  <th>Verified</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="plugins_table_id" hx-get="list" hx-trigger="load, reload-plugin-list from:body"
+                hx-indicator="#spinner">
+                <tr>
+                  <td colspan="6">
+                    <div id="spinner" class="htmx-indicator">Loading...</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal fade text-left" id="verify" tabindex="-1" role="dialog" style="display: none" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+<div class="modal fade text-left" id="edit" tabindex="-1" role="dialog" style="display: none" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+{% endblock %}
+{% block js %}
+<script src="assets/extensions/dayjs/dayjs.min.js"></script>
+<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="assets/static/js/pages/ui-apexchart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}

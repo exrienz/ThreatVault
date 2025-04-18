@@ -51,10 +51,14 @@ class Plugin(Base):
     __tablename__ = "plugin"
 
     name: Mapped[str]
-    description: Mapped[str]
-    status: Mapped[str]
-    type: Mapped[str]
-    config: Mapped[str]
+    description: Mapped[Optional[str]]
+    is_active: Mapped[bool] = mapped_column(server_default="f")
+    type: Mapped[str]  # builtin or custom
+    env: Mapped[Optional[str]]  # VA or HA
+    config: Mapped[Optional[str]]  # JSON?
+    verified: Mapped[bool] = mapped_column(server_default="f")
+    # verification_error: Mapped[Optional[str]]
+    file_path: Mapped[Optional[str]]
 
 
 class FindingName(Base):
@@ -75,7 +79,6 @@ class FindingName(Base):
             "name",
             "product_id",
             unique=True,
-            postgresql_where=(Column("deleted_at").is_(None)),
         ),
     )
 
@@ -108,6 +111,8 @@ class Comment(Base):
 
     comment: Mapped[str]
     findingName_id: Mapped[UUID] = mapped_column(ForeignKey("finding_name.id"))
+    commentor_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
+    commentor = relationship("User")
 
 
 class Log(Base):
@@ -131,3 +136,7 @@ class Log(Base):
 
     product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
     log_date: Mapped[datetime] = mapped_column(DateTime(True))
+    uploader_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
+    uploader = relationship("User")
+
+    product = relationship("Product")

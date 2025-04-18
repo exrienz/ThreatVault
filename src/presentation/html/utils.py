@@ -37,6 +37,12 @@ def slaCalc(finding: Finding, sla: dict):
     ).days
 
 
+def datetime_format(value, format="%H:%M %d-%m-%y"):
+    if value:
+        return value.strftime(format)
+
+
 templates.env.filters["startsWith"] = startsWith
 templates.env.filters["findingSeverityMap"] = findingSeverityMap
 templates.env.filters["slaCalc"] = slaCalc
+templates.env.filters["datetime_format"] = datetime_format

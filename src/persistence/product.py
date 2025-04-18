@@ -1,59 +1,96 @@
 from collections.abc import Sequence
-from datetime import datetime
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.entity import Environment, Product
+from src.domain.entity import Environment, Product, ProductUserAccess, User
 from src.infrastructure.database import get_session
+from src.persistence.base import BaseRepository
 
 
-class ProductRepository:
+class ProductRepository(BaseRepository[Product]):
     def __init__(self, session: AsyncSession = Depends(get_session)):
-        self.session = session
+        super().__init__(Product, session)
 
-    async def get_by_id(self, item_id: UUID):
-        stmt = (
-            select(Product)
-            .where(Product.id == item_id, Product.deleted_at.is_(None))
-            .options(selectinload(Product.environment))
-        )
-        query = await self.session.execute(stmt)
-        return query.scalars().one_or_none()
-
-    async def delete(self, item_id: UUID):
-        product = await self.get_by_id(item_id)
-        if product is None:
-            raise
-        product.deleted_at = datetime.now()
-        await self.session.commit()
-
-    async def create(self, data: dict) -> Product:
-        db_data = Product(**data)
-        self.session.add(db_data)
-        await self.session.commit()
-        await self.session.refresh(db_data)
-        return db_data
+    def _options(self, stmt: Select):
+        return stmt.options(selectinload(Product.environment))
 
     async def get_by_id_filter(
         self,
         project_id: UUID | None = None,
         environment_id: UUID | None = None,
     ) -> Sequence[Product]:
-        stmt = (
-            select(Product)
-            .join(Environment)
-            .where(
-                Environment.deleted_at.is_(None),
-                Product.deleted_at.is_(None),
-            )
-        )
+        stmt = select(Product).join(Environment)
         if project_id:
             stmt = stmt.where(Environment.project_id == project_id)
         if environment_id:
             stmt = stmt.where(Environment.id == environment_id)
         query = await self.session.execute(stmt)
         return query.scalars().all()
+
+    async def product_access(
+        self,
+        product_id: UUID,
+        user_id: UUID,
+    ) -> ProductUserAccess | None:
+        stmt = (
+            select(ProductUserAccess)
+            .where(
+                ProductUserAccess.product_id == product_id,
+                ProductUserAccess.user_id == user_id,
+            )
+            .options(selectinload(ProductUserAccess.user))
+        )
+
+        query = await self.session.execute(stmt)
+        return query.scalar()
+
+    async def product_access_list(
+        self, role_id: UUID | None = None, user_id: UUID | None = None
+    ) -> Sequence[Product]:
+        stmt = (
+            (select(Product).join(ProductUserAccess).join(User))
+            .options(
+                selectinload(Product.accesses).joinedload(ProductUserAccess.user),
+                selectinload(Product.environment),
+            )
+            .where(User.active.is_(True))
+        )
+        if role_id:
+            stmt = stmt.where(User.role_id == role_id)
+        if user_id:
+            stmt = stmt.where(User.id == user_id)
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
+
+    async def create_product_access(
+        self, product_id: UUID, user_id: UUID, granted: bool = True
+    ) -> ProductUserAccess:
+        db_data = ProductUserAccess(
+            product_id=product_id, user_id=user_id, granted=granted
+        )
+        self.session.add(db_data)
+        await self.session.commit()
+        await self.session.refresh(db_data)
+        permission = await self.product_access(product_id, user_id)
+        if permission is None:
+            raise
+        return permission
+
+    async def manage_product_access(
+        self, product_id, user_id: UUID, granted: bool = True
+    ) -> ProductUserAccess | None:
+        permission = await self.product_access(product_id, user_id)
+        if granted:
+            if permission:
+                return permission
+            return await self.create_product_access(product_id, user_id, granted)
+        if permission:
+            return await self.delete_product_access(permission)
+        return None
+
+    async def delete_product_access(self, permission: ProductUserAccess):
+        await self.session.delete(permission)

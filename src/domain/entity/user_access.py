@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
@@ -10,9 +12,11 @@ class User(Base):
     __tablename__ = "auth_user"
 
     email: Mapped[str]
-    first_name: Mapped[str]
-    last_name: Mapped[str]
+    username: Mapped[str]
     active: Mapped[bool] = mapped_column(server_default="f")
+    password: Mapped[Optional[str]]
+    login_via_email: Mapped[bool] = mapped_column(server_default="f")
+    deleted_at: Mapped[Optional[datetime]]
 
     role_id: Mapped[UUID] = mapped_column(ForeignKey("role.id"))
     role = relationship("Role", back_populates="users")
@@ -48,3 +52,6 @@ class ProductUserAccess(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
     product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
     granted: Mapped[bool] = mapped_column(server_default="f")
+
+    user = relationship("User")
+    products = relationship("Product", back_populates="accesses")

@@ -1,58 +1,87 @@
-from math import ceil
-from uuid import UUID, uuid4
+from collections.abc import Sequence
+from datetime import datetime
+from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends
 from pydantic import PositiveInt
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.entity import Role, User
-from src.infrastructure.database.session import get_session
-from src.persistence.finding import Pagination
+from src.domain.entity import Environment, Product, ProductUserAccess, Role, User
+from src.infrastructure.database import get_session
+from src.persistence.base import BaseRepository, Pagination
 
 
-class UserRepository:
-    def __init__(self, session: AsyncSession = Depends(get_session)):
-        self.session = session
+class UserRepository(BaseRepository):
+    def __init__(self, session: Annotated[AsyncSession, Depends(get_session)]):
+        super().__init__(User, session)
 
-    async def get_current_user_id(self) -> UUID:
-        return uuid4()
-
-    async def pagination(
+    # TODO: Generalize get_all_by_filters
+    async def get_all_pagination(
         self,
-        stmt: Select,
         page: PositiveInt = 1,
-        scalars: bool = False,
-    ):
-        limit = 2
-        fn_stmt = stmt.limit(limit).offset((page - 1) * limit)
-        query = await self.session.execute(fn_stmt)
-        if scalars:
-            findings = query.scalars().all()
-        else:
-            findings = query.all()
-        addition_query = stmt.with_only_columns(func.count().label("total"))
-        query = await self.session.execute(addition_query)
-        total = query.scalar() or 0
-
-        return Pagination(
-            total=total,
-            size=limit,
-            page=page,
-            total_page=ceil(total / limit),
-            data=findings,
-        )
-
-    async def get_all(
-        self, page: PositiveInt = 1, filters: dict | None = None
-    ) -> Pagination:
+        filters: dict | None = None,
+        pagination: bool = True,
+    ) -> Pagination | Sequence[User]:
         stmt = select(User).join(Role).options(selectinload(User.role))
         if filters:
-            if val := filters.get("email") is not None:
-                stmt = stmt.where(User.email.ilike(val))
-            if val := filters.get("role") is not None:
-                stmt = stmt.where(Role.name.ilike(val))
-            if val := filters.get("active") is not None:
+            if (val := filters.get("email")) is not None:
+                stmt = stmt.where(User.email.ilike(f"%{val}%"))
+            if (val := filters.get("role")) is not None:
+                stmt = stmt.where(Role.name.ilike(f"%{val}%"))
+            if (val := filters.get("active")) is not None:
                 stmt = stmt.where(User.active.is_(val))
-        return await self.pagination(stmt, page, True)
+            if (val := filters.get("role_id")) is not None:
+                stmt = stmt.where(User.role_id == val)
+        if pagination:
+            return await self.pagination(stmt, page, True)
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
+
+    def _options(self, stmt: Select):
+        return stmt.options(selectinload(User.role))
+
+    async def get_accessible_product(self, user_id: UUID):
+        stmt = (
+            select(Product)
+            .join(ProductUserAccess)
+            .where(ProductUserAccess.user_id == user_id)
+        ).options(selectinload(Product.environment).joinedload(Environment.project))
+
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
+
+    async def get_users_with_product_accesibility(
+        self,
+        product_id: UUID,
+        allowed: bool = True,
+        exclude_roles: list | None = None,
+    ):
+        stmt = (
+            select(User)
+            .join(Role)
+            .options(selectinload(User.role))
+            .where(Role.required_project_access.is_(True), User.active.is_(True))
+        )
+        inner_stmt = select(ProductUserAccess.user_id).where(
+            ProductUserAccess.product_id == product_id,
+            ProductUserAccess.granted.is_(True),
+        )
+
+        if allowed:
+            stmt = stmt.where(User.id.in_(inner_stmt))
+        else:
+            stmt = stmt.where(User.id.notin_(inner_stmt))
+
+        if exclude_roles:
+            stmt = stmt.where(Role.name.not_in(exclude_roles))
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
+
+    async def delete(self, item_id: UUID, target: User | None = None):
+        if target is None:
+            target = await self.get_one_by_id(item_id)
+        target.deleted_at = datetime.now()
+        await self.session.commit()

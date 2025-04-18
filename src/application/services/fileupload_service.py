@@ -1,4 +1,5 @@
 from datetime import datetime
+from types import ModuleType
 from uuid import UUID
 
 import pandas as pd
@@ -71,7 +72,7 @@ class FileUploadService:
         self,
         session: AsyncSession,
         file: UploadFile,
-        plugin: PluginFunction,
+        plugin: ModuleType | PluginFunction | None,
         scan_date: datetime,
         product_id: UUID,
         process_new_finding: bool,
@@ -88,7 +89,14 @@ class FileUploadService:
         self.process_new_finding = process_new_finding
 
     async def scan_date_validation(self):
-        stmt = select(Finding.finding_date).where(Finding.finding_date > self.scan_date)
+        stmt = (
+            select(Finding.finding_date)
+            .join(FindingName)
+            .where(
+                Finding.finding_date > self.scan_date,
+                FindingName.product_id == self.product_id,
+            )
+        )
         query = await self.session.execute(stmt)
         res = query.scalars().first()
         if res is not None:
@@ -107,7 +115,6 @@ class FileUploadService:
     async def run_plugin(self):
         csv_file = await self.file.read()
 
-        # fn = plugin_service.plugin_import(self.plugin, "builtin/nessus.py")
         if self.plugin is None:
             raise
 
@@ -120,6 +127,7 @@ class FileUploadService:
         self.finding_lf = lf
 
     async def new_finding_check(self):
+        """Include/Exclude New Finding"""
         if self.process_new_finding:
             return
         query = (
@@ -139,6 +147,13 @@ class FileUploadService:
         )
 
     async def finding_name_process(self):
+        """
+        Add finding name into the database.
+
+        Since, we store finding_name and finding in separate table, we need to update
+        the findingName table first since we need it's id to match with the finding
+        table.
+        """
         total = (
             (
                 self.finding_lf.select(pl.col("name"), pl.col("description"))
@@ -158,7 +173,7 @@ class FileUploadService:
 
     async def cve_process(self):
         fn_stmt = select(FindingName.id, FindingName.name).where(
-            FindingName.product_id == self.product_id, FindingName.deleted_at.is_(None)
+            FindingName.product_id == self.product_id
         )
         finding_name_lf = pl.read_database(fn_stmt, connection=sync_engine).lazy()
 
@@ -186,7 +201,7 @@ class FileUploadService:
         CSV - DB Mapping
         """
         fn_stmt = select(FindingName.id, FindingName.name).where(
-            FindingName.product_id == self.product_id, FindingName.deleted_at.is_(None)
+            FindingName.product_id == self.product_id
         )
         finding_name_lf = pl.read_database(fn_stmt, connection=sync_engine).lazy()
 
@@ -209,6 +224,13 @@ class FileUploadService:
         )
 
     async def process(self):
+        """
+        For the finding upload, we use UPSERT technique.
+
+        ON Conflict (finding_name_id, host, port) already exists for the product,
+        we update the "status" (only_status).
+        If there's any other things to update, add it to the update_dict.
+        """
         total = self.finding_lf.collect().write_database(
             table_name=Finding.__tablename__,
             connection=sync_engine,
@@ -250,6 +272,7 @@ class FileUploadService:
         await self.session.commit()
 
     async def reopen_finding(self):
+        # TODO: Add reopen_at
         subquery_max = (
             select(
                 Finding.finding_name_id,
@@ -311,3 +334,22 @@ class FileUploadService:
         await self.update_new_same_date_scan()
         await self.close_finding()
         await self.reopen_finding()
+
+    async def plugin_verification(self):
+        await self.file_validation()
+        await self.run_plugin()
+        df_schema = pl.Schema(
+            {
+                "cve": pl.String(),
+                "risk": pl.String(),
+                "host": pl.String(),
+                "port": pl.Int64(),
+                "name": pl.String(),
+                "description": pl.String(),
+                "remediation": pl.String(),
+                "evidence": pl.String(),
+                "vpr_score": pl.String(),
+            }
+        )
+
+        return self.finding_lf.collect_schema() == df_schema
