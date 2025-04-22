@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="/assets/compiled/css/app-dark.css" />
   <link rel="shortcut icon" href="/assets/static/images/logo/favicon.svg" type="image/x-icon">
   <link rel="shortcut icon" href="/assets/static/images/logo/favicon.png" type="image/png">
+
+  <link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
   {# TODO: Install the script, dont use cdn #}
   <script src="https://unpkg.com/htmx.org@2.0.4"
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
@@ -35,6 +37,23 @@
   <script src="/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
   <script src="/assets/extensions/dayjs/dayjs.min.js"></script>
   <script src="/assets/compiled/js/app.js"></script>
+  <script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
+  <script>
+    document.addEventListener("htmx:confirm", function (e) {
+      if (!e.detail.elt.hasAttribute('hx-confirm')) return
+
+      e.preventDefault()
+      Swal.fire({
+        title: "Are you sure?",
+        text: `${e.detail.question}`
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          // If the user confirms, we manually issue the request
+          e.detail.issueRequest(true); // true to skip the built-in window.confirm()
+        }
+      })
+    })
+  </script>
   {% block js %}{% endblock %}
 </body>
 

@@ -77,6 +77,15 @@
                         </li>
                     {% endif %}
                 {% endfor %}
-            </ul>
-        </div>
+                <li class="sidebar-item">
+                    <a hx-post="/auth/logout"
+                       class="sidebar-link"
+                       hx-confirm="You are about to log out.">
+                        <i class="bi bi-power"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </li>
+        </ul>
     </div>
+</div>
