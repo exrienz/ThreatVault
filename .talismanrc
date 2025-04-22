@@ -41,4 +41,6 @@ fileignoreconfig:
   checksum: 6ea4bc9bd47a86deed25c268a676be5058aeaec2f637c3844ee208c519e97c44
 - filename: src/sidebars.json
   checksum: 4a8a97233f5058c9112ea2dcf99150b06f23d7768df06b115b454b64abd544d9
+- filename: src/presentation/html/v1/product.py
+  checksum: eb18d79932f15f65f488e4cae5d13f53fa7ca587a7dc346a275532487ac7ee7b
 version: ""

@@ -4,6 +4,7 @@ from .config import GlobalRepository
 from .environment import EnvRepository
 from .finding import FindingRepository
 from .finding_name import FindingNameRepository
+from .finding_revert import FindingRevertRepository
 from .log import LogRepository
 from .plugin import PluginRepository
 from .product import ProductRepository
@@ -26,4 +27,5 @@ __all__ = [
     "RoleRepository",
     "UserRepository",
     "TokenRepository",
+    "FindingRevertRepository",
 ]

@@ -4,8 +4,12 @@ from uuid import UUID
 from fastapi import Depends
 
 from src.domain.constant import FnStatusEnum
-from src.domain.entity.finding import Finding, FindingName
-from src.persistence import FindingNameRepository, FindingRepository
+from src.domain.entity.finding import Finding, FindingName, FindingRevertPoint
+from src.persistence import (
+    FindingNameRepository,
+    FindingRepository,
+    FindingRevertRepository,
+)
 
 
 class FindingService:
@@ -13,9 +17,11 @@ class FindingService:
         self,
         repository: FindingRepository = Depends(),
         findingname_repository: FindingNameRepository = Depends(),
+        revert_repository: FindingRevertRepository = Depends(),
     ):
         self.repository = repository
         self.findingname_repository = findingname_repository
+        self.revert_repository = revert_repository
 
     async def get_by_product_id(self, product_id: UUID):
         return await self.repository.get_by_product_id_extended(product_id)
@@ -44,3 +50,13 @@ class FindingService:
         data["last_update"] = data.get("finding_date", datetime.now())
 
         return await self.repository.create(data)
+
+    async def revert(self, product_id: UUID):
+        await self.revert_repository.revert(product_id)
+
+    async def can_revert(self, product_id: UUID):
+        curr = await self.repository.get_latest_date_by_product_id(product_id)
+        prev = await self.revert_repository.get_latest_date_by_product_id(product_id)
+        if prev is None or curr is None:
+            return False
+        return curr > prev

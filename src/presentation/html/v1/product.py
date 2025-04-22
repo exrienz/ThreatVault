@@ -20,7 +20,7 @@ from src.application.dependencies.service_dependency import (
     UserServiceDep,
 )
 from src.application.schemas.finding import ManualFindingUploadSchema
-from src.application.services import FileUploadService, PluginService
+from src.application.services import FileUploadService
 from src.config import sidebar_items
 from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.infrastructure.database.session import get_session
@@ -30,14 +30,13 @@ from ..utils import templates
 router = APIRouter(prefix="/product", tags=["product"])
 
 
-# TODO: Fix thisindex
+# TODO: Fix this index
 @router.get("/{product_id}", response_class=HTMLResponse)
 async def get_product(
     request: Request,
     service: ProductServiceDep,
     log_service: LogServiceDep,
     plugin_service: PluginServiceDep,
-    tokenService: TokenServiceDep,
     product_id: UUID,
 ):
     product = await service.get_by_id(product_id)
@@ -46,6 +45,7 @@ async def get_product(
     tSeverity = 1
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
+
     return templates.TemplateResponse(
         request,
         "pages/product/index.html",
@@ -125,7 +125,7 @@ async def upload_file(
     user_service: UserServiceDep,
     product_id: UUID,
     scan_date: Annotated[datetime, Form()],
-    plugin: Annotated[str, Form()],
+    plugin: Annotated[UUID, Form()],
     formFile: Annotated[UploadFile, File()],
     process_new_finding: Annotated[bool, Form()] = False,
     sync_update: Annotated[bool, Form()] = False,
@@ -135,12 +135,10 @@ async def upload_file(
         - All the error handling
         - Sync Update
     """
-    # fn = plugin_service.plugin_import(self.plugin, "builtin/nessus.py")
-    plugin_fn = PluginService.plugin_import(plugin.split("/")[-1], f"{plugin}.py")
     fileupload = FileUploadService(
         session,
         formFile,
-        plugin_fn,
+        plugin,
         scan_date,
         product_id,
         process_new_finding,
@@ -267,4 +265,53 @@ async def escalation_list(
     data = await service.get_all()
     return templates.TemplateResponse(
         request, "pages/product/response/escalation.html", {"users": data}
+    )
+
+
+@router.get("/{product_id}/revert")
+async def revert_modal(
+    request: Request,
+    service: LogServiceDep,
+    finding_service: FindingServiceDep,
+    product_id: UUID,
+):
+    current = await service.get_by_product_id(product_id)
+    prev = await service.get_prev_by_product_id(product_id)
+    keys = ["tNew", "tOpen", "tClosed", "tExamption", "tOthers"]
+    can_revert = await finding_service.can_revert(product_id)
+    return templates.TemplateResponse(
+        request,
+        "pages/product/response/revertModal.html",
+        {
+            "prev": prev,
+            "keys": keys,
+            "current": current,
+            "product_id": product_id,
+            "can_revert": can_revert,
+        },
+    )
+
+
+@router.post("/{product_id}/revert")
+async def revert(
+    request: Request,
+    service: FindingServiceDep,
+    log_service: LogServiceDep,
+    user_service: UserServiceDep,
+    product_id: UUID,
+):
+    await service.revert(product_id)
+
+    logs = await log_service.get_by_product_id(product_id)
+    tSeverity = 1
+    user = None
+    if logs:
+        tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
+        user = await user_service.get_by_id(logs.uploader_id)
+
+    return templates.TemplateResponse(
+        request,
+        "pages/product/response/fileupload.html",
+        headers={"HX-Trigger": "reload-findings"},
+        context={"logs": logs, "totalSeverity": tSeverity, "user": user},
     )

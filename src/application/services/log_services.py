@@ -17,6 +17,9 @@ class LogService:
     async def get_by_product_id(self, product_id: UUID) -> Log | None:
         return await self.repository.get_by_product_id(product_id)
 
+    async def get_prev_by_product_id(self, product_id: UUID) -> Log | None:
+        return await self.repository.get_prev_by_product_id(product_id)
+
     async def get_products_by_env(
         self, env_id: UUID, year: int | None = None, month: int | None = None
     ):

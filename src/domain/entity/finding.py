@@ -41,10 +41,29 @@ class Finding(Base):
             "finding_name_id",
             "host",
             "port",
+            "plugin_id",
             unique=True,
             postgresql_where=(Column("status") != FnStatusEnum.CLOSED.value),
         ),
     )
+
+
+class FindingRevertPoint(Base):
+    __tablename__ = "finding_revert_point"
+
+    status: Mapped[FnStatusEnum]
+    severity: Mapped[SeverityEnum]
+    reopen: Mapped[bool] = mapped_column(server_default="f")
+    vpr_score: Mapped[Optional[str]]
+    evidence: Mapped[str]
+    remediation: Mapped[str]
+
+    internal_remark: Mapped[Optional[str]]
+    finding_date: Mapped[datetime] = mapped_column(DateTime(True))
+    last_update: Mapped[datetime] = mapped_column(DateTime(True))
+    label: Mapped[Optional[str]]
+
+    finding_name_id: Mapped[UUID] = mapped_column(ForeignKey("finding_name.id"))
 
 
 class Plugin(Base):
@@ -58,7 +77,7 @@ class Plugin(Base):
     config: Mapped[Optional[str]]  # JSON?
     verified: Mapped[bool] = mapped_column(server_default="f")
     # verification_error: Mapped[Optional[str]]
-    file_path: Mapped[Optional[str]]
+    # file_path: Mapped[Optional[str]]
 
 
 class FindingName(Base):

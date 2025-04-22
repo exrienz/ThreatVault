@@ -20,7 +20,7 @@
                 <select name="plugin" id="plugin_id" class="form-control">
                     <option selected="">Select source...</option>
                     {% for pl in plugins %}
-                        <option value={{ pl.type }}/{{ pl.name }}>
+                        <option value={{ pl.id }}>
                             {{ pl.name | title if pl.name != "manual" else "Manual (Pentest)" }}
                         </option>
                     {% endfor %}

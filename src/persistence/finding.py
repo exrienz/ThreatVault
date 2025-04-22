@@ -40,6 +40,18 @@ class FindingRepository(BaseRepository):
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
+    async def get_latest_date_by_product_id(self, product_id: UUID):
+        stmt = (
+            select(Finding.last_update)
+            .join(FindingName)
+            .where(FindingName.product_id == product_id)
+            .order_by(Finding.last_update.desc())
+            .limit(1)
+        )
+
+        query = await self.session.execute(stmt)
+        return query.scalar()
+
     async def get_group_by_severity_status(
         self,
         product_id: UUID,

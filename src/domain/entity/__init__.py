@@ -1,5 +1,5 @@
 from .base import Base
-from .finding import CVE, Comment, Finding, FindingName, Log, Plugin
+from .finding import CVE, Comment, Finding, FindingName, FindingRevertPoint, Log, Plugin
 from .project_management import Environment, Product, Project
 from .setting import EmailConfig, GlobalConfig
 from .token import Token
@@ -24,4 +24,5 @@ __all__ = [
     "RolePermission",
     "ProductUserAccess",
     "Token",
+    "FindingRevertPoint",
 ]

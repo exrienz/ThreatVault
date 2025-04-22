@@ -89,6 +89,29 @@ class LogRepository(BaseRepository[Log]):
         query = await self.session.execute(stmt)
         return query.scalars().first()
 
+    async def get_prev_by_product_id(self, product_id: UUID):
+        sub = (
+            select(
+                Log.id.label("id"),
+                func.row_number()
+                .over(order_by=[Log.log_date.desc()], partition_by=[Log.product_id])
+                .label("rank"),
+            )
+            .where(Log.product_id == product_id)
+            .alias()
+        )
+
+        stmt = (
+            select(Log)
+            .join(sub, sub.c.id == Log.id)
+            .where(
+                sub.c.rank == 2,
+            )
+        )
+
+        query = await self.session.execute(stmt)
+        return query.scalars().first()
+
     async def get_products_by_env(self, env_id: UUID, year: int, month: int):
         sub = (
             select(

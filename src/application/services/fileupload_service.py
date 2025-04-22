@@ -1,3 +1,6 @@
+import importlib.util
+import pathlib
+import sys
 from datetime import datetime
 from types import ModuleType
 from uuid import UUID
@@ -18,7 +21,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.constant import FnStatusEnum, PluginFunction, SeverityEnum
 from src.domain.entity import CVE, Finding, FindingName
+from src.domain.entity.finding import Plugin
 from src.infrastructure.database import sync_engine
+from src.persistence.finding_revert import FindingRevertRepository
 
 
 def insert_conflict_do_nothing(table, conn, keys, data_iter):
@@ -45,15 +50,16 @@ def insert_conflict_do_update(
     if no_update_cols is None:
         no_update_cols = []
 
+    if update_dict is None:
+        update_dict = {}
+
     def inner(table, conn, keys, data_iter):
         data = [dict(zip(keys, row)) for row in data_iter]
         stmt = insert(table.table).values(data)
         table_cols = table.frame.columns.values
         update_cols = [c for c in table_cols if c not in no_update_cols]
         update_conflict_data = {
-            k: update_dict.get(k, getattr(stmt.excluded, k))
-            for k in update_cols
-            if update_dict
+            k: update_dict.get(k, getattr(stmt.excluded, k)) for k in update_cols
         }
         stmt = stmt.on_conflict_do_update(
             constraint=constraint,
@@ -72,7 +78,7 @@ class FileUploadService:
         self,
         session: AsyncSession,
         file: UploadFile,
-        plugin: ModuleType | PluginFunction | None,
+        plugin_id: UUID,
         scan_date: datetime,
         product_id: UUID,
         process_new_finding: bool,
@@ -80,13 +86,14 @@ class FileUploadService:
     ):
         self.session: AsyncSession = session
         self.file = file
-        self.plugin = plugin
+        self.plugin_id = plugin_id
         self.scan_date = scan_date.replace(
             hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.utc
         )
         self.product_id = product_id
         self.finding_lf = pl.LazyFrame()
         self.process_new_finding = process_new_finding
+        self.plugin: PluginFunction | ModuleType | None = None
 
     async def scan_date_validation(self):
         stmt = (
@@ -112,11 +119,18 @@ class FileUploadService:
 
         # TODO: Validation
 
+    async def get_plugin(self):
+        stmt = select(Plugin).where(Plugin.id == self.plugin_id)
+        query = await self.session.execute(stmt)
+        plugin = query.scalars().first()
+        if plugin is None:
+            raise
+        self.plugin = self.plugin_import(plugin.name, f"{plugin.type}/{plugin.name}.py")
+
     async def run_plugin(self):
         csv_file = await self.file.read()
-
         if self.plugin is None:
-            raise
+            await self.get_plugin()
 
         lf = self.plugin.process(csv_file)
         if isinstance(lf, pl.DataFrame):
@@ -166,7 +180,12 @@ class FileUploadService:
                 table_name=FindingName.__tablename__,
                 connection=sync_engine,
                 if_table_exists="append",
-                engine_options={"method": insert_conflict_do_nothing},
+                # engine_options={"method": insert_conflict_do_nothing},
+                engine_options={
+                    "method": insert_conflict_do_update(
+                        idx_element=("name", "product_id"),
+                    )
+                },
             )
         )
         print(f"Added {total} new finding names")
@@ -214,6 +233,7 @@ class FileUploadService:
             severity=pl.col("risk").str.to_uppercase().cast(SeverityEnum),
             finding_date=pl.lit(self.scan_date),
             last_update=pl.lit(self.scan_date),
+            plugin_id=pl.lit(self.plugin_id),
         )
 
         self.finding_lf = self.finding_lf.select(
@@ -223,12 +243,15 @@ class FileUploadService:
             subset=["finding_name_id", "port", "host"]
         )
 
+    async def finding_revert_point(self):
+        await FindingRevertRepository.create_revert_point(self.session, self.product_id)
+
     async def process(self):
         """
         For the finding upload, we use UPSERT technique.
 
         ON Conflict (finding_name_id, host, port) already exists for the product,
-        we update the "status" (only_status).
+        we update the "status" with open, the other based on the file itself.
         If there's any other things to update, add it to the update_dict.
         """
         total = self.finding_lf.collect().write_database(
@@ -237,7 +260,7 @@ class FileUploadService:
             if_table_exists="append",
             engine_options={
                 "method": insert_conflict_do_update(
-                    idx_element=("finding_name_id", "host", "port"),
+                    idx_element=("finding_name_id", "host", "port", "plugin_id"),
                     idx_where=(Finding.status != FnStatusEnum.CLOSED),
                     no_update_cols=["finding_date", "finding_name_id"],
                     update_dict={"status": FnStatusEnum.OPEN.value},
@@ -330,6 +353,7 @@ class FileUploadService:
         await self.finding_name_process()
         await self.cve_process()
         await self.final_preprocess()
+        await self.finding_revert_point()
         await self.process()
         await self.update_new_same_date_scan()
         await self.close_finding()
@@ -353,3 +377,18 @@ class FileUploadService:
         )
 
         return self.finding_lf.collect_schema() == df_schema
+
+    def plugin_import(self, name: str, filename: str) -> ModuleType:
+        ph = pathlib.Path(__file__).cwd()
+        path = f"{ph}/public/plugins/{filename}"
+        spec = importlib.util.spec_from_file_location(name, path)
+        if spec is None or spec.loader is None:
+            raise
+        loader = importlib.util.LazyLoader(spec.loader)
+        spec.loader = loader
+        module = importlib.util.module_from_spec(spec)
+        if module is None:
+            raise
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        return module
