@@ -5,7 +5,6 @@
 <!--<link rel="stylesheet" href="/assets/extensions/choices.js/public/assets/styles/choices.css">-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css" />-->
-<link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
 <style>
   .htmx-indicator {
     display: none;
@@ -306,7 +305,6 @@
   ])
   {% endif %}
 </script>
-<script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
 <script>
   var el = document.querySelector("#choices");
   var hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
@@ -319,20 +317,5 @@
     fm = document.querySelector("#fn_name_action_id")
     fm.setAttribute("value", `${finding_name_id}`)
   }
-
-  document.addEventListener("htmx:confirm", function (e) {
-    if (!e.detail.elt.hasAttribute('hx-confirm')) return
-
-    e.preventDefault()
-    Swal.fire({
-      title: "Are you sure?",
-      text: `${e.detail.question}`
-    }).then(function (result) {
-      if (result.isConfirmed) {
-        // If the user confirms, we manually issue the request
-        e.detail.issueRequest(true); // true to skip the built-in window.confirm()
-      }
-    })
-  })
 </script>
 {% endblock %}

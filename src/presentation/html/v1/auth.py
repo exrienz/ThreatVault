@@ -53,8 +53,21 @@ async def login(
         request,
         "empty.html",
         headers={
-            "HX-Redirect": "/project-management",
+            "HX-Redirect": "/",
         },
     )
     response.set_cookie("Authorization", f"Bearer {token}")
+    return response
+
+
+@router.post("/logout")
+async def logout(request: Request):
+    response = templates.TemplateResponse(
+        request,
+        "empty.html",
+        headers={
+            "HX-Redirect": "/auth/login",
+        },
+    )
+    response.delete_cookie("Authorization")
     return response
