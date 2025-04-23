@@ -52,7 +52,9 @@ class FindingService:
         return await self.repository.create(data)
 
     async def revert(self, product_id: UUID):
-        await self.revert_repository.revert(product_id)
+        can_revert = await self.can_revert(product_id)
+        if can_revert:
+            await self.revert_repository.revert(product_id)
 
     async def can_revert(self, product_id: UUID):
         curr = await self.repository.get_latest_date_by_product_id(product_id)
