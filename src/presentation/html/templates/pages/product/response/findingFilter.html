@@ -1,0 +1,33 @@
+<script>
+statusChoices.clearStore();
+statusChoices.setChoices(
+  {{status | tojson}},
+  'value',
+  'label',
+  true,
+);
+
+sourceChoices.clearStore();
+sourceChoices.setChoices(
+  {{plugins | tojson}},
+  'value',
+  'label',
+  true,
+);
+
+severityChoices.clearStore();
+severityChoices.setChoices(
+  {{severity | tojson}},
+  'value',
+  'label',
+  true,
+);
+
+assetsChoices.clearStore();
+assetsChoices.setChoices(
+  {{hosts | tojson}},
+  'value',
+  'label',
+  true,
+);
+</script>

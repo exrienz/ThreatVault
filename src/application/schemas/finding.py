@@ -14,3 +14,10 @@ class ManualFindingUploadSchema(BaseModel):
     evidence: str
     remediation: str
     finding_date: datetime
+
+
+class FindingFiltersSchema(BaseModel):
+    status: list[str] | None = None
+    severity: list[str] | None = None
+    plugin_id: list[str] | None = None
+    host: list[str] | None = None

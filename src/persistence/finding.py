@@ -1,3 +1,4 @@
+import json
 from typing import Annotated
 from uuid import UUID
 
@@ -56,6 +57,7 @@ class FindingRepository(BaseRepository):
         self,
         product_id: UUID,
         page: int = 1,
+        filters: dict | str | None = None,
     ) -> Pagination:
         stmt = (
             select(
@@ -72,10 +74,18 @@ class FindingRepository(BaseRepository):
             .join(FindingName)
             .where(
                 FindingName.product_id == product_id,
-                Finding.status != FnStatusEnum.CLOSED,
             )
-            .group_by(FindingName.id, Finding.severity, Finding.status)
-        ).order_by(Finding.severity)
+        )
+        if isinstance(filters, str):
+            filters = json.loads(filters)
+        if isinstance(filters, dict):
+            for k, v in filters.items():
+                if not v:
+                    continue
+                stmt = stmt.where(getattr(Finding, k).in_(v))
+        stmt = stmt.group_by(FindingName.id, Finding.severity, Finding.status).order_by(
+            Finding.severity
+        )
         return await self.pagination(stmt, page)
 
     async def update(self, item_id: UUID, data: dict, hosts: list):

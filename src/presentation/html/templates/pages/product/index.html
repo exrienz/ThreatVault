@@ -2,9 +2,7 @@
 {% set filename = "product" %}
 {% extends 'layouts/master.html' %}
 {% block styles %}
-<!--<link rel="stylesheet" href="/assets/extensions/choices.js/public/assets/styles/choices.css">-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
-<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css" />-->
 <style>
   .htmx-indicator {
     display: none;
@@ -198,8 +196,18 @@
   <section class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between">
           <h4>Findings</h4>
+          <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal"
+            hx-get="{{ product.id }}/hosts" hx-target="#finding-filter-script-id" hx-trigger="click">
+
+            <i class="bi bi-filter"></i>
+            Filter
+
+          </a>
+          <div id="filterModal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+            {% include "pages/product/component/findingFilterModal.html"%}
+          </div>
         </div>
         <div class="card-body">
           <div class="table-responsive">
@@ -319,5 +327,42 @@
     fm = document.querySelector("#fn_name_action_id")
     fm.setAttribute("value", `${finding_name_id}`)
   }
+</script>
+
+<script id="finding-filter-script-id">
+  var statusChoiceEl = document.querySelector("#status-choices");
+  var statusChoices = new Choices(statusChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var severityChoiceEl = document.querySelector("#severity-choices");
+  var severityChoices = new Choices(severityChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var assetsChoiceEl = document.querySelector("#assets-choices");
+  var assetsChoices = new Choices(assetsChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var sourceChoiceEl = document.querySelector("#source-choices");
+  var sourceChoices = new Choices(sourceChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices];
+
+  function clearChoices() {
+    chLists.forEach(clearChoiceMap);
+  }
+
+  function clearChoiceMap(value, idx, array) {
+    value.removeActiveItems();
+  }
+
 </script>
 {% endblock %}

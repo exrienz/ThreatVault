@@ -25,8 +25,6 @@ fileignoreconfig:
   checksum: 961a4a15f31b951db3853b0e390033ccb34b2214f6a08c88e9875772c7bd1552
 - filename: src/application/services/product_services.py
   checksum: c81e5a88ba34d0f8134b5b8440579baa913d252d29b1058a696ee3c70f9e2b9f
-- filename: src/config.py
-  checksum: 4377d0331d5e44f655b29680a3441420dc8a00cd21029f795ecfcd818f87e5f5
 - filename: src/domain/entity/setting.py
   checksum: accf4153c9066d7531161c92db9ee7e3561d2e1135b8bba1b3fb8db66ad41a88
 - filename: src/presentation/html/templates/pages/auth/login.html
@@ -43,4 +41,8 @@ fileignoreconfig:
   checksum: 4a8a97233f5058c9112ea2dcf99150b06f23d7768df06b115b454b64abd544d9
 - filename: src/presentation/html/v1/product.py
   checksum: eb18d79932f15f65f488e4cae5d13f53fa7ca587a7dc346a275532487ac7ee7b
+- filename: src/main.py
+  checksum: 1b8535f0559ef072dd77895b58ee964b269e9f0c7ea956e52dc03985409b8dd9
+- filename: src/config.py
+  checksum: b7607348647e9b840340425c842b85ea07eda01d10b64e79728f1eeee3d06ff0
 version: ""

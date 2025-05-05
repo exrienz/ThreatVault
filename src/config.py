@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     JWT_EXPIRED_MINUTES: int = 30
     JWT_EXPIRED_DELTA: timedelta = timedelta(minutes=JWT_EXPIRED_MINUTES)
 
+    SESSION_SECRET_KEY: str = "SESSION_SECRET_KEY"
+
 
 settings = Settings()
 

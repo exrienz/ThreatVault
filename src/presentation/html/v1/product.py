@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta
+import json
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-import pytz
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from pydantic import PositiveInt
@@ -10,19 +10,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.dependencies import (
     FindingServiceDep,
-    GlobalServiceDep,
     LogServiceDep,
     PluginServiceDep,
     ProductServiceDep,
-)
-from src.application.dependencies.service_dependency import (
-    TokenServiceDep,
     UserServiceDep,
 )
-from src.application.schemas.finding import ManualFindingUploadSchema
+from src.application.schemas.finding import (
+    FindingFiltersSchema,
+    ManualFindingUploadSchema,
+)
 from src.application.services import FileUploadService
 from src.config import sidebar_items
-from src.domain.constant import FnStatusEnum, SeverityEnum
+from src.domain.constant import FnStatusEnum
 from src.infrastructure.database.session import get_session
 
 from ..utils import templates
@@ -30,7 +29,6 @@ from ..utils import templates
 router = APIRouter(prefix="/product", tags=["product"])
 
 
-# TODO: Fix this index
 @router.get("/{product_id}", response_class=HTMLResponse)
 async def get_product(
     request: Request,
@@ -63,24 +61,13 @@ async def get_product(
 async def get_findings(
     request: Request,
     finding_service: FindingServiceDep,
-    global_service: GlobalServiceDep,
     product_id: UUID,
     page: PositiveInt = 1,
 ):
-    findings = await finding_service.get_group_by_severity_status(product_id, page)
-    sla = await global_service.get()
-    sla_mapping = {}
-    # TODO: Optimize this
-    for finding in findings.data:
-        severity: SeverityEnum = finding[2]
-        finding_date: datetime = finding[5]
-        try:
-            sla_val = getattr(sla, "sla_" + severity.value.lower())
-        except:  #  noqa: E722
-            sla_val = 10
-        sla_mapping[finding[0]] = (
-            finding_date + timedelta(sla_val) - datetime.now(pytz.utc)
-        ).days
+    filters = request.session.get("finding-selected")
+    findings, sla_mapping = await finding_service.get_group_by_severity_status(
+        product_id, page, filters
+    )
     return templates.TemplateResponse(
         request,
         "pages/product/response/findings.html",
@@ -314,4 +301,78 @@ async def revert(
         "pages/product/response/fileupload.html",
         headers={"HX-Trigger": "reload-findings"},
         context={"logs": logs, "totalSeverity": tSeverity, "user": user},
+    )
+
+
+@router.get("/{product_id}/hosts")
+async def get_hosts(
+    request: Request,
+    service: ProductServiceDep,
+    plugin_service: PluginServiceDep,
+    product_id: UUID,
+):
+    selected = request.session.get("finding-selected")
+    if selected:
+        selected: dict = json.loads(selected)
+        for k in selected.keys():
+            if selected[k] is None:
+                selected[k] = []
+    else:
+        selected = {}
+    hosts = await service.get_hosts(product_id)
+    plugins = await plugin_service.get_all_activated()
+
+    status = [
+        {
+            "value": v,
+            "label": v.title(),
+            "selected": v in selected.get("status", []),
+        }
+        for v in ("NEW", "OPEN", "CLOSED", "EXAMPTION")
+    ]
+
+    severity = [
+        {"value": v, "label": v.title(), "selected": v in selected.get("severity", [])}
+        for v in ("CRITICAL", "HIGH", "MEDIUM", "LOW")
+    ]
+
+    plugins_process = [
+        {
+            "value": str(pl.id),
+            "label": pl.name.title(),
+            "selected": str(pl.id) in selected.get("plugin_id", []),
+        }
+        for pl in plugins
+    ]
+
+    hosts_process = [
+        {"value": host, "label": host, "selected": host in selected.get("host", [])}
+        for host in hosts
+    ]
+
+    data = {
+        "plugins": plugins_process,
+        "hosts": hosts_process,
+        "status": status,
+        "severity": severity,
+    }
+
+    # request.session.update({"finding-filters": json.dumps(data)})
+
+    return templates.TemplateResponse(
+        request,
+        "pages/product/response/findingFilter.html",
+        data,
+    )
+
+
+@router.post("/{product_id}/finding-filters")
+async def filter_findings(
+    request: Request, product_id: UUID, filters: Annotated[FindingFiltersSchema, Form()]
+):
+    request.session.update({"finding-selected": json.dumps(filters.model_dump())})
+    return templates.TemplateResponse(
+        request,
+        "empty.html",
+        headers={"HX-Trigger": "reload-findings"},
     )

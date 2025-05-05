@@ -1,8 +1,8 @@
-from typing import Annotated, Sequence
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import and_, delete, insert, not_, select, update
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 

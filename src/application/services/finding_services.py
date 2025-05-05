@@ -1,15 +1,18 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import UUID
 
+import pytz
 from fastapi import Depends
 
 from src.domain.constant import FnStatusEnum
-from src.domain.entity.finding import Finding, FindingName, FindingRevertPoint
+from src.domain.entity.finding import Finding, FindingName
 from src.persistence import (
     FindingNameRepository,
     FindingRepository,
     FindingRevertRepository,
+    GlobalRepository,
 )
+from src.persistence.base import Pagination
 
 
 class FindingService:
@@ -18,16 +21,44 @@ class FindingService:
         repository: FindingRepository = Depends(),
         findingname_repository: FindingNameRepository = Depends(),
         revert_repository: FindingRevertRepository = Depends(),
+        global_repository: GlobalRepository = Depends(),
     ):
         self.repository = repository
         self.findingname_repository = findingname_repository
         self.revert_repository = revert_repository
+        self.global_repository = global_repository
 
     async def get_by_product_id(self, product_id: UUID):
         return await self.repository.get_by_product_id_extended(product_id)
 
-    async def get_group_by_severity_status(self, product_id: UUID, page: int = 1):
-        return await self.repository.get_group_by_severity_status(product_id, page)
+    async def get_group_by_severity_status(
+        self,
+        product_id: UUID,
+        page: int = 1,
+        filters: dict | None = None,
+        include_sla: bool = True,
+    ):
+        res = await self.repository.get_group_by_severity_status(
+            product_id, page, filters
+        )
+        if include_sla:
+            return res, await self._include_sla(res)
+        return res
+
+    async def _include_sla(self, res: Pagination):
+        sla = await self.global_repository.get()
+        sla_mapping = {}
+        for finding in res.data:
+            severity = finding[2]
+            finding_date: datetime = finding[5]
+            try:
+                sla_val = getattr(sla, "sla_" + severity.value.lower())
+            except:  #  noqa: E722
+                sla_val = 10
+            sla_mapping[finding[0]] = (
+                finding_date + timedelta(sla_val) - datetime.now(pytz.utc)
+            ).days
+        return sla_mapping
 
     async def update(self, item_id: UUID, host_list: list, data: dict):
         await self.repository.update(item_id, data, host_list)
