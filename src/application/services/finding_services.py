@@ -4,7 +4,7 @@ from uuid import UUID
 import pytz
 from fastapi import Depends
 
-from src.domain.constant import FnStatusEnum
+from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.domain.entity.finding import Finding, FindingName
 from src.persistence import (
     FindingNameRepository,
@@ -41,9 +41,26 @@ class FindingService:
         res = await self.repository.get_group_by_severity_status(
             product_id, page, filters
         )
+        data = {"findings": res, "sla": None}
+
         if include_sla:
-            return res, await self._include_sla(res)
-        return res
+            data["sla"] = await self._include_sla(res)
+        return data
+
+    async def get_group_by_assets(
+        self, product_id: UUID, page: int = 1, filters: dict | None = None
+    ):
+        res = await self.repository.get_group_by_asset(product_id, page, filters)
+        return {"findings": res}
+
+    async def get_breached_findings(
+        self, product_id: UUID, severity: SeverityEnum = SeverityEnum.CRITICAL
+    ):
+        res = await self.repository.get_breached_findings_by_severity(
+            product_id, severity
+        )
+        sla = await self.global_repository.get_sla_by_severity(severity)
+        return {"findings": res, "sla": sla}
 
     async def _include_sla(self, res: Pagination):
         sla = await self.global_repository.get()

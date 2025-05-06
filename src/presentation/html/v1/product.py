@@ -21,7 +21,7 @@ from src.application.schemas.finding import (
 )
 from src.application.services import FileUploadService
 from src.config import sidebar_items
-from src.domain.constant import FnStatusEnum
+from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.infrastructure.database.session import get_session
 
 from ..utils import templates
@@ -57,21 +57,43 @@ async def get_product(
     )
 
 
+@router.get("/{product_id}/table-view")
+async def swap_finding_table_view(
+    request: Request,
+    product_id: UUID,
+    view: str = "default",
+):
+    return templates.TemplateResponse(
+        request,
+        "pages/product/component/tables/index.html",
+        {"view": view, "product_id": product_id},
+    )
+
+
 @router.get("/{product_id}/findings", response_class=HTMLResponse)
 async def get_findings(
     request: Request,
     finding_service: FindingServiceDep,
     product_id: UUID,
+    view: str = "default",
+    severity: SeverityEnum = SeverityEnum.CRITICAL,
     page: PositiveInt = 1,
 ):
     filters = request.session.get("finding-selected")
-    findings, sla_mapping = await finding_service.get_group_by_severity_status(
-        product_id, page, filters
+    fn_dict = {
+        "assets": [finding_service.get_group_by_assets, (product_id, page, filters)],
+        "slaBreach": [finding_service.get_breached_findings, (product_id, severity)],
+    }
+    fn = fn_dict.get(
+        view,
+        [finding_service.get_group_by_severity_status, (product_id, page, filters)],
     )
+
+    data = await fn[0](*fn[1])
     return templates.TemplateResponse(
         request,
         "pages/product/response/findings.html",
-        {"findings": findings, "product_id": product_id, "sla": sla_mapping},
+        {"product_id": product_id, "view": view, "severity": severity, **data},
     )
 
 
@@ -304,7 +326,7 @@ async def revert(
     )
 
 
-@router.get("/{product_id}/hosts")
+@router.get("/{product_id}/finding-filters")
 async def get_hosts(
     request: Request,
     service: ProductServiceDep,
@@ -356,8 +378,6 @@ async def get_hosts(
         "status": status,
         "severity": severity,
     }
-
-    # request.session.update({"finding-filters": json.dumps(data)})
 
     return templates.TemplateResponse(
         request,

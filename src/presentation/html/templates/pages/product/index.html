@@ -147,30 +147,7 @@
   <!--Row4-->
   <section class="row">
     <!-- Card 1 -->
-    <div class="col-6">
-      <div class="card">
-        <div class="card-body">
-          <div class="col-12">
-            <h6>Select View</h6>
-            <div class="input-group mb-3">
-              <select class="form-select" id="inputGroupSelect01">
-                <option selected="">Choose Action</option>
-                <!--<option value="fip">By Host</option>-->
-                <option value="fn">View : Simplified</option>
-                <option value="frisk">View : Detailed</option>
-                <!--<option value="fr">Download Remarks</option>-->
-                <option value="fsla">Filter by SLA Breach</option>
-                <option value="fia">Filter by Asset</option>
-                <option value="fiep">Filter by Exception (Process)</option>
-                <option value="fiem">Filter by Exception (Manual Close)</option>
-                <option value="fie">Filter by Exception (All)</option>
-              </select>
-              <label class="input-group-text" for="inputGroupSelect01">Confirm</label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include "pages/product/component/viewOptions.html" %}
     <!-- Card 2 -->
     <div class="col-6">
       <div class="card">
@@ -199,7 +176,7 @@
         <div class="card-header d-flex justify-content-between">
           <h4>Findings</h4>
           <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal"
-            hx-get="{{ product.id }}/hosts" hx-target="#finding-filter-script-id" hx-trigger="click">
+            hx-get="{{ product.id }}/finding-filters" hx-target="#finding-filter-script-id" hx-trigger="click">
 
             <i class="bi bi-filter"></i>
             Filter
@@ -210,29 +187,8 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Source</th>
-                  <th>Status</th>
-                  <th style="text-align: center;">Severity</th>
-                  <th>ITSE Remark</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="findings_table" hx-get="{{ product.id if product is defined else product_id }}/findings"
-                hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
-                <tr>
-                  <td colspan="6">
-                    <div id="spinner" class="htmx-indicator">
-                      Loading...
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="table-responsive" id="tableDivID">
+            {% include "pages/product/component/tables/index.html" %}
             <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
               aria-hidden="true">
               <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">

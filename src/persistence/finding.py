@@ -1,14 +1,16 @@
 import json
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import ARRAY, Select, String, func, select, update
+from sqlalchemy import ARRAY, Select, String, case, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.constant import FnStatusEnum
+from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.domain.entity import Finding, FindingName
+from src.domain.entity.setting import GlobalConfig
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository, Pagination
 
@@ -60,21 +62,25 @@ class FindingRepository(BaseRepository):
         filters: dict | str | None = None,
     ) -> Pagination:
         stmt = (
-            select(
-                FindingName.id.label("finding_name_id"),
-                FindingName.name,
-                Finding.severity,
-                Finding.status,
-                func.max(Finding.remark),
-                func.max(Finding.finding_date),
-                func.array_agg(func.distinct(Finding.host), type_=ARRAY(String)).label(
-                    "hosts"
-                ),
+            (
+                select(
+                    FindingName.id.label("finding_name_id"),
+                    FindingName.name,
+                    Finding.severity,
+                    Finding.status,
+                    func.max(Finding.remark),
+                    func.max(Finding.finding_date),
+                    func.array_agg(
+                        func.distinct(Finding.host), type_=ARRAY(String)
+                    ).label("hosts"),
+                )
+                .join(FindingName)
+                .where(
+                    FindingName.product_id == product_id,
+                )
             )
-            .join(FindingName)
-            .where(
-                FindingName.product_id == product_id,
-            )
+            .group_by(FindingName.id, Finding.severity, Finding.status)
+            .order_by(Finding.severity)
         )
         if isinstance(filters, str):
             filters = json.loads(filters)
@@ -83,10 +89,76 @@ class FindingRepository(BaseRepository):
                 if not v:
                     continue
                 stmt = stmt.where(getattr(Finding, k).in_(v))
-        stmt = stmt.group_by(FindingName.id, Finding.severity, Finding.status).order_by(
-            Finding.severity
-        )
         return await self.pagination(stmt, page)
+
+    async def get_group_by_asset(
+        self,
+        product_id: UUID,
+        page: int = 1,
+        filters: dict | str | None = None,
+    ) -> Pagination:
+        stmt = (
+            (
+                select(
+                    Finding.host,
+                    func.count(case((Finding.severity == "LOW", 1))).label("low"),
+                    func.count(case((Finding.severity == "MEDIUM", 1))).label("medium"),
+                    func.count(case((Finding.severity == "HIGH", 1))).label("high"),
+                    func.count(case((Finding.severity == "CRITICAL", 1))).label(
+                        "critical"
+                    ),
+                )
+                .join(FindingName)
+                .where(
+                    FindingName.product_id == product_id,
+                )
+            )
+            .group_by(Finding.host)
+            .order_by(Finding.host)
+        )
+
+        if isinstance(filters, str):
+            filters = json.loads(filters)
+        if isinstance(filters, dict):
+            for k, v in filters.items():
+                if not v:
+                    continue
+                stmt = stmt.where(getattr(Finding, k).in_(v))
+
+        return await self.pagination(stmt, page)
+
+    async def get_breached_findings_by_severity(
+        self, product_id: UUID, severity: SeverityEnum
+    ):
+        sub = select(
+            GlobalConfig.__table__.c[f"sla_{severity.value.lower()}"]
+        ).scalar_subquery()
+        today = datetime.now()
+        stmt = (
+            select(
+                FindingName.id.label("finding_name_id"),
+                FindingName.name,
+                Finding.severity,
+                func.max(Finding.remediation).label("remediation"),
+                func.array_agg(func.distinct(Finding.host), type_=ARRAY(String)).label(
+                    "hosts"
+                ),
+                func.extract("day", func.max(Finding.finding_date) - today).label(
+                    "date"
+                ),
+                sub.label("sla"),
+            )
+            .join(FindingName)
+            .where(
+                FindingName.product_id == product_id,
+                Finding.status.not_in([FnStatusEnum.CLOSED, FnStatusEnum.EXAMPTION]),
+                Finding.severity == severity,
+                func.extract("day", Finding.finding_date - today) < sub,
+            )
+        ).group_by(FindingName.id, FindingName.name, Finding.severity)
+
+        query = await self.session.execute(stmt)
+        return query.all()
 
     async def update(self, item_id: UUID, data: dict, hosts: list):
         stmt = (

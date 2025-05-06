@@ -1,0 +1,16 @@
+<div class="col-6">
+  <div class="card">
+    <div class="card-body">
+      <div class="col-12">
+        <h6>Select View</h6>
+        <div class="input-group mb-3">
+          <select class="form-select" hx-get="{{product.id}}/table-view" hx-swap="none" name="view">
+            <option value="default" selected="">Findings</option>
+            <option value="slaBreach">SLA Breach</option>
+            <option value="assets">Asset</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

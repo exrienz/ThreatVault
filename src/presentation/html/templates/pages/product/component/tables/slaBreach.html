@@ -1,0 +1,24 @@
+<div class="card">
+  <div class="card-body">
+    <div hx-target="#slaBreachContentID" hx-swap="innerHTML">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" data-bs-toggle="tab" hx-get="{{product_id}}/findings?view={{view}}&severity=CRITICAL" role="tab" aria-controls="home" aria-selected="true">Critical</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="profile-tab" data-bs-toggle="tab" hx-get="{{product_id}}/findings?view={{view}}&severity=HIGH" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">High</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="profile-tab" data-bs-toggle="tab" hx-get="{{product_id}}/findings?view={{view}}&severity=MEDIUM" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Medium</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="profile-tab" data-bs-toggle="tab" hx-get="{{product_id}}/findings?view={{view}}&severity=LOW" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Low</a>
+        </li>
+      </ul>
+    </div>
+    <div class="tab-content" id="slaBreachContentID">
+      <div hx-trigger="load" hx-get="{{product_id}}/findings?view=slaBreach">
+      </div>
+    </div>
+  </div>
+</div>
