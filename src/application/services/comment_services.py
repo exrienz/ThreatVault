@@ -27,3 +27,6 @@ class CommentService:
         }
         created_comment = await self.repository.create(data)
         return await self.repository.get_one_by_id(created_comment.id)
+
+    async def delete(self, item_id: UUID):
+        await self.repository.delete(item_id)
