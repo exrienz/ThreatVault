@@ -189,60 +189,58 @@
         <div class="card-body">
           <div class="table-responsive" id="tableDivID">
             {% include "pages/product/component/tables/index.html" %}
-            <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
-              aria-hidden="true">
-              <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
-                <form id="finding_action_form" class="modal-content" hx-post="finding/action">
-                  <div class="modal-header bg-danger">
-                    <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                      <i data-feather="x"></i>
-                    </button>
+          </div>
+          <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
+              <form id="finding_action_form" class="modal-content" hx-post="finding/action">
+                <div class="modal-header bg-danger">
+                  <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                  </button>
+                </div>
+                <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
+                <div class="modal-body">
+                  <div class="form-group" align="left">
+                    <label for="name" class="form-label">Host (default: all)</label>
+                    <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
+                      <optgroup label="Select affected host">
+                      </optgroup>
+                    </select>
                   </div>
-                  <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
-                  <div class="modal-body">
-                    <div class="form-group" align="left">
-                      <label for="name" class="form-label">Host (default: all)</label>
-                      <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
-                        <optgroup label="Select affected host">
-                        </optgroup>
+                  <div class="form-group" align="left">
+                    <div class="form-group">
+                      <label for="selectOption">Action</label>
+                      <select name="action" class="form-control" id="selectOptionz" required>
+                        <option value="" disabled selected>Select an action</option>
+                        <option value="Examption">Examption</option>
+                        <option value="Not Applicable">Not Applicable</option>
+                        <option value="Invalid">Invalid</option>
+                        <option value="Duplicate">Duplicate</option>
                       </select>
                     </div>
                     <div class="form-group" align="left">
-                      <div class="form-group">
-                        <label for="selectOption">Action</label>
-                        <select name="action" class="form-control" id="selectOptionz" required>
-                          <option value="" disabled selected>Select an action</option>
-                          <option value="Examption">Examption</option>
-                          <option value="Not Applicable">Not Applicable</option>
-                          <option value="Invalid">Invalid</option>
-                          <option value="Duplicate">Duplicate</option>
-                        </select>
-                      </div>
-                      <div class="form-group" align="left">
-                        <label for="birthday" class="form-label">Action valid until</label>
-                        <input type="date" name="delayUntill" class="form-control"
-                          placeholder="Target Remediation Date">
-                      </div>
-                      <div class="form-group" align="left">
-                        <label for="birthday" class="form-label">Remarks</label>
-                        <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
-                      </div>
+                      <label for="birthday" class="form-label">Action valid until</label>
+                      <input type="date" name="delayUntill" class="form-control" placeholder="Target Remediation Date">
                     </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Close</span>
-                      </button>
-                      <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Confirm</span>
-                      </button>
+                    <div class="form-group" align="left">
+                      <label for="birthday" class="form-label">Remarks</label>
+                      <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
                     </div>
                   </div>
-                </form>
-              </div>
-
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                      <i class="bx bx-x d-block d-sm-none"></i>
+                      <span class="d-none d-sm-block">Close</span>
+                    </button>
+                    <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
+                      <i class="bx bx-check d-block d-sm-none"></i>
+                      <span class="d-none d-sm-block">Confirm</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>

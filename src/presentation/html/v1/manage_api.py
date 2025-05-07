@@ -38,7 +38,9 @@ async def get_token(request: Request, service: TokenServiceDep, token_id: UUID):
     data = await service.get_by_id(token_id)
     if data is None:
         return
-    return data.token
+    return templates.TemplateResponse(
+        request, "pages/manage_api/response/token.html", {"token": data.token}
+    )
 
 
 @router.delete("/{token_id}")
