@@ -31,8 +31,6 @@ fileignoreconfig:
   checksum: a57917491064a3549cd106350ea83061ea60cc52c3b338a22f168e43564ab6c3
 - filename: src/presentation/html/templates/pages/auth/register.html
   checksum: ef6b4441ab8ad723d4cde5d8167dd7bd84c90d611bfb00ed29ad893e07e2e13e
-- filename: src/presentation/html/templates/pages/product/response/tokenGeneration.html
-  checksum: 47f2375b2420121eb4a9ef54bf3df8471c279c28721d510a0824ac48cc611d04
 - filename: src/presentation/html/templates/pages/user_setting/index.html
   checksum: c4aba2f5017bbc2eff386380182ebfd7952c1564ea577fc1de9f8255aefeaebb
 - filename: src/presentation/html/v1/auth.py
@@ -45,4 +43,6 @@ fileignoreconfig:
   checksum: 1b8535f0559ef072dd77895b58ee964b269e9f0c7ea956e52dc03985409b8dd9
 - filename: src/config.py
   checksum: b7607348647e9b840340425c842b85ea07eda01d10b64e79728f1eeee3d06ff0
+- filename: src/presentation/html/templates/pages/product/response/tokenGeneration.html
+  checksum: 9f3f96b1bef7c11a95bf6043498d3d6653aa0e65ce9415d7500cc317ec63a151
 version: ""

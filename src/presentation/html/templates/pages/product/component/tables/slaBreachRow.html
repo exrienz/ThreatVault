@@ -17,7 +17,7 @@
             <td>
               <small class="text-muted">Affected Host: <br>
                 {%for host in finding.hosts%}
-                <a>{{host}}</a>
+                <a href="/host?host={{host}}">{{host}}</a>
                 <span class="badge bg-danger"> ?? </span>
                 {% if not loop.last %}
                   |

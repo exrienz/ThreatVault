@@ -80,6 +80,9 @@ async def get_findings(
     page: PositiveInt = 1,
 ):
     filters = request.session.get("finding-selected")
+    if filters and not isinstance(filters, dict):
+        filters = json.loads(filters)
+
     fn_dict = {
         "assets": [finding_service.get_group_by_assets, (product_id, page, filters)],
         "slaBreach": [finding_service.get_breached_findings, (product_id, severity)],

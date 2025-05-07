@@ -66,8 +66,7 @@
     </form>
     <div class="col-md-12 mb-1">
         <br />
-        <form hx-post="/product/{{ product.id }}/generate-api-key"
-              hx-confirm="Generate New API Key. Previous API Key will be invalid.">
+        <form >
             {% include "pages/product/response/tokenGeneration.html" %}
         </form>
     </div>

@@ -33,13 +33,15 @@ class FindingService:
 
     async def get_group_by_severity_status(
         self,
-        product_id: UUID,
+        product_id: UUID | None = None,
         page: int = 1,
         filters: dict | None = None,
         include_sla: bool = True,
     ):
+        if filters is None:
+            filters = {}
         res = await self.repository.get_group_by_severity_status(
-            product_id, page, filters
+            product_id, filters, page
         )
         data = {"findings": res, "sla": None}
 
@@ -47,10 +49,17 @@ class FindingService:
             data["sla"] = await self._include_sla(res)
         return data
 
-    async def get_group_by_assets(
-        self, product_id: UUID, page: int = 1, filters: dict | None = None
+    async def get_group_by_asset_details(
+        self, host: str, filters: dict | None = None, page: int = 1
     ):
-        res = await self.repository.get_group_by_asset(product_id, page, filters)
+        return await self.repository.get_group_by_asset_details(host, filters, page)
+
+    async def get_group_by_assets(
+        self, product_id: UUID | None = None, page: int = 1, filters: dict | None = None
+    ):
+        if filters is None:
+            filters = {}
+        res = await self.repository.get_group_by_asset(product_id, filters, page)
         return {"findings": res}
 
     async def get_breached_findings(
@@ -110,3 +119,6 @@ class FindingService:
         if prev is None or curr is None:
             return False
         return curr > prev
+
+    async def delete_by_filter(self, product_id: UUID, filters: dict):
+        return await self.repository.delete_by_filter(product_id, filters)

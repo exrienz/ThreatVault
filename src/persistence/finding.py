@@ -1,10 +1,20 @@
-import json
 from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import ARRAY, Select, String, case, func, select, update
+from sqlalchemy import (
+    ARRAY,
+    Select,
+    String,
+    case,
+    func,
+    select,
+    update,
+)
+from sqlalchemy import (
+    delete as sql_delete,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -57,9 +67,9 @@ class FindingRepository(BaseRepository):
 
     async def get_group_by_severity_status(
         self,
-        product_id: UUID,
+        product_id: UUID | None = None,
+        filters: dict | None = None,
         page: int = 1,
-        filters: dict | str | None = None,
     ) -> Pagination:
         stmt = (
             (
@@ -73,18 +83,16 @@ class FindingRepository(BaseRepository):
                     func.array_agg(
                         func.distinct(Finding.host), type_=ARRAY(String)
                     ).label("hosts"),
-                )
-                .join(FindingName)
-                .where(
-                    FindingName.product_id == product_id,
-                )
+                ).join(FindingName)
             )
             .group_by(FindingName.id, Finding.severity, Finding.status)
             .order_by(Finding.severity)
         )
-        if isinstance(filters, str):
-            filters = json.loads(filters)
-        if isinstance(filters, dict):
+        if product_id:
+            stmt = stmt.where(
+                FindingName.product_id == product_id,
+            )
+        if filters:
             for k, v in filters.items():
                 if not v:
                     continue
@@ -93,9 +101,9 @@ class FindingRepository(BaseRepository):
 
     async def get_group_by_asset(
         self,
-        product_id: UUID,
+        product_id: UUID | None = None,
+        filters: dict | None = None,
         page: int = 1,
-        filters: dict | str | None = None,
     ) -> Pagination:
         stmt = (
             (
@@ -107,25 +115,44 @@ class FindingRepository(BaseRepository):
                     func.count(case((Finding.severity == "CRITICAL", 1))).label(
                         "critical"
                     ),
-                )
-                .join(FindingName)
-                .where(
-                    FindingName.product_id == product_id,
-                )
+                    func.max(Finding.last_update).label("last_update"),
+                ).join(FindingName)
             )
             .group_by(Finding.host)
             .order_by(Finding.host)
         )
 
-        if isinstance(filters, str):
-            filters = json.loads(filters)
-        if isinstance(filters, dict):
+        if product_id:
+            stmt = stmt.where(
+                FindingName.product_id == product_id,
+            )
+
+        if filters:
             for k, v in filters.items():
                 if not v:
                     continue
                 stmt = stmt.where(getattr(Finding, k).in_(v))
 
         return await self.pagination(stmt, page)
+
+    async def get_group_by_asset_details(
+        self,
+        host: str,
+        filters: dict | None = None,
+        page: int = 1,
+    ) -> Pagination:
+        stmt = (
+            select(Finding)
+            .join(FindingName)
+            .options(selectinload(Finding.finding_name).selectinload(FindingName.cves))
+        ).where(Finding.host == host)
+        if filters:
+            for k, v in filters.items():
+                if not v:
+                    continue
+                stmt = stmt.where(getattr(Finding, k).in_(v))
+        stmt = stmt.distinct().order_by(Finding.severity, Finding.finding_date.desc())
+        return await self.pagination(stmt, page, True)
 
     async def get_breached_findings_by_severity(
         self, product_id: UUID, severity: SeverityEnum
@@ -172,3 +199,23 @@ class FindingRepository(BaseRepository):
         )
         await self.session.execute(stmt)
         await self.session.commit()
+
+    async def delete_by_filter(self, product_id: UUID, filters: dict):
+        sub = (
+            select(Finding.id)
+            .join(FindingName)
+            .where(FindingName.product_id == product_id)
+        ).scalar_subquery()
+
+        stmt = sql_delete(Finding).where(Finding.id.in_(sub))
+
+        for k, v in filters.items():
+            if not v:
+                continue
+            stmt = stmt.where(getattr(Finding, k).in_(v))
+        await self.session.execute(stmt)
+        await self.session.commit()
+
+    async def adhoc_statitics(self, filters: dict, year: int | None = None):
+        if year is None:
+            ...

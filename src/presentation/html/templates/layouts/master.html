@@ -5,6 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sentinel - {{ title }}</title>
+  <style>
+    .htmx-indicator {
+      display: none;
+    }
+
+    .htmx-request .htmx-indicator {
+      display: inline;
+    }
+
+    .htmx-request.htmx-indicator {
+      display: inline;
+    }
+  </style>
   {% block stylesfirst %}{% endblock %}
   <link rel="stylesheet" href="/assets/compiled/css/app.css" />
   <link rel="stylesheet" href="/assets/compiled/css/app-dark.css" />
