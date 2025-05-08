@@ -7,7 +7,7 @@
         </small>
         <div>
           <a class="btn btn-sm btn-danger"
-             hx-delete="/finding/{{finding_name_id}}/comment/{{comment.id}}"
+             hx-delete="/finding/comment/{{comment.id}}"
              hx-swap="delete"
              hx-confirm="Delete this comment: {{comment.comment}}"
              hx-target="closest tr">

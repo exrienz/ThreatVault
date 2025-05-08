@@ -24,3 +24,9 @@ class GlobalConfigSchema(BaseModel):
     smtp_port: Optional[str]
     smtp_username: Optional[str]
     smtp_password: Optional[str]
+
+
+class UserResetPasswordSchema(BaseModel):
+    current_pass: str
+    new_pass: str
+    confirm_pass: str

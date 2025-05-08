@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import jwt
 from fastapi import Depends
 
+from src.application.exception.error import InvalidAuthentication
 from src.config import settings
 from src.domain.entity import User
 from src.persistence import AuthRepository
@@ -30,11 +31,11 @@ class AuthService:
     async def authenticate(self, data: UserLoginSchema) -> str:
         user = await self.repository.get_by_filter({"username": data.username})
         if not user:
-            raise
+            raise InvalidAuthentication
         if user.password is None or not self.verify_password(
             data.password, user.password
         ):
-            raise
+            raise InvalidAuthentication
         return self.create_access_token(TokenDataSchema(userid=str(user.id)))
 
     def verify_password(self, input_password: str, hashed_password: str):

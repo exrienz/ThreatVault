@@ -8,4 +8,4 @@
 </div>
 {% import 'pages/project_management/macros.html' as macros %}
 <div id="project_accordion" hx-swap-oob="afterbegin">{{ macros.project_accordion(project, project.id) }}</div>
-<script id="pm_script" hx-swap-oob>ToastSuccessCustom("Created");</script>
+<script id="toast-global-id" hx-swap-oob="true">ToastSuccessCustom("Project Created: {{project.name}}");</script>

@@ -71,3 +71,12 @@ async def logout(request: Request):
     )
     response.delete_cookie("Authorization")
     return response
+
+
+@router.get("/reset-password")
+async def password_forgot_page(request: Request):
+    response = templates.TemplateResponse(
+        request,
+        "pages/auth/forgotPassword.html",
+    )
+    return response

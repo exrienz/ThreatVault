@@ -50,7 +50,6 @@
   <script src="/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
   <script src="/assets/extensions/dayjs/dayjs.min.js"></script>
   <script src="/assets/compiled/js/app.js"></script>
-  <script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
   <script>
     document.addEventListener("htmx:confirm", function (e) {
       if (!e.detail.elt.hasAttribute('hx-confirm')) return
@@ -67,6 +66,9 @@
       })
     })
   </script>
+  <script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
+  <script src="/assets/static/js/pages/sweetalert2.js"></script>
+  <script id="toast-global-id"></script>
   {% block js %}{% endblock %}
 </body>
 

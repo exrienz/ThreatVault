@@ -338,7 +338,8 @@ async def get_hosts(
 ):
     selected = request.session.get("finding-selected")
     if selected:
-        selected: dict = json.loads(selected)
+        if not isinstance(selected, dict):
+            selected = json.loads(selected)
         for k in selected.keys():
             if selected[k] is None:
                 selected[k] = []
