@@ -1,0 +1,31 @@
+{% if not view is defined%}
+  {% set view="default"%}
+{% endif %}
+
+<div id="tableDivID" hx-swap-oob="innerHTML">
+{% if view in ('slaBreach',)%}
+      {% include ['pages/product/component/tables/' + view + '.html','empty.html'] %}
+{%else%}
+
+<table class="table table-hover mb-0">
+  <thead>
+    <tr style="text-align: center;">
+      {% include ['pages/product/component/tables/finding' + (view | title) + 'Header.html',
+      'pages/product/component/tables/findingDefaultHeader.html'] %}
+    </tr>
+  </thead>
+  <tbody id="findings_table"
+         hx-get="{{ product.id if product is defined else product_id }}/findings?page=1&view={{view}}"
+         hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
+
+    <tr>
+      <td colspan="6">
+        <div id="spinner" class="htmx-indicator">
+          Loading...
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+</div>

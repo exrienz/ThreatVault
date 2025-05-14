@@ -2,9 +2,7 @@
 {% set filename = "product" %}
 {% extends 'layouts/master.html' %}
 {% block styles %}
-<!--<link rel="stylesheet" href="/assets/extensions/choices.js/public/assets/styles/choices.css">-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
-<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css" />-->
 <style>
   .htmx-indicator {
     display: none;
@@ -114,6 +112,8 @@
         </div>
         <div class="card-body">{% include "pages/product/form/fileupload.html" %}</div>
         <hr>
+        {%include "pages/product/component/advancedUpload.html"%}
+        <hr>
         {%include "pages/product/component/advancedSetting.html"%}
       </div>
     </div>
@@ -147,30 +147,7 @@
   <!--Row4-->
   <section class="row">
     <!-- Card 1 -->
-    <div class="col-6">
-      <div class="card">
-        <div class="card-body">
-          <div class="col-12">
-            <h6>Select View</h6>
-            <div class="input-group mb-3">
-              <select class="form-select" id="inputGroupSelect01">
-                <option selected="">Choose Action</option>
-                <!--<option value="fip">By Host</option>-->
-                <option value="fn">View : Simplified</option>
-                <option value="frisk">View : Detailed</option>
-                <!--<option value="fr">Download Remarks</option>-->
-                <option value="fsla">Filter by SLA Breach</option>
-                <option value="fia">Filter by Asset</option>
-                <option value="fiep">Filter by Exception (Process)</option>
-                <option value="fiem">Filter by Exception (Manual Close)</option>
-                <option value="fie">Filter by Exception (All)</option>
-              </select>
-              <label class="input-group-text" for="inputGroupSelect01">Confirm</label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include "pages/product/component/viewOptions.html" %}
     <!-- Card 2 -->
     <div class="col-6">
       <div class="card">
@@ -196,87 +173,74 @@
   <section class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between">
           <h4>Findings</h4>
+          <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal"
+            hx-get="{{ product.id }}/finding-filters" hx-target="#finding-filter-script-id" hx-trigger="click">
+
+            <i class="bi bi-filter"></i>
+            Filter
+
+          </a>
+          <div id="filterModal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+            {% include "pages/product/component/findingFilterModal.html"%}
+          </div>
         </div>
         <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Source</th>
-                  <th>Status</th>
-                  <th style="text-align: center;">Severity</th>
-                  <th>ITSE Remark</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="findings_table" hx-get="{{ product.id if product is defined else product_id }}/findings"
-                hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
-                <tr>
-                  <td colspan="6">
-                    <div id="spinner" class="htmx-indicator">
-                      Loading...
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
-              aria-hidden="true">
-              <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
-                <form id="finding_action_form" class="modal-content" hx-post="finding/action">
-                  <div class="modal-header bg-danger">
-                    <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                      <i data-feather="x"></i>
-                    </button>
+          <div class="table-responsive" id="tableDivID">
+            {% include "pages/product/component/tables/index.html" %}
+          </div>
+          <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
+              <form id="finding_action_form" class="modal-content" hx-post="finding/action">
+                <div class="modal-header bg-danger">
+                  <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                  </button>
+                </div>
+                <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
+                <div class="modal-body">
+                  <div class="form-group" align="left">
+                    <label for="name" class="form-label">Host (default: all)</label>
+                    <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
+                      <optgroup label="Select affected host">
+                      </optgroup>
+                    </select>
                   </div>
-                  <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
-                  <div class="modal-body">
-                    <div class="form-group" align="left">
-                      <label for="name" class="form-label">Host (default: all)</label>
-                      <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
-                        <optgroup label="Select affected host">
-                        </optgroup>
+                  <div class="form-group" align="left">
+                    <div class="form-group">
+                      <label for="selectOption">Action</label>
+                      <select name="action" class="form-control" id="selectOptionz" required>
+                        <option value="" disabled selected>Select an action</option>
+                        <option value="Examption">Examption</option>
+                        <option value="Not Applicable">Not Applicable</option>
+                        <option value="Invalid">Invalid</option>
+                        <option value="Duplicate">Duplicate</option>
                       </select>
                     </div>
                     <div class="form-group" align="left">
-                      <div class="form-group">
-                        <label for="selectOption">Action</label>
-                        <select name="action" class="form-control" id="selectOptionz" required>
-                          <option value="" disabled selected>Select an action</option>
-                          <option value="Examption">Examption</option>
-                          <option value="Not Applicable">Not Applicable</option>
-                          <option value="Invalid">Invalid</option>
-                          <option value="Duplicate">Duplicate</option>
-                        </select>
-                      </div>
-                      <div class="form-group" align="left">
-                        <label for="birthday" class="form-label">Action valid until</label>
-                        <input type="date" name="delayUntill" class="form-control"
-                          placeholder="Target Remediation Date">
-                      </div>
-                      <div class="form-group" align="left">
-                        <label for="birthday" class="form-label">Remarks</label>
-                        <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
-                      </div>
+                      <label for="birthday" class="form-label">Action valid until</label>
+                      <input type="date" name="delayUntill" class="form-control" placeholder="Target Remediation Date">
                     </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Close</span>
-                      </button>
-                      <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Confirm</span>
-                      </button>
+                    <div class="form-group" align="left">
+                      <label for="birthday" class="form-label">Remarks</label>
+                      <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
                     </div>
                   </div>
-                </form>
-              </div>
-
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                      <i class="bx bx-x d-block d-sm-none"></i>
+                      <span class="d-none d-sm-block">Close</span>
+                    </button>
+                    <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
+                      <i class="bx bx-check d-block d-sm-none"></i>
+                      <span class="d-none d-sm-block">Confirm</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -317,5 +281,42 @@
     fm = document.querySelector("#fn_name_action_id")
     fm.setAttribute("value", `${finding_name_id}`)
   }
+</script>
+
+<script id="finding-filter-script-id">
+  var statusChoiceEl = document.querySelector("#status-choices");
+  var statusChoices = new Choices(statusChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var severityChoiceEl = document.querySelector("#severity-choices");
+  var severityChoices = new Choices(severityChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var assetsChoiceEl = document.querySelector("#assets-choices");
+  var assetsChoices = new Choices(assetsChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var sourceChoiceEl = document.querySelector("#source-choices");
+  var sourceChoices = new Choices(sourceChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices];
+
+  function clearChoices() {
+    chLists.forEach(clearChoiceMap);
+  }
+
+  function clearChoiceMap(value, idx, array) {
+    value.removeActiveItems();
+  }
+
 </script>
 {% endblock %}

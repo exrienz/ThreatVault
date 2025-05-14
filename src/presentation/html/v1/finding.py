@@ -78,3 +78,12 @@ async def comment_finding(
             "comment": data,
         },
     )
+
+
+@router.delete("/comment/{comment_id}")
+async def delete_finding_comment(
+    request: Request,
+    service: CommentServiceDep,
+    comment_id: UUID,
+):
+    await service.delete(comment_id)

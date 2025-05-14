@@ -1,0 +1,32 @@
+<div class="card-header">
+    <h4>Advance Upload</h4>
+</div>
+<div class="card-body">
+    <div class="col-md-12 mb-1">
+        <br />
+        <button type="button"
+                class="btn btn-success w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#inlineForm">Manual Upload</button>
+    </div>
+    {% include "pages/product/form/manualUpload.html" %}
+    <div class="col-md-12 mb-1">
+        <br />
+        <button type="button"
+                class="btn btn-danger w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#revert_modal"
+                hx-target="#revert_modal"
+                hx-trigger="click"
+                hx-get="{{ product.id }}/revert">Revert Upload</button>
+    </div>
+</div>
+<div id="revert_modal"
+     class="modal modal-blur fade"
+     style="display: none"
+     aria-hidden="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>

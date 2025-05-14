@@ -1,4 +1,5 @@
 import secrets
+from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import Depends
@@ -61,3 +62,6 @@ class ProductService:
         }
 
         return await self.productRepository.update(product_id, data)
+
+    async def get_hosts(self, product_id: UUID) -> Sequence[str]:
+        return await self.productRepository.get_hosts(product_id)

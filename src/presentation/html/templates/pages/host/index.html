@@ -1,0 +1,154 @@
+{% set title = "Host" %}
+{% set filename = "host" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>
+    {{ host }} Dashboard
+    {#
+    <span class="badge bg-success">TODO-env</span>
+    #}
+  </h3>
+  <div id="finding_header_id">
+    Last Update : {{logs.last_update.strftime('%d-%m-%Y') if logs is defined else 'DD-MM-YYYY' }}
+    <code>|</code>
+  </div>
+</div>
+<div class="page-content">
+  <!--Row3-->
+  <section class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Vulnerability Chart</h4>
+        </div>
+        <div class="card-body">
+          <div id="risk"></div><br>
+        </div>
+      </div>
+    </div>
+    {#
+    <div class="col-8">
+      <div class="card">
+        <div class="card-header">
+          <h4>Aging Finding</h4>
+        </div>
+        <div class="card-body">
+          <div id="aging"></div>
+          <div display:None ></div>
+        </div>
+      </div>
+    </div>
+    #}
+  </section>
+  <!--EO Row3-->
+
+  <!-- Table -->
+  <section class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <h4>Findings</h4>
+          {#
+          <button class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+
+            <i class="bi bi-filter"></i>
+            Filter
+
+          </button>
+          #}
+          <div id="filterModal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+            {% include "pages/host/component/findingFilterModal.html"%}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive" id="tableDivID">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr style="text-align: center;">
+                  <th style="text-align: left">Name</th>
+                  <th>Severity</th>
+                  <th>VPR</th>
+                  <th>Status</th>
+                  <th>CVE</th>
+                  <th>Port</th>
+                  <th>Scan Date</th>
+                  <th>Remark</th>
+                </tr>
+              </thead>
+              <tbody id="findings_table"
+                     hx-get="/host/findings?host={{host}}"
+                     hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
+
+                <tr>
+                  <td colspan="6">
+                    <div id="spinner" class="htmx-indicator">
+                      Loading...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  </section>
+  <!-- EO TABLE -->
+</div>
+{% endblock %}
+{% block js %}
+<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="/assets/static/js/pages/ui-apexchart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
+
+<script>
+  {% if logs %}
+  risk.updateSeries([
+    {{(logs.critical | default(0) / totalSeverity * 100) | round }},
+    {{(logs.high | default(0) / totalSeverity * 100) | round }},
+    {{(logs.medium | default(0) / totalSeverity * 100) | round}},
+    {{(logs.low | default(0) / totalSeverity * 100) | round}}
+  ])
+  {% endif %}
+</script>
+
+<script id="finding-filter-script-id">
+  var statusChoiceEl = document.querySelector("#status-choices");
+  var statusChoices = new Choices(statusChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var severityChoiceEl = document.querySelector("#severity-choices");
+  var severityChoices = new Choices(severityChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var assetsChoiceEl = document.querySelector("#assets-choices");
+  var assetsChoices = new Choices(assetsChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var sourceChoiceEl = document.querySelector("#source-choices");
+  var sourceChoices = new Choices(sourceChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices];
+
+  function clearChoices() {
+    chLists.forEach(clearChoiceMap);
+  }
+
+  function clearChoiceMap(value, idx, array) {
+    value.removeActiveItems();
+  }
+
+{% endblock %}

@@ -1,8 +1,4 @@
-import importlib.util
-import pathlib
-import sys
 from collections.abc import Sequence
-from types import ModuleType
 from uuid import UUID
 
 from fastapi import Depends
@@ -10,8 +6,6 @@ from fastapi.datastructures import UploadFile
 
 from src.domain.entity import Plugin
 from src.persistence.plugin import PluginRepository
-
-# TODO: Lazy Import
 
 
 class PluginService:
@@ -47,19 +41,3 @@ class PluginService:
         with open(filepath, "wb") as f:
             file_data = await file.read()
             f.write(file_data)
-
-    @classmethod
-    def plugin_import(cls, name: str, filename: str) -> ModuleType:
-        ph = pathlib.Path(__file__).cwd()
-        path = f"{ph}/public/plugins/{filename}"
-        spec = importlib.util.spec_from_file_location(name, path)
-        if spec is None or spec.loader is None:
-            raise
-        loader = importlib.util.LazyLoader(spec.loader)
-        spec.loader = loader
-        module = importlib.util.module_from_spec(spec)
-        if module is None:
-            raise
-        sys.modules[name] = module
-        spec.loader.exec_module(module)
-        return module

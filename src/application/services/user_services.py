@@ -4,10 +4,12 @@ from fastapi import Cookie, Depends
 from pydantic import PositiveInt
 
 from src.application.middlewares.user_context import get_current_user_id
+from src.application.schemas.settings import UserResetPasswordSchema
 from src.domain.entity import Product, User
 from src.persistence import ProjectRepository, UserRepository
 
 from ..schemas.auth import AuthTokenSchema
+from ..security.oauth2.password import pwd_context
 
 
 class UserService:
@@ -61,3 +63,17 @@ class UserService:
             else:
                 res[res_id] = [product]
         return res
+
+    async def reset_password(self, data: UserResetPasswordSchema):
+        if data.current_pass == data.new_pass or data.new_pass != data.confirm_pass:
+            raise
+        user_id = get_current_user_id()
+        if user_id is None:
+            raise
+        user = await self.repository.get_by_id(user_id)
+        if user is None:
+            raise
+        if user is None and user.password != data.current_pass:
+            raise
+        password = pwd_context.hash(data.new_pass)
+        return await self.repository.update(user_id, {"password": password})

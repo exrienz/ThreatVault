@@ -41,8 +41,13 @@ class BaseRepository(Generic[Entity]):
             findings = query.scalars().all()
         else:
             findings = query.all()
-        addition_query = stmt.with_only_columns(func.count().label("total"))
-        query = await self.session.execute(addition_query)
+
+        if stmt._group_by_clauses:
+            total_query = select(func.count().label("total")).select_from(stmt.alias())
+        else:
+            total_query = stmt.with_only_columns(func.count().label("total"))
+
+        query = await self.session.execute(total_query.order_by(None))
         total = query.scalar() or 0
 
         return Pagination(

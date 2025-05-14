@@ -22,3 +22,11 @@ function ToastSuccessCustom(msg) {
     title:  msg
   })
 }
+
+function ToastCustom(msg, icon) {
+  Toast.fire(
+    {
+      icon: icon,
+      title: msg
+    })
+}

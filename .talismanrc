@@ -1,8 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev
   checksum: 089560526a856cb8dcf6c2194a497d07276f4e3ff45d5f590ae0fa1d8f8c7010
-- filename: src/application/schemas/settings.py
-  checksum: 785f12783d8f835d7bb3c6cff3222d2f3e5a682616c3278b47e0aeb019200f42
 - filename: src/application/security/oauth2/password.py
   checksum: d2840536fffc3a798d3392818594f74d5dc24892e4f27ccfff36be2e0699e835
 - filename: src/application/services/env_service.py
@@ -25,20 +23,34 @@ fileignoreconfig:
   checksum: 961a4a15f31b951db3853b0e390033ccb34b2214f6a08c88e9875772c7bd1552
 - filename: src/application/services/product_services.py
   checksum: c81e5a88ba34d0f8134b5b8440579baa913d252d29b1058a696ee3c70f9e2b9f
-- filename: src/config.py
-  checksum: 4377d0331d5e44f655b29680a3441420dc8a00cd21029f795ecfcd818f87e5f5
 - filename: src/domain/entity/setting.py
   checksum: accf4153c9066d7531161c92db9ee7e3561d2e1135b8bba1b3fb8db66ad41a88
-- filename: src/presentation/html/templates/pages/auth/login.html
-  checksum: a57917491064a3549cd106350ea83061ea60cc52c3b338a22f168e43564ab6c3
 - filename: src/presentation/html/templates/pages/auth/register.html
   checksum: ef6b4441ab8ad723d4cde5d8167dd7bd84c90d611bfb00ed29ad893e07e2e13e
-- filename: src/presentation/html/templates/pages/product/response/tokenGeneration.html
-  checksum: 47f2375b2420121eb4a9ef54bf3df8471c279c28721d510a0824ac48cc611d04
-- filename: src/presentation/html/templates/pages/user_setting/index.html
-  checksum: c4aba2f5017bbc2eff386380182ebfd7952c1564ea577fc1de9f8255aefeaebb
-- filename: src/presentation/html/v1/auth.py
-  checksum: 6ea4bc9bd47a86deed25c268a676be5058aeaec2f637c3844ee208c519e97c44
 - filename: src/sidebars.json
   checksum: 4a8a97233f5058c9112ea2dcf99150b06f23d7768df06b115b454b64abd544d9
+- filename: src/presentation/html/v1/product.py
+  checksum: eb18d79932f15f65f488e4cae5d13f53fa7ca587a7dc346a275532487ac7ee7b
+- filename: src/main.py
+  checksum: 1b8535f0559ef072dd77895b58ee964b269e9f0c7ea956e52dc03985409b8dd9
+- filename: src/config.py
+  checksum: b7607348647e9b840340425c842b85ea07eda01d10b64e79728f1eeee3d06ff0
+- filename: src/presentation/html/templates/pages/product/response/tokenGeneration.html
+  checksum: 9f3f96b1bef7c11a95bf6043498d3d6653aa0e65ce9415d7500cc317ec63a151
+- filename: src/application/schemas/settings.py
+  checksum: 0739e61ccdc86a1991bb7f21c0ff120d218dc3a7f03f72e0c57d2866d3166301
+- filename: src/presentation/html/templates/error/500.html
+  checksum: ed4d8d0a1015dd54d1eab7cf059920e6102bc402c77fa638323f9259fdb805cb
+- filename: src/application/services/user_services.py
+  checksum: c0bb17ab19452421d3e2d83c5dc16696af03e3a84bafe38427ad7ce2c39538af
+- filename: src/presentation/html/templates/pages/user_setting/response/resetPassword.html
+  checksum: 94fb157ac5649e77e3c01c0d19aa4f7a1bb3808d4e0fe4eaaba636b4328da6cd
+- filename: src/presentation/html/v1/self_service.py
+  checksum: 5bd7bb492511bad22ef6c9560d7e4a39b31d18acf760797e209eebc96e45a508
+- filename: src/presentation/html/templates/pages/auth/login.html
+  checksum: 316c376d1cc319619e82ad577573fee5083227ddebbaeaa6bca46a83e166b1b1
+- filename: src/presentation/html/v1/auth.py
+  checksum: a9b3f5a351787425f25e4cd36e1c5edc38cc7e06a924ab923ebc26a84a920ffd
+- filename: src/presentation/html/templates/pages/user_setting/index.html
+  checksum: 9800a96aabfee955b183a43494cbf702f7829e70b73073f687a1858ef6f58862
 version: ""

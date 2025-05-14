@@ -6,7 +6,14 @@ from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.entity import Environment, Product, ProductUserAccess, User
+from src.domain.entity import (
+    Environment,
+    Finding,
+    FindingName,
+    Product,
+    ProductUserAccess,
+    User,
+)
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository
 
@@ -94,3 +101,13 @@ class ProductRepository(BaseRepository[Product]):
 
     async def delete_product_access(self, permission: ProductUserAccess):
         await self.session.delete(permission)
+
+    async def get_hosts(self, product_id: UUID) -> Sequence[str]:
+        stmt = (
+            select(Finding.host)
+            .join(FindingName)
+            .where(FindingName.product_id == product_id)
+            .distinct()
+        )
+        query = await self.session.execute(stmt)
+        return query.scalars().all()

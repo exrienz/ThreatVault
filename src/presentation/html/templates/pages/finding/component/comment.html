@@ -1,9 +1,21 @@
 <tr>
-    <td class="col-auto">
+  <td class="col-auto">
+    <div>
+      <div class="d-flex justify-content-between">
+        <small style="color: blue;">
+          {{ comment.commentor.username | title }}@{{ comment.created_at | datetime_format("%d/%m/%Y") }}
+        </small>
         <div>
-            <small style="color: blue;">
-            {{ comment.commentor.username | title }}@{{ comment.created_at | datetime_format("%d/%m/%Y") }}</small>
-            {{ comment.comment }}
+          <a class="btn btn-sm btn-danger"
+             hx-delete="/finding/comment/{{comment.id}}"
+             hx-swap="delete"
+             hx-confirm="Delete this comment: {{comment.comment}}"
+             hx-target="closest tr">
+            <i class="fas fa-solid fa-trash-alt"></i>
+          </a>
         </div>
-    </td>
+      </div>
+      {{ comment.comment }}
+    </div>
+  </td>
 </tr>
