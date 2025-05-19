@@ -12,5 +12,5 @@ COPY ./public/ ./public
 # CMD ["fastapi", "dev", "src/main.py", "--port", "8080"]
 # CMD ["uvicorn", "src.main:app", "--port", "8000", "--reload"]
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
