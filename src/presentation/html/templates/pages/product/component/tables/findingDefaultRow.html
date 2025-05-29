@@ -6,7 +6,11 @@
                 <i class="fas fa-biohazard" title="High-Priority" style="color: red"></i>&nbsp;</a>
         {% endif %}
     </td>
-    <td class="text-bold-500">Nessus</td>
+    <td class="text-bold-500">
+      {%for plugin_id in finding.plugin_ids%}
+      {{source[plugin_id | string ]}}
+      {% endfor%}
+    </td>
     <td class="text-bold-500">{{ finding.status.value | title }}</td>
     <td align="center">
         <span class="badge"

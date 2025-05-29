@@ -3,7 +3,11 @@ from uuid import UUID
 
 from fastapi import Depends
 
-from src.application.middlewares.user_context import get_current_user_id
+from src.application.exception.error import UnauthorizedError
+from src.application.middlewares.user_context import (
+    get_current_user_id,
+    is_admin,
+)
 from src.domain.entity.finding import Comment
 from src.persistence import CommentRepository
 
@@ -28,5 +32,9 @@ class CommentService:
         created_comment = await self.repository.create(data)
         return await self.repository.get_one_by_id(created_comment.id)
 
-    async def delete(self, item_id: UUID):
-        await self.repository.delete(item_id)
+    async def delete(self, comment_id: UUID, bypass: bool = False):
+        comment = await self.repository.get_one_by_id(comment_id)
+        if self.user_id is None:
+            raise UnauthorizedError
+        if bypass or is_admin() or str(comment.commentor_id) == self.user_id:
+            return await self.repository.delete(comment_id)

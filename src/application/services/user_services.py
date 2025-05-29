@@ -1,14 +1,13 @@
 from uuid import UUID
 
-from fastapi import Cookie, Depends
+from fastapi import Cookie, Depends, HTTPException
 from pydantic import PositiveInt
 
 from src.application.middlewares.user_context import get_current_user_id
-from src.application.schemas.settings import UserResetPasswordSchema
 from src.domain.entity import Product, User
 from src.persistence import ProjectRepository, UserRepository
 
-from ..schemas.auth import AuthTokenSchema
+from ..schemas.auth import AuthTokenSchema, UserResetPasswordSchema
 from ..security.oauth2.password import pwd_context
 
 
@@ -32,6 +31,12 @@ class UserService:
         return await self.repository.get_all_pagination(page, filters, pagination)
 
     async def get_by_id(self, user_id: UUID) -> User:
+        return await self.repository.get_one_by_id(user_id)
+
+    async def get_me(self) -> User:
+        user_id = get_current_user_id()
+        if user_id is None:
+            raise
         return await self.repository.get_one_by_id(user_id)
 
     # create schema
@@ -65,8 +70,8 @@ class UserService:
         return res
 
     async def reset_password(self, data: UserResetPasswordSchema):
-        if data.current_pass == data.new_pass or data.new_pass != data.confirm_pass:
-            raise
+        if data.current_pass == data.new_pass:
+            raise HTTPException(422, "Current and New Password must be different")
         user_id = get_current_user_id()
         if user_id is None:
             raise
@@ -74,6 +79,6 @@ class UserService:
         if user is None:
             raise
         if user is None and user.password != data.current_pass:
-            raise
+            raise HTTPException(422, "Wrong Password")
         password = pwd_context.hash(data.new_pass)
         return await self.repository.update(user_id, {"password": password})

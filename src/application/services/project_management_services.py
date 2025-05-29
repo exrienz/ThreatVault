@@ -57,6 +57,9 @@ class ProjectManagementService:
         await self.projectRepository.delete(item_id)
         return await self.projectRepository.get_all()
 
+    async def get_project_by_id(self, project_id: UUID) -> Project | None:
+        return await self.projectRepository.get_by_id(project_id)
+
     # TODO: change the function name
     async def get_product_by_project_id(
         self, project_id: UUID | None = None, environment_id: UUID | None = None

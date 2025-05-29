@@ -1,6 +1,7 @@
 from fastapi import Depends
-from sqlalchemy import func, or_, select
+from sqlalchemy import Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.domain.entity import Role, User
 from src.infrastructure.database import get_session
@@ -43,3 +44,6 @@ class AuthRepository(BaseRepository[User]):
         user = query.scalars().first()
         if user:
             raise
+
+    def _options(self, stmt: Select):
+        return stmt.options(selectinload(User.role))

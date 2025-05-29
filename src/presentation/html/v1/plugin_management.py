@@ -7,7 +7,6 @@ from fastapi.responses import HTMLResponse
 
 from src.application.dependencies.service_dependency import PluginServiceDep
 from src.application.services.fileupload_service import FileUploadService
-from src.config import sidebar_items
 
 from ..utils import templates
 
@@ -15,13 +14,12 @@ router = APIRouter(prefix="/setting/plugin", tags=["plugin-config"])
 
 
 @router.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def index(
+    request: Request,
+):
     return templates.TemplateResponse(
         request,
         "pages/plugin_management/index.html",
-        {
-            "sidebarItems": sidebar_items,
-        },
     )
 
 

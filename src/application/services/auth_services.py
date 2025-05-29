@@ -3,7 +3,11 @@ from datetime import datetime, timedelta
 import jwt
 from fastapi import Depends
 
-from src.application.exception.error import InvalidAuthentication
+from src.application.exception.error import (
+    InactiveUser,
+    InvalidAuthentication,
+    SchemaException,
+)
 from src.config import settings
 from src.domain.entity import User
 from src.persistence import AuthRepository
@@ -19,11 +23,9 @@ class AuthService:
         self.repository = repository
 
     async def register(self, data: UserRegisterSchema) -> User:
-        if data.password != data.password_confirm:
-            raise
         user = await self.repository.get_by_filter({"username": data.username})
         if user:
-            raise
+            raise SchemaException("User already exists")
         data_dict = data.model_dump(exclude={"password_confirm"})
         data_dict["password"] = self.hash_password(data.password)
         return await self.repository.register(data_dict)
@@ -36,7 +38,21 @@ class AuthService:
             data.password, user.password
         ):
             raise InvalidAuthentication
-        return self.create_access_token(TokenDataSchema(userid=str(user.id)))
+        if not user.active:
+            raise InactiveUser
+        high_priviledge = False
+        if user.role.name in ("ITSE"):
+            high_priviledge = True
+        token_data = TokenDataSchema(
+            userid=str(user.id),
+            role=user.role.name,
+            is_admin=user.role.super_admin,
+            high_privilege=high_priviledge,
+            role_id=str(user.role.id),
+            required_project_access=user.role.required_project_access,
+            username=user.username,
+        )
+        return self.create_access_token(token_data)
 
     def verify_password(self, input_password: str, hashed_password: str):
         return pwd_context.verify(input_password, hashed_password)

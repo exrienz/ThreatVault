@@ -1,31 +1,39 @@
 from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 
 from src.application.dependencies.service_dependency import (
     EnvServiceDep,
     LogServiceDep,
+    ProductServiceDep,
     ProjectManagementServiceDep,
 )
-from src.config import sidebar_items
 
 from ..utils import templates
 
-router = APIRouter(tags=["Dashboard"])
+router = APIRouter(
+    tags=["Dashboard"],
+)
 
 
 @router.get("/")
-async def get_dashboard(request: Request, service: ProjectManagementServiceDep):
+async def get_dashboard(
+    request: Request,
+    service: ProjectManagementServiceDep,
+):
     projects = await service.get_all_with_logs()
     return templates.TemplateResponse(
         request,
         "pages/dashboard/index.html",
-        {"projects": projects, "sidebarItems": sidebar_items},
+        {
+            "projects": projects,
+        },
     )
 
 
+# TODO: Do some clean up
 @router.get("/project/{project_id}", response_class=HTMLResponse)
 async def get_project_dashboard(
     request: Request,
@@ -33,11 +41,18 @@ async def get_project_dashboard(
     logService: LogServiceDep,
     project_id: UUID,
 ):
-    project = await service.get_project_extended(project_id)
+    project = await service.get_project_by_id(project_id)
     chart = {}
     prod_env = None
     nonprod_env = None
-    for env in project[0].environment:
+
+    if project is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID({project_id}) cannot be found!",
+        )
+
+    for env in project.environment:
         if env.name == "production":
             prod_env = env
             chart["prod"], *_ = await logService.get_statistic_by_env(env.id)
@@ -49,8 +64,7 @@ async def get_project_dashboard(
         request,
         "pages/dashboard/project.html",
         {
-            "project": project[0],
-            "sidebarItems": sidebar_items,
+            "project": project,
             "chart": chart,
             "prod_env": prod_env,
             "nonprod_env": nonprod_env,
@@ -59,12 +73,13 @@ async def get_project_dashboard(
     )
 
 
-# TODO: Chart in one route
-@router.get("/chart/env/{env_id}")
+# TODO: Clean up
+@router.get("/project/chart/env/{env_id}")
 async def get_aging_chart_env(
     request: Request,
     service: LogServiceDep,
     envService: EnvServiceDep,
+    productService: ProductServiceDep,
     env_id: UUID,
     date_str: datetime | None = None,
     year: int | None = None,
@@ -83,6 +98,8 @@ async def get_aging_chart_env(
         total[2] += d.tMedium
         total[3] += d.tLow
 
+    products = await productService.get_by_env_id(env_id)
+
     return templates.TemplateResponse(
         request,
         "pages/dashboard/component/compareCard.html",
@@ -90,6 +107,7 @@ async def get_aging_chart_env(
             "data": data_dct,
             "total": total,
             "env": env,
+            "products": products,
             "year": year,
             "month": month,
             "date_options": date_options,

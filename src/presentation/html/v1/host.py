@@ -1,13 +1,13 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from pydantic import PositiveInt
 
 from src.application.dependencies import (
     FindingServiceDep,
 )
-from src.config import sidebar_items
+from src.presentation.html.dependencies import PermissionChecker
 
 from ..utils import templates
 
@@ -31,7 +31,6 @@ async def get_host_finding_by_product_id(
         request,
         "pages/host/index.html",
         {
-            "sidebarItems": sidebar_items,
             "host": host,
             "logs": risk_data,
             "totalSeverity": total_severity,
@@ -58,8 +57,13 @@ async def get_findings(
     )
 
 
-@router.delete("/{product_id}/{host}")
+@router.delete(
+    "/{product_id}/{host}", dependencies=[Depends(PermissionChecker(["host:delete"]))]
+)
 async def delete_host(
-    request: Request, service: FindingServiceDep, product_id: UUID, host: str
+    request: Request,
+    service: FindingServiceDep,
+    product_id: UUID,
+    host: str,
 ):
     await service.delete_by_filter(product_id, {"host": (host,)})

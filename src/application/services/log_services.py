@@ -4,14 +4,19 @@ from uuid import UUID
 from fastapi import Depends
 
 from src.domain.entity import Log
-from src.persistence import LogRepository
+from src.persistence import LogRepository, ProjectRepository
 
 from ..middlewares.user_context import get_current_user_id
 
 
 class LogService:
-    def __init__(self, repository: LogRepository = Depends()):
+    def __init__(
+        self,
+        repository: LogRepository = Depends(),
+        projectRepository: ProjectRepository = Depends(),
+    ):
         self.repository = repository
+        self.projectRepository = projectRepository
         self.user_id = get_current_user_id()
 
     async def get_by_product_id(self, product_id: UUID) -> Log | None:

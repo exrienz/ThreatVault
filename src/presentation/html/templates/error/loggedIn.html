@@ -1,0 +1,18 @@
+{% set userInfo = get_user_info() %}
+{% extends 'layouts/error.html' %}
+{%block content %}
+<div class="error-container">
+  <div class="lottie-animation"></div>
+  <div class="error-content">
+    <h1>Hello, {{userInfo.username | title }}! </h1>
+    <p>Oops! You're already logged in</p>
+    <div>
+      <a href="/" class="btn btn-success">Dashboard</a>
+      <a hx-post="/auth/logout" class="btn btn-danger" hx-confirm="You are about to log out.">
+        <i class="bi bi-power"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
+</div>
+{%endblock%}

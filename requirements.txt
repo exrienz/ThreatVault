@@ -13,3 +13,4 @@ pyarrow==19.*
 pyjwt==2.10.*
 passlib[bcrypt]==1.7.*
 itsdangerous==2.2.0
+feedparser==6.0.11

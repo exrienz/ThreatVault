@@ -1,3 +1,4 @@
+{% set is_admin = is_admin() %}
 {% for user in users.data %}
     <tr>
         <td>{{ loop.index + (users.page - 1) * users.size }}</td>
@@ -5,9 +6,12 @@
         <td>{{ user.email }}</td>
         <td>{{ 'Active' if user.active else 'Inactive'}}</td>
         <td>{{ user.role.name }}</td>
+
+        {%if is_admin %}
         <td>
             <a href="user/{{ user.id }}"><i class="fas fa-solid fa-user-pen"></i></a>
         </td>
+        {% endif %}
     </tr>
 {% endfor %}
 {% if users.page + 1 <= users.total_page %}

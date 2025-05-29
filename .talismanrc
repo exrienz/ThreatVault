@@ -5,8 +5,6 @@ fileignoreconfig:
   checksum: d2840536fffc3a798d3392818594f74d5dc24892e4f27ccfff36be2e0699e835
 - filename: src/application/services/env_service.py
   checksum: 67355fe340bf683f3981ee63659453a1c5e0c62ac29f001cf6b8c48038f33dd0
-- filename: src/persistence/environment.py
-  checksum: 530ff452df5bf64ef2ea46e326173ef39f798db95478527deb7b2dc879755928
 - filename: src/presentation/html/templates/pages/manage_owner/component/envSelect.html
   checksum: b5aedd3922f36dd42065f78fa0b5a37dd7089ae5963a5ce87cc32f9ca046b51e
 - filename: src/presentation/html/templates/error/401.html
@@ -41,8 +39,6 @@ fileignoreconfig:
   checksum: 0739e61ccdc86a1991bb7f21c0ff120d218dc3a7f03f72e0c57d2866d3166301
 - filename: src/presentation/html/templates/error/500.html
   checksum: ed4d8d0a1015dd54d1eab7cf059920e6102bc402c77fa638323f9259fdb805cb
-- filename: src/application/services/user_services.py
-  checksum: c0bb17ab19452421d3e2d83c5dc16696af03e3a84bafe38427ad7ce2c39538af
 - filename: src/presentation/html/templates/pages/user_setting/response/resetPassword.html
   checksum: 94fb157ac5649e77e3c01c0d19aa4f7a1bb3808d4e0fe4eaaba636b4328da6cd
 - filename: src/presentation/html/v1/self_service.py
@@ -53,4 +49,22 @@ fileignoreconfig:
   checksum: a9b3f5a351787425f25e4cd36e1c5edc38cc7e06a924ab923ebc26a84a920ffd
 - filename: src/presentation/html/templates/pages/user_setting/index.html
   checksum: 9800a96aabfee955b183a43494cbf702f7829e70b73073f687a1858ef6f58862
+- filename: src/persistence/environment.py
+  checksum: abe134b73d1b7af0c1066ebbb5221a4e1c72564e9284c53f3b28aa42149ccfc1
+- filename: src/presentation/html/templates/error/403.html
+  checksum: 8e278efaf2e9b34a49475f538c3eeef80bf3b7f7f77a91e91dd204a235acced5
+- filename: src/application/services/comment_services.py
+  checksum: 637f22c915d78f1701f8a6b51991b68b6935489a9700d67ecdc5d11edca0a0ed
+- filename: src/application/schemas/auth.py
+  checksum: b005342bf5d461e5ac886c21dc758c63639f2752dbe33ef85fca5d7fa956a476
+- filename: src/default/default.yaml
+  checksum: 3f0ec66b2446ecbe5c797d898687f703e74138f539b542046c70a1f48c878169
+- filename: src/persistence/finding.py
+  checksum: 47f7dd7c0c075e4c05484767d7d5c29480fd4c906abd1b6281f76ffd2231bd25
+- filename: src/application/services/user_services.py
+  checksum: eb94da0ffd900d6dd04462de0fa1e7c48e6328ac92598e2b63e56b3428870fc4
+- filename: src/presentation/html/templates/pages/thread_intelligence/index.html
+  checksum: be50568dd8c27968976003247c41c3c13c6e08f4c4309c0b98c48fa7e0c99d87
+- filename: src/presentation/html/templates/layouts/error.html
+  checksum: 00d0eda76495e45eccfb981588b6973d43c267db8f3a619f39e909c3be25a4ad
 version: ""

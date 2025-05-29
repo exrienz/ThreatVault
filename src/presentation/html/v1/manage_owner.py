@@ -9,7 +9,6 @@ from src.application.dependencies import (
     ProjectManagementServiceDep,
     UserServiceDep,
 )
-from src.config import sidebar_items
 
 from ..utils import templates
 
@@ -33,7 +32,6 @@ async def get_index_page(
         request,
         "pages/manage_owner/index.html",
         {
-            "sidebarItems": sidebar_items,
             "projects": projects,
             "users": users,
             "owners": products_by_id,

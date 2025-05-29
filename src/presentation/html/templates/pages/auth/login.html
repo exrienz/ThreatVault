@@ -12,7 +12,7 @@
       <h1 class="auth-title">Log in.</h1>
       <p class="auth-subtitle mb-5">Log in with your data that you entered during registration.</p>
       <div id="error-alert-id"></div>
-      <form hx-post>
+      <form hx-post hx-disabled-elt="find button">
         <div class="form-group position-relative has-icon-left mb-4">
           <input type="text" name="username" class="form-control form-control-xl" placeholder="Username" required>
           <div class="form-control-icon">

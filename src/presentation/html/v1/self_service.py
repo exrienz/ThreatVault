@@ -5,9 +5,7 @@ from fastapi import APIRouter, Form, Request
 from src.application.dependencies.service_dependency import (
     UserServiceDep,
 )
-from src.application.middlewares.user_context import get_current_user_id
-from src.application.schemas.settings import UserResetPasswordSchema
-from src.config import sidebar_items
+from src.application.schemas.auth import UserResetPasswordSchema
 
 from ..utils import templates
 
@@ -15,24 +13,23 @@ router = APIRouter(prefix="/self-service", tags=["Self-Service"])
 
 
 @router.get("")
-async def get_index_page(request: Request, service: UserServiceDep):
-    user_id = get_current_user_id()
-    if user_id is None:
-        raise
-    user = await service.get_by_id(user_id)
+async def get_index_page(
+    request: Request,
+    service: UserServiceDep,
+):
+    user = await service.get_me()
     return templates.TemplateResponse(
         request,
         "pages/user_setting/index.html",
-        {"sidebarItems": sidebar_items, "user": user},
+        {
+            "user": user,
+        },
     )
 
 
 @router.delete("/user")
 async def delete_current_user(request: Request, service: UserServiceDep):
-    user_id = get_current_user_id()
-    if user_id is None:
-        raise
-    await service.delete(user_id)
+    await service.delete_me()
 
 
 @router.post("/reset-password")
@@ -41,11 +38,7 @@ async def reset_password(
     service: UserServiceDep,
     data: Annotated[UserResetPasswordSchema, Form()],
 ):
-    res = {"error": False}
-    try:
-        await service.reset_password(data)
-    except Exception:
-        res["error"] = True
+    await service.reset_password(data)
     return templates.TemplateResponse(
-        request, "pages/user_setting/response/resetPassword.html", res
+        request, "pages/user_setting/response/resetPassword.html"
     )

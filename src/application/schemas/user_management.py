@@ -4,7 +4,9 @@ from pydantic import BaseModel
 
 
 class UserSearchSchema(BaseModel):
-    pass
+    email: str | None = None
+    role: str | None = None
+    active: bool | None = None
 
 
 class UserUpdateSchema(BaseModel):

@@ -13,6 +13,9 @@ from sqlalchemy import (
     update,
 )
 from sqlalchemy import (
+    UUID as SQL_UUID,
+)
+from sqlalchemy import (
     delete as sql_delete,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -78,8 +81,11 @@ class FindingRepository(BaseRepository):
                     FindingName.name,
                     Finding.severity,
                     Finding.status,
-                    func.max(Finding.remark),
+                    func.max(Finding.remark).label("remark"),
                     func.max(Finding.finding_date),
+                    func.array_agg(
+                        func.distinct(Finding.plugin_id), type_=ARRAY(SQL_UUID)
+                    ).label("plugin_ids"),
                     func.array_agg(
                         func.distinct(Finding.host), type_=ARRAY(String)
                     ).label("hosts"),
@@ -197,6 +203,24 @@ class FindingRepository(BaseRepository):
             )
             .values(data)
         )
+        await self.session.execute(stmt)
+        await self.session.commit()
+
+    async def bulk_update(self, filters: dict, data: dict):
+        stmt = (
+            update(Finding)
+            .where(
+                Finding.status != FnStatusEnum.CLOSED,
+            )
+            .values(data)
+        )
+
+        for k, v in filters.items():
+            key = getattr(Finding, k)
+            if isinstance(v, list):
+                stmt = stmt.where(key.in_(v))
+            else:
+                stmt = stmt.where(key == v)
         await self.session.execute(stmt)
         await self.session.commit()
 

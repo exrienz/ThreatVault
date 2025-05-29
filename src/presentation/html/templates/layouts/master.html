@@ -1,9 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+{% set permissions = get_user_permissions() %}
+{% set user_info = get_user_info() %}
+{% set is_admin = is_admin() %}
 
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="htmx-config"
+    content='{
+          "responseHandling":[
+              {"code":"204", "swap": false},
+              {"code":"[23]..", "swap": true},
+              {"code":"[45]..", "swap": false, "error":true},
+              {"code":"...", "swap": true}
+          ]
+      }'
+  />
   <title>Sentinel - {{ title }}</title>
   <style>
     .htmx-indicator {
@@ -25,7 +39,6 @@
   <link rel="shortcut icon" href="/assets/static/images/logo/favicon.png" type="image/png">
 
   <link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
-  {# TODO: Install the script, dont use cdn #}
   <script src="https://unpkg.com/htmx.org@2.0.4"
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
@@ -43,7 +56,7 @@
         </a>
       </header>
       {% block content %}{% endblock %}
-      {% include 'partials/footer.html' %}
+      {% include 'layouts/footer.html' %}
     </div>
   </div>
   <script src="/assets/static/js/components/dark.js"></script>
@@ -65,9 +78,22 @@
         }
       })
     })
+
+    document.addEventListener("htmx:responseError", function (e) {
+      const xhr = e.detail.xhr
+
+      Swal.fire({
+        icon: "error",
+        title: xhr.status,
+        text: JSON.parse(xhr.responseText),
+        timer: 3500,
+      });
+    })
   </script>
   <script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
   <script src="/assets/static/js/pages/sweetalert2.js"></script>
+  <script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
+  <script src="/assets/static/js/pages/ui-apexchart.js"></script>
   <script id="toast-global-id"></script>
   {% block js %}{% endblock %}
 </body>
