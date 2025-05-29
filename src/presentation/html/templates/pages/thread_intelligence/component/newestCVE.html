@@ -1,0 +1,9 @@
+{% for entry in entries %}
+<tr>
+  <td>{{entry.published}}</td>
+  <td><a href={{entry.link}} target="_blank">{{entry.title}}</a></td>
+  <td style="width: 6rem;">
+    {{entry.summary.replace("<h3>Description</h3>", "", 1) | safe}}
+  </td>
+</tr>
+{%endfor%}

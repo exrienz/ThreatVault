@@ -1,10 +1,11 @@
 from datetime import datetime
+from typing import Annotated
 from uuid import UUID
 
 import polars as pl
 import pytz
 from fastapi import Depends
-from sqlalchemy import Float, Integer, func, select
+from sqlalchemy import Float, Integer, Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -12,11 +13,20 @@ from src.domain.entity import Environment, Finding, FindingName, Log, Product, P
 from src.infrastructure.database import sync_engine
 from src.infrastructure.database.session import get_session
 from src.persistence.base import BaseRepository
+from src.presentation.html.dependencies import (
+    get_allowed_product_ids,
+    get_allowed_project_ids,
+)
 
 
 class LogRepository(BaseRepository[Log]):
-    def __init__(self, session: AsyncSession = Depends(get_session)):
-        super().__init__(Log, session)
+    def __init__(
+        self,
+        session: Annotated[AsyncSession, Depends(get_session)],
+        project_ids: Annotated[list[UUID], Depends(get_allowed_project_ids)],
+        product_ids: Annotated[list[UUID], Depends(get_allowed_product_ids)],
+    ):
+        super().__init__(Log, session, project_ids, product_ids)
 
     async def calculate(
         self,
@@ -31,10 +41,7 @@ class LogRepository(BaseRepository[Log]):
             )
             .join(FindingName)
             .group_by(Finding.status)
-            .where(
-                FindingName.product_id == product_id,
-                Finding.last_update == scan_date,
-            )
+            .where(FindingName.product_id == product_id)
         )
         status_calc = pl.read_database(status_stmt, connection=sync_engine).lazy()
 
@@ -47,7 +54,7 @@ class LogRepository(BaseRepository[Log]):
             .group_by(Finding.severity)
             .where(
                 FindingName.product_id == product_id,
-                Finding.last_update == scan_date,
+                # Finding.last_update == scan_date,
             )
         )
 
@@ -140,6 +147,7 @@ class LogRepository(BaseRepository[Log]):
                 sub.c.month == month,
             )
         )
+        stmt = self._product_allowed_ids(stmt)
         query = await self.session.execute(stmt)
         return query.all()
 
@@ -186,6 +194,7 @@ class LogRepository(BaseRepository[Log]):
             )
             .group_by(Project.id, Project.name)
         )
+        stmt = self._product_allowed_ids(stmt)
         query = await self.session.execute(stmt)
         return query.all()
 
@@ -244,7 +253,9 @@ class LogRepository(BaseRepository[Log]):
                 sub.c.environment_id == env_id,
             )
             .group_by(sub.c.environment_id, sub.c.month, sub.c.rank)
-        )
+        ).join(Product, sub.c.product_id == Product.id)
+
+        stmt = self._product_allowed_ids(stmt)
 
         if month:
             stmt = stmt.where(sub.c.month == month)
@@ -267,3 +278,13 @@ class LogRepository(BaseRepository[Log]):
         )
         query = await self.session.execute(stmt)
         return query.all()
+
+    def _project_allowed_ids(self, stmt: Select) -> Select:
+        if self.allowed_project_ids is None:
+            return stmt
+        return stmt.where(Project.id.in_(self.allowed_project_ids))
+
+    def _product_allowed_ids(self, stmt: Select) -> Select:
+        if self.allowed_product_ids is None:
+            return stmt
+        return stmt.where(Product.id.in_(self.allowed_product_ids))

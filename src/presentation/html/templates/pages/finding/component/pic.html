@@ -1,0 +1,15 @@
+<select id="picSelect"
+        class="choices form-select multiple-remove"
+        name="pic_list"
+        multiple="multiple">
+    <optgroup label="Owner List">
+        {% for user in data %}
+            <option value={{ user.id }}>{{ user.username }}
+            </option>
+        {% endfor %}
+    </optgroup>
+</select>
+<script>
+  var elEsc = document.querySelector("#picSelect");
+  var escChoices = new Choices(elEsc, {removeItems: true, removeItemButton: true, searchFields: ['label',]});
+</script>

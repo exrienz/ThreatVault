@@ -288,6 +288,7 @@ class FileUploadService:
             .where(
                 Finding.last_update < self.scan_date,
                 Finding.status != FnStatusEnum.CLOSED,
+                Finding.plugin_id == self.plugin_id,
             )
             .values(status=FnStatusEnum.CLOSED, last_update=self.scan_date)
         )
@@ -316,6 +317,7 @@ class FileUploadService:
                 Finding.host == subquery_max.c.host,
                 Finding.port == subquery_max.c.port,
                 Finding.finding_date == subquery_max.c.latest_date,
+                Finding.plugin_id == self.plugin_id,
             )
             .values(
                 internal_remark=(
@@ -337,6 +339,7 @@ class FileUploadService:
                 Finding.port == subquery_max.c.port,
                 Finding.finding_date == subquery_max.c.first_discovered_date,
                 Finding.status == FnStatusEnum.CLOSED,
+                Finding.plugin_id == self.plugin_id,
             )
             .values(reopen=True)
         )

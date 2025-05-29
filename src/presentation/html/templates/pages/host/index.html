@@ -38,7 +38,7 @@
         </div>
         <div class="card-body">
           <div id="aging"></div>
-          <div display:None ></div>
+          <div display:None></div>
         </div>
       </div>
     </div>
@@ -79,9 +79,8 @@
                   <th>Remark</th>
                 </tr>
               </thead>
-              <tbody id="findings_table"
-                     hx-get="/host/findings?host={{host}}"
-                     hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
+              <tbody id="findings_table" hx-get="/host/findings?host={{host}}"
+                hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
 
                 <tr>
                   <td colspan="6">
@@ -151,4 +150,4 @@
     value.removeActiveItems();
   }
 
-{% endblock %}
+  {% endblock %}

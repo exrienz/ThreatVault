@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -21,3 +22,11 @@ class FindingFiltersSchema(BaseModel):
     severity: list[str] | None = None
     plugin_id: list[str] | None = None
     host: list[str] | None = None
+
+
+class ITSRemark(BaseModel):
+    pic_list: list[UUID] | None = None
+    target_date: datetime
+    reason: str
+    remark: str
+    product_id: UUID

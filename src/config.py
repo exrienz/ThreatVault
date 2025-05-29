@@ -19,14 +19,23 @@ class Settings(BaseSettings):
     JWT_EXPIRED_DELTA: timedelta = timedelta(minutes=JWT_EXPIRED_MINUTES)
 
     SESSION_SECRET_KEY: str = "SESSION_SECRET_KEY"
+    NEWEST_CVE_URL: str = "https://www.tenable.com/cve/feeds?sort=newest"
 
 
 settings = Settings()
 
 default_roles = []
-with open("src/default_roles.json") as file:
+with open("src/default/roles.json") as file:
     default_roles = json.load(file)
 
 sidebar_items = []
-with open("src/sidebars.json") as file:
+with open("src/default/sidebars.json") as file:
     sidebar_items = json.load(file)
+
+default_permissions = []
+with open("src/default/permissions.json") as file:
+    default_permissions = json.load(file)
+
+default_role_permission = []
+with open("src/default/role_permission.json") as file:
+    default_role_permission = json.load(file)

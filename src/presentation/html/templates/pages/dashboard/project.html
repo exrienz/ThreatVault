@@ -66,21 +66,24 @@
   <section class="row">
     <div class="col-6">
       <div id="prod_prev" hx-target="#prod_prev">
-        <div display:None hx-get="/chart/env/{{prod_env.id}}?year={{curr_date.year}}&month={{curr_date.month - 1}}"
+        <div display:None
+          hx-get="/project/chart/env/{{prod_env.id}}?year={{curr_date.year}}&month={{curr_date.month - 1}}"
           hx-trigger="load"></div>
       </div>
       <div id="nonprod_prev" hx-target="#nonprod_prev">
-        <div display:None hx-get="/chart/env/{{nonprod_env.id}}?year={{curr_date.year}}&month={{curr_date.month - 1}}"
+        <div display:None
+          hx-get="/project/chart/env/{{nonprod_env.id}}?year={{curr_date.year}}&month={{curr_date.month - 1}}"
           hx-trigger="load"></div>
       </div>
     </div>
     <div class="col-6">
       <div id="prod_curr" hx-target="#prod_curr">
-        <div display:None hx-get="/chart/env/{{prod_env.id}}?year={{curr_date.year}}&month={{curr_date.month}}"
+        <div display:None hx-get="/project/chart/env/{{prod_env.id}}?year={{curr_date.year}}&month={{curr_date.month}}"
           hx-trigger="load"></div>
       </div>
       <div id="nonprod_curr" hx-target="#nonprod_curr">
-        <div display:None hx-get="/chart/env/{{nonprod_env.id}}?year={{curr_date.year}}&month={{curr_date.month}}"
+        <div display:None
+          hx-get="/project/chart/env/{{nonprod_env.id}}?year={{curr_date.year}}&month={{curr_date.month}}"
           hx-trigger="load"></div>
       </div>
     </div>

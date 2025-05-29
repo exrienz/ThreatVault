@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import Depends
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,10 +11,13 @@ from src.persistence.base import BaseRepository
 
 
 class EnvRepository(BaseRepository[Environment]):
-    def __init__(self, session: AsyncSession = Depends(get_session)):
+    def __init__(
+        self,
+        session: Annotated[AsyncSession, Depends(get_session)],
+    ):
         super().__init__(Environment, session)
 
-    def _options(self, stmt: Select):
+    def _options(self, stmt: Select) -> Select:
         return stmt.options(joinedload(Environment.project)).options(
             joinedload(Environment.products)
         )

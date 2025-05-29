@@ -4,7 +4,6 @@ from uuid import UUID
 from fastapi import APIRouter, Form, Request
 
 from src.application.dependencies import TokenServiceDep
-from src.config import sidebar_items
 
 from ..utils import templates
 
@@ -12,12 +11,15 @@ router = APIRouter(prefix="/manage-api", tags=["manage-api"])
 
 
 @router.get("")
-async def get_index_page(request: Request, service: TokenServiceDep):
+async def get_index_page(
+    request: Request,
+    service: TokenServiceDep,
+):
     data = await service.get_all()
     return templates.TemplateResponse(
         request,
         "pages/manage_api/index.html",
-        {"sidebarItems": sidebar_items, "data": data},
+        {"data": data},
     )
 
 

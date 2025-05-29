@@ -34,9 +34,14 @@ class FindingNameRepository(BaseRepository[FindingName]):
             )
         )
 
+        # TODO: generalize/simplify
         if finding_name_id := filters.get("finding_name_id"):
             stmt = stmt.where(FindingName.id == finding_name_id)
         if severity := filters.get("severity"):
             stmt = stmt.where(Finding.severity == severity)
+        if finding_name := filters.get("name"):
+            stmt = stmt.where(FindingName.name.ilike(finding_name))
+        if product_id := filters.get("product_id"):
+            stmt = stmt.where(FindingName.product_id == product_id)
         query = await self.session.execute(stmt)
         return query.scalars().first()

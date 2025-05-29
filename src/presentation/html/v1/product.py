@@ -15,14 +15,15 @@ from src.application.dependencies import (
     ProductServiceDep,
     UserServiceDep,
 )
+from src.application.middlewares.user_context import get_current_user
 from src.application.schemas.finding import (
     FindingFiltersSchema,
     ManualFindingUploadSchema,
 )
 from src.application.services import FileUploadService
-from src.config import sidebar_items
 from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.infrastructure.database.session import get_session
+from src.presentation.html.dependencies import PermissionChecker
 
 from ..utils import templates
 
@@ -48,7 +49,6 @@ async def get_product(
         request,
         "pages/product/index.html",
         {
-            "sidebarItems": sidebar_items,
             "product": product,
             "logs": logs,
             "totalSeverity": tSeverity,
@@ -100,7 +100,9 @@ async def get_findings(
     )
 
 
-@router.post("/finding/action")
+@router.post(
+    "/finding/action", dependencies=[Depends(PermissionChecker(["finding:action"]))]
+)
 async def finding_action(
     request: Request,
     finding_name_id: Annotated[UUID, Form()],
@@ -129,7 +131,11 @@ async def finding_action(
     )
 
 
-@router.post("/{product_id}/upload", response_class=HTMLResponse)
+@router.post(
+    "/{product_id}/upload",
+    response_class=HTMLResponse,
+    dependencies=[Depends(PermissionChecker(["finding:create"]))],
+)
 async def upload_file(
     request: Request,
     session: Annotated[AsyncSession, Depends(get_session)],
@@ -171,16 +177,32 @@ async def upload_file(
     )
 
 
-@router.post("/{product_id}/upload/manual")
+@router.post(
+    "/{product_id}/upload/manual",
+    dependencies=[Depends(PermissionChecker(["finding:create"]))],
+)
 async def manual_upload(
     request: Request,
     service: FindingServiceDep,
+    log_service: LogServiceDep,
     product_id: UUID,
     data: Annotated[ManualFindingUploadSchema, Form()],
 ):
     await service.manual_upload(
         {"name": data.finding_name, "product_id": product_id},
         data.model_dump(exclude={"finding_name"}),
+    )
+    tSeverity = 1
+    logs = await log_service.calculate(
+        product_id, data.finding_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    )
+    if logs:
+        tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
+    return templates.TemplateResponse(
+        request,
+        "pages/product/response/fileupload.html",
+        headers={"HX-Trigger": "reload-findings"},
+        context={"logs": logs, "totalSeverity": tSeverity, "user": get_current_user()},
     )
 
 
@@ -211,7 +233,10 @@ async def aging_finding_chart(
     )
 
 
-@router.get("/{product_id}/user-permissions")
+@router.get(
+    "/{product_id}/user-permissions",
+    dependencies=[Depends(PermissionChecker(["finding:action"]))],
+)
 async def get_permission(request: Request, product_id: UUID):
     return templates.TemplateResponse(
         request,
@@ -237,7 +262,10 @@ async def get_with_permission_list(
     )
 
 
-@router.post("/{product_id}/user-permission")
+@router.post(
+    "/{product_id}/user-permission",
+    dependencies=[Depends(PermissionChecker(["finding:action"]))],
+)
 async def toggle_user_permission(
     request: Request,
     service: ProductServiceDep,
@@ -248,7 +276,10 @@ async def toggle_user_permission(
     await service.manage_product_access(product_id, user_id, granted)
 
 
-@router.post("/{product_id}/generate-api-key")
+@router.post(
+    "/{product_id}/generate-api-key",
+    dependencies=[Depends(PermissionChecker(["finding:action"]))],
+)
 async def generate_api_key(
     request: Request, service: ProductServiceDep, product_id: UUID
 ):
@@ -266,7 +297,10 @@ async def get_escalation_list(request: Request, service: UserServiceDep):
     )
 
 
-@router.post("/{product_id}/escalation")
+@router.post(
+    "/{product_id}/escalation",
+    dependencies=[Depends(PermissionChecker(["finding:action"]))],
+)
 async def escalation_list(
     request: Request,
     service: UserServiceDep,
@@ -280,7 +314,10 @@ async def escalation_list(
     )
 
 
-@router.get("/{product_id}/revert")
+@router.get(
+    "/{product_id}/revert",
+    dependencies=[Depends(PermissionChecker(["finding:revert"]))],
+)
 async def revert_modal(
     request: Request,
     service: LogServiceDep,
@@ -304,7 +341,10 @@ async def revert_modal(
     )
 
 
-@router.post("/{product_id}/revert")
+@router.post(
+    "/{product_id}/revert",
+    dependencies=[Depends(PermissionChecker(["finding:action"]))],
+)
 async def revert(
     request: Request,
     service: FindingServiceDep,

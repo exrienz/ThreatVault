@@ -5,6 +5,7 @@ from uuid import UUID
 from fastapi import Depends
 
 from src.domain.entity import Product, ProductUserAccess
+from src.domain.entity.user_access import User
 from src.persistence import (
     EnvRepository,
     ProductRepository,
@@ -31,6 +32,11 @@ class ProductService:
 
     async def get_by_id(self, product_id: UUID) -> Product | None:
         return await self.productRepository.get_by_id(product_id)
+
+    async def get_by_env_id(self, env_id: UUID) -> Sequence[Product]:
+        return await self.productRepository.get_all_by_filter(
+            {"environment_id": env_id}
+        )
 
     async def manage_product_access(
         self, product_id: UUID, user_id: UUID, granted: bool = True
@@ -65,3 +71,6 @@ class ProductService:
 
     async def get_hosts(self, product_id: UUID) -> Sequence[str]:
         return await self.productRepository.get_hosts(product_id)
+
+    async def get_owners_by_product_id(self, product_id) -> Sequence[User]:
+        return await self.productRepository.get_owners_by_product_id(product_id)

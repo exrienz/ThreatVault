@@ -44,3 +44,6 @@ class ProjectRepository(BaseRepository[Project]):
         await self.session.commit()
         await self.session.refresh(db_data)
         return db_data
+
+    def _product_allowed_ids(self, stmt: Select) -> Select:
+        return super()._product_allowed_ids(stmt)

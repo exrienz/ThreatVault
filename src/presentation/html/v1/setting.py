@@ -6,7 +6,6 @@ from src.application.dependencies.service_dependency import (
     GlobalServiceDep,
 )
 from src.application.schemas.settings import GlobalConfigSchema
-from src.config import sidebar_items
 
 from ..utils import templates
 
@@ -19,7 +18,7 @@ async def get_index_page(request: Request, service: GlobalServiceDep):
     return templates.TemplateResponse(
         request,
         "pages/setting/index.html",
-        {"sidebarItems": sidebar_items, "data": data},
+        {"data": data},
     )
 
 

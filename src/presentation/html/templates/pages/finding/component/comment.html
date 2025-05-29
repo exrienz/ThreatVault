@@ -1,19 +1,27 @@
+{% set user_info = get_user_info() %}
+{% set permissions = get_user_permissions() %}
 <tr>
   <td class="col-auto">
-    <div>
+    <div class="comment">
       <div class="d-flex justify-content-between">
         <small style="color: blue;">
           {{ comment.commentor.username | title }}@{{ comment.created_at | datetime_format("%d/%m/%Y") }}
         </small>
+        {% if "all" in permissions or "comment:delete-admin" in permissions %}
         <div>
-          <a class="btn btn-sm btn-danger"
-             hx-delete="/finding/comment/{{comment.id}}"
-             hx-swap="delete"
-             hx-confirm="Delete this comment: {{comment.comment}}"
-             hx-target="closest tr">
+          <a class="btn btn-sm btn-danger" hx-delete="/finding/comment/{{comment.id}}/admin" hx-swap="delete"
+            hx-confirm="Delete this comment: {{comment.comment}}" hx-target="closest tr">
             <i class="fas fa-solid fa-trash-alt"></i>
           </a>
         </div>
+        {% elif comment.commentor.id | string == user_info.userid %}
+        <div>
+          <a class="btn btn-sm btn-danger" hx-delete="/finding/comment/{{comment.id}}" hx-swap="delete"
+            hx-confirm="Delete this comment: {{comment.comment}}" hx-target="closest tr">
+            <i class="fas fa-solid fa-trash-alt"></i>
+          </a>
+        </div>
+        {% endif %}
       </div>
       {{ comment.comment }}
     </div>

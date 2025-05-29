@@ -11,6 +11,7 @@ from src.persistence import (
     FindingRepository,
     FindingRevertRepository,
     GlobalRepository,
+    PluginRepository,
 )
 from src.persistence.base import Pagination
 
@@ -22,11 +23,13 @@ class FindingService:
         findingname_repository: FindingNameRepository = Depends(),
         revert_repository: FindingRevertRepository = Depends(),
         global_repository: GlobalRepository = Depends(),
+        plugin_repository: PluginRepository = Depends(),
     ):
         self.repository = repository
         self.findingname_repository = findingname_repository
         self.revert_repository = revert_repository
         self.global_repository = global_repository
+        self.plugin_repository = plugin_repository
 
     async def get_by_product_id(self, product_id: UUID):
         return await self.repository.get_by_product_id_extended(product_id)
@@ -43,7 +46,9 @@ class FindingService:
         res = await self.repository.get_group_by_severity_status(
             product_id, filters, page
         )
-        data = {"findings": res, "sla": None}
+        sources = await self.plugin_repository.get_all()
+        source_dict = {str(s.id): s.name.title() for s in sources}
+        data = {"findings": res, "sla": None, "source": source_dict}
 
         if include_sla:
             data["sla"] = await self._include_sla(res)
@@ -86,8 +91,12 @@ class FindingService:
             ).days
         return sla_mapping
 
+    # TODO: Fix this, rearrange
     async def update(self, item_id: UUID, host_list: list, data: dict):
         await self.repository.update(item_id, data, host_list)
+
+    async def bulk_update(self, filters: dict, data: dict):
+        await self.repository.bulk_update(filters, data)
 
     async def get_by_id_extended(self, item_id: UUID) -> FindingName:
         finding_name = await self.findingname_repository.get_by_filter(
@@ -99,12 +108,14 @@ class FindingService:
 
     async def manual_upload(self, fn_data: dict, data: dict) -> Finding:
         finding_name = await self.findingname_repository.get_by_filter(fn_data)
-
         if finding_name is None:
             finding_name = await self.findingname_repository.create(fn_data)
         data["finding_name_id"] = finding_name.id
         data["status"] = FnStatusEnum.NEW
         data["last_update"] = data.get("finding_date", datetime.now())
+
+        plugin = await self.plugin_repository.get_by_filter({"name": "manual"})
+        data["plugin_id"] = plugin.id if plugin else None
 
         return await self.repository.create(data)
 

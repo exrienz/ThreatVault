@@ -1,0 +1,14 @@
+[
+  {
+    "role": "Management",
+    "scopes": ["dashboard:view"]
+  },
+  {
+    "role": "Audit",
+    "scopes": ["dashboard:view"]
+  },
+  {
+    "role": "Owner",
+    "scopes": ["dashboard:view"]
+  }
+]

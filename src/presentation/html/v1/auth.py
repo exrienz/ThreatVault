@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.application.dependencies import AuthServiceDep, GlobalServiceDep
+from src.application.middlewares.user_context import get_current_user_id
 from src.application.schemas.auth import UserLoginSchema, UserRegisterSchema
 
 from ..utils import templates
@@ -15,7 +16,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register_page(request: Request, globalsetting: GlobalServiceDep):
     db_setting = await globalsetting.get()
     if db_setting is None or not db_setting.login_via_email:
-        raise
+        raise HTTPException(404)
     return templates.TemplateResponse(request, "pages/auth/register.html")
 
 
@@ -37,7 +38,15 @@ async def register(
 async def login_page(request: Request, globalsetting: GlobalServiceDep):
     db_setting = await globalsetting.get()
     if db_setting is None or not db_setting.login_via_email:
-        raise
+        raise HTTPException(404)
+
+    user = get_current_user_id()
+    if user:
+        return templates.TemplateResponse(
+            request,
+            "error/loggedIn.html",
+        )
+
     return templates.TemplateResponse(request, "pages/auth/login.html")
 
 

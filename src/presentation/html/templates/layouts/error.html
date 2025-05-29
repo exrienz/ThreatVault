@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ title }} - {{ web_title }}</title>
+        <link rel="stylesheet" href="/assets/compiled/css/app.css">
+        <link rel="stylesheet" href="/assets/css/themes/dark/app-dark.css">
+        <link rel="stylesheet" href="/assets/css/pages/auth.css">
+        <link rel="shortcut icon"
+              href="/assets/static/images/logo/favicon.svg"
+              type="image/x-icon">
+        <link rel="shortcut icon"
+              href="/assets/static/images/logo/favicon.png"
+              type="image/png">
+        <script src="https://unpkg.com/htmx.org@2.0.4"
+                integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+                crossorigin="anonymous"></script>
+        <style>
+      .error-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background-color: #f8f9fa;
+        }
+
+        .error-content {
+          text-align: center;
+        }
+
+        .error-content h1 {
+          font-size: 6rem;
+          font-weight: bold;
+          margin-bottom: 1rem;
+        }
+
+        .error-content p {
+          font-size: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .lottie-animation {
+          max-width: 400px;
+          margin-bottom: 2rem;
+        }
+        </style>
+    </head>
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        {% block content%}
+        {% endblock %}
+    </body>
+
+    <script>
+      document.addEventListener("htmx:confirm", function (e) {
+        if (!e.detail.elt.hasAttribute('hx-confirm')) return
+
+        e.preventDefault()
+        Swal.fire({
+          title: "Are you sure?",
+          text: `${e.detail.question}`
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            // If the user confirms, we manually issue the request
+            e.detail.issueRequest(true); // true to skip the built-in window.confirm()
+          }
+        })
+      })
+    </script>
+</html>

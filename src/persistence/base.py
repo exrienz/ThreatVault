@@ -7,6 +7,7 @@ from pydantic import BaseModel, NonNegativeInt, PositiveInt
 from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.application.middlewares.user_context import get_current_user
 from src.domain.entity.base import Base
 
 
@@ -24,9 +25,18 @@ Entity = TypeVar("Entity", bound=Base)
 class BaseRepository(Generic[Entity]):
     model: type[Entity]
 
-    def __init__(self, model: type[Entity], session: AsyncSession):
+    def __init__(
+        self,
+        model: type[Entity],
+        session: AsyncSession,
+        project_ids: list[UUID] | None = None,
+        product_ids: list[UUID] | None = None,
+    ):
         self.model = model
         self.session = session
+        self.current_user = get_current_user()
+        self.allowed_project_ids = project_ids
+        self.allowed_product_ids = product_ids
 
     async def pagination(
         self,
@@ -61,13 +71,20 @@ class BaseRepository(Generic[Entity]):
     async def get_all(self) -> Sequence[Entity]:
         stmt = select(self.model).order_by(self.model.created_at.desc())
         stmt = self._options(stmt)
+
+        # TODO: Generalize this
+        stmt = self._product_allowed_ids(stmt)
+        stmt = self._project_allowed_ids(stmt)
+
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
     async def get_all_by_filter(self, filters: dict) -> Sequence[Entity]:
         stmt = select(self.model).filter_by(**filters)
+        stmt = self._options(stmt)
+        stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)
-        return query.scalars().all()
+        return query.unique().scalars().all()
 
     async def get_by_id(self, item_id: UUID) -> Entity | None:
         stmt = (
@@ -91,8 +108,9 @@ class BaseRepository(Generic[Entity]):
 
     async def get_by_filter(self, filters: dict) -> Entity | None:
         stmt = select(self.model).filter_by(**filters)
+        stmt = self._options(stmt)
         query = await self.session.execute(stmt)
-        return query.scalar_one_or_none()
+        return query.unique().scalar_one_or_none()
 
     async def create(self, data: dict, *args, **kwargs) -> Entity:
         db = self.model(**data)
@@ -130,4 +148,15 @@ class BaseRepository(Generic[Entity]):
         await self.session.commit()
 
     def _options(self, stmt: Select) -> Select:
+        return stmt
+
+    # TODO: Generalize
+    def _permission_filter(self, stmt: Select) -> Select:
+        stmt = self._project_allowed_ids(stmt)
+        return self._product_allowed_ids(stmt)
+
+    def _project_allowed_ids(self, stmt: Select) -> Select:
+        return stmt
+
+    def _product_allowed_ids(self, stmt: Select) -> Select:
         return stmt

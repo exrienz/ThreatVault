@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
@@ -14,13 +15,19 @@ from src.domain.entity import (
     ProductUserAccess,
     User,
 )
+from src.domain.entity.user_access import Role
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository
+from src.presentation.html.dependencies import get_allowed_product_ids
 
 
 class ProductRepository(BaseRepository[Product]):
-    def __init__(self, session: AsyncSession = Depends(get_session)):
-        super().__init__(Product, session)
+    def __init__(
+        self,
+        session: Annotated[AsyncSession, Depends(get_session)],
+        product_ids: Annotated[list[UUID] | None, Depends(get_allowed_product_ids)],
+    ):
+        super().__init__(Product, session, product_ids=product_ids)
 
     def _options(self, stmt: Select):
         return stmt.options(selectinload(Product.environment))
@@ -109,5 +116,25 @@ class ProductRepository(BaseRepository[Product]):
             .where(FindingName.product_id == product_id)
             .distinct()
         )
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
+
+    def _product_allowed_ids(self, stmt: Select) -> Select:
+        if self.allowed_product_ids is None:
+            return stmt
+        return stmt.where(Product.id.in_(self.allowed_product_ids))
+
+    async def get_owners_by_product_id(self, product_id: UUID) -> Sequence[User]:
+        stmt = (
+            select(User)
+            .join(ProductUserAccess)
+            .join(Role)
+            .where(
+                ProductUserAccess.product_id == product_id,
+                ProductUserAccess.granted.is_(True),
+                Role.name == "Owner",
+            )
+        )
+
         query = await self.session.execute(stmt)
         return query.scalars().all()

@@ -45,6 +45,8 @@ class RolePermission(Base):
     role_id: Mapped[UUID] = mapped_column(ForeignKey("role.id"))
     permission_id: Mapped[UUID] = mapped_column(ForeignKey("permission.id"))
 
+    permissions = relationship("Permission")
+
 
 class ProductUserAccess(Base):
     __tablename__ = "product_user_access"

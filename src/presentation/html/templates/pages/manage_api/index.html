@@ -2,7 +2,6 @@
 {% set filename = "/manage-api" %}
 {% extends 'layouts/master.html' %}
 {% block styles %}
-<link rel="stylesheet" href="/assets/css/shared/iconly.css">
 <link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
 {% endblock %}
 {% block content %}
@@ -47,23 +46,5 @@
 </div>
 {% endblock %}
 {% block js %}
-<script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
-<script src="/assets/static/js/pages/sweetalert2.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-<script>
-  document.addEventListener("htmx:confirm", function (e) {
-    if (!e.detail.elt.hasAttribute('hx-confirm')) return
-
-    e.preventDefault()
-    Swal.fire({
-      title: "Are you sure?",
-      text: `${e.detail.question}`
-    }).then(function (result) {
-      if (result.isConfirmed) {
-        // If the user confirms, we manually issue the request
-        e.detail.issueRequest(true); // true to skip the built-in window.confirm()
-      }
-    })
-  })
-</script>
 {% endblock %}

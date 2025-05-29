@@ -5,22 +5,41 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
 from src.application.services import EnvService, ProjectManagementService
-from src.config import sidebar_items
+from src.presentation.html.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/project-management", tags=["Project Management"])
+router = APIRouter(
+    prefix="/project-management",
+    tags=["Project Management"],
+    dependencies=[
+        Depends(
+            PermissionChecker(
+                [
+                    "project-management:view",
+                    "project-management:create",
+                    "project-management:delete",
+                ]
+            )
+        ),
+    ],
+)
 
 projectService = Annotated[ProjectManagementService, Depends()]
 
 
 @router.get("/", response_class=HTMLResponse)
-async def project_management(request: Request, service: projectService):
+async def project_management(
+    request: Request,
+    service: projectService,
+):
     projects = await service.get_project_extended()
     return templates.TemplateResponse(
         request,
         "pages/project_management/index.html",
-        {"sidebarItems": sidebar_items, "projects": projects},
+        {
+            "projects": projects,
+        },
     )
 
 
@@ -31,6 +50,7 @@ async def create_project(
     project_type: Annotated[str, Form()],
     service: projectService,
 ):
+    # TODO: idx?
     project = await service.create_project({"name": name, "type_": project_type})
     return templates.TemplateResponse(
         request,
@@ -57,7 +77,6 @@ async def delete_project(
 async def get_environments(
     request: Request,
     project_id: UUID,
-    # service: EnvService = Depends()
     service: Annotated[EnvService, Depends()],
 ):
     envs = await service.get_by_project_id(project_id)

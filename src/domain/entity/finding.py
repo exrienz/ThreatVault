@@ -57,7 +57,7 @@ class FindingRevertPoint(Base):
     vpr_score: Mapped[Optional[str]]
     evidence: Mapped[str]
     remediation: Mapped[str]
-
+    # remark: Mapped[Optional[str]]
     internal_remark: Mapped[Optional[str]]
     finding_date: Mapped[datetime] = mapped_column(DateTime(True))
     last_update: Mapped[datetime] = mapped_column(DateTime(True))

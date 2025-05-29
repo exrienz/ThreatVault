@@ -1,0 +1,106 @@
+sidebars:
+  - name: Menu
+    isTitle: true
+
+  - name: VAPT Dashboard
+    key: vapt
+    url: /
+    icon: grid-fill
+
+  - name: Hardening Dashboard
+    key: hardening
+    icon: shield-shaded
+    url: hardeningIndex.html
+
+  - name: Threat Intelligence
+    key: threat-intel
+    icon: fingerprint
+    url: TIindex.html
+
+  - name: User Management
+    key: /manage
+    icon: people-fill
+    permissions:
+      - ""
+    submenu:
+      - name: Manage User
+        url: /manage-user
+      - name: Manage Owner
+        url: /manage-owner
+      - name
+
+
+roles:
+  - name: Admin
+    super_admin: true
+    required_project_access: false
+
+  - name: ITSE
+    required_project_access: false
+
+  - name: Management
+
+  - name: Audit
+
+  - name: Owner
+
+permissions:
+  - name: Dashboard
+    scope: dashboard:view
+    url: /
+
+  - name: Project Management
+    scope: project-management:view
+    url: /project-management
+
+  - name: Project Management
+    scope: project-management:create
+    url: /project-management
+
+  - name: Project Management
+    scope: project-management:delete
+    url: /project-management
+
+  - name: User Management
+    scope: user-management:all
+    url: ""
+
+  - name: Product Owner Management
+    scope: owner-management:all
+    url: ""
+
+  - name: Product API Management
+    scope: api-management:all
+    url: ""
+
+  - name: Product
+    scope: product:view
+    url: /product
+
+  - name: Product
+    scope: product:create
+    url: /product
+
+  - name: Finding
+    scope: finding:view
+    url: /finding
+
+  - name: Update/Upload Finding
+    scope: finding:create
+    url: /product
+
+  - name: Finding - Action
+    scope: finding:action
+    url: /product
+
+  - name: Comment
+    scope: comment:view
+    url: /comment
+
+  - name: Comment
+    scope: comment:create
+    url: /comment
+
+  - name: Comment
+    scope: comment:delete
+    url: /comment

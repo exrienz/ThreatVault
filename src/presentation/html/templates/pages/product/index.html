@@ -1,22 +1,12 @@
 {% set title = "Product" %}
 {% set filename = "product" %}
+
 {% extends 'layouts/master.html' %}
+
 {% block styles %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
-<style>
-  .htmx-indicator {
-    display: none;
-  }
-
-  .htmx-request .htmx-indicator {
-    display: inline;
-  }
-
-  .htmx-request.htmx-indicator {
-    display: inline;
-  }
-</style>
 {% endblock %}
+
 {% block content %}
 <div class="page-heading">
   <h3>
@@ -104,6 +94,7 @@
   </section>
   <!--E1 Row-->
   <!--Row2-->
+  {% if "finding:action" in permissions or "all" in permissions %}
   <section class="row">
     <div class="col-12">
       <div class="card">
@@ -118,6 +109,7 @@
       </div>
     </div>
   </section>
+  {% endif %}
   <!--EO Row2-->
   <!--Row3-->
   <section class="row">
@@ -249,12 +241,11 @@
   <!--EO Row3-->
 </div>
 {% endblock %}
+
 {% block js %}
-<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="/assets/static/js/pages/ui-apexchart.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<!--<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>-->
+<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
 
 <script src="/assets/static/js/pages/form-element-select.js"></script>

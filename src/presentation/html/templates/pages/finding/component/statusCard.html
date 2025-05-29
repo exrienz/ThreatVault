@@ -1,0 +1,16 @@
+<div class="col-3">
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <div class="stats-icon {{data.color if data.color is defined else 'red'}} mb-2 me-3">
+          <!-- Added margin-right -->
+          <i class="fa-solid fa-{{data.icon}}"></i>
+        </div>
+        <div>
+          <h6 class="text-muted font-semibold">{{data.title}}</h6>
+          <h6 class="font-extrabold mb-0">{{data.data | title}}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
