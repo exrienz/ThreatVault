@@ -32,7 +32,9 @@ class Finding(Base):
 
     # product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
     plugin_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("plugin.id"))
-    finding_name_id: Mapped[UUID] = mapped_column(ForeignKey("finding_name.id"))
+    finding_name_id: Mapped[UUID] = mapped_column(
+        ForeignKey("finding_name.id", ondelete="CASCADE")
+    )
     finding_name = relationship("FindingName")
 
     __table_args__ = (
@@ -86,7 +88,9 @@ class FindingName(Base):
 
     description: Mapped[Optional[str]]
 
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
+    )
     product = relationship("Product")
     findings = relationship("Finding", back_populates="finding_name")
 
@@ -113,7 +117,7 @@ class CVE(Base):
     vector: Mapped[Optional[str]]
 
     finding_name_id: Mapped[Optional[UUID]] = mapped_column(
-        ForeignKey("finding_name.id")
+        ForeignKey("finding_name.id", ondelete="CASCADE")
     )
     finding_name = relationship("FindingName", back_populates="cves")
 
@@ -129,8 +133,10 @@ class Comment(Base):
     __tablename__ = "comment"
 
     comment: Mapped[str]
-    findingName_id: Mapped[UUID] = mapped_column(ForeignKey("finding_name.id"))
-    commentor_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
+    findingName_id: Mapped[UUID] = mapped_column(
+        ForeignKey("finding_name.id", ondelete="CASCADE")
+    )
+    commentor_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("auth_user.id"))
     commentor = relationship("User")
 
 
@@ -153,9 +159,11 @@ class Log(Base):
     bMedium: Mapped[int] = mapped_column(default=0)
     bLow: Mapped[int] = mapped_column(default=0)
 
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
+    )
     log_date: Mapped[datetime] = mapped_column(DateTime(True))
-    uploader_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
+    uploader_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("auth_user.id"))
     uploader = relationship("User")
 
     product = relationship("Product")

@@ -13,8 +13,6 @@ fileignoreconfig:
   checksum: 2c4b1f05a8553ae06866e82463967906901a7559492996f8cf03b613e9f85e55
 - filename: src/presentation/html/templates/pages/dashboard/project.html
   checksum: 6d8d25188e9a14d2ca2a2700b52ff6c49d623c2c790f79769ad60197485de1c5
-- filename: src/domain/entity/user_access.py
-  checksum: 1a52e1065bf3917745b507b4c15f7cf7c508a718dcbe229dee7a930549bf731a
 - filename: src/application/services/auth_services.py
   checksum: 9880f823d61fc8b5a183b655ab24225d87479a52023b648f9bef8d3b42d7d95b
 - filename: src/application/services/permission_services.py
@@ -27,6 +25,7 @@ fileignoreconfig:
   checksum: ef6b4441ab8ad723d4cde5d8167dd7bd84c90d611bfb00ed29ad893e07e2e13e
 - filename: src/sidebars.json
   checksum: 4a8a97233f5058c9112ea2dcf99150b06f23d7768df06b115b454b64abd544d9
+<<<<<<< HEAD
 - filename: src/presentation/html/v1/product.py
   checksum: eb18d79932f15f65f488e4cae5d13f53fa7ca587a7dc346a275532487ac7ee7b
 - filename: src/main.py
@@ -67,4 +66,12 @@ fileignoreconfig:
   checksum: be50568dd8c27968976003247c41c3c13c6e08f4c4309c0b98c48fa7e0c99d87
 - filename: src/presentation/html/templates/layouts/error.html
   checksum: 00d0eda76495e45eccfb981588b6973d43c267db8f3a619f39e909c3be25a4ad
+=======
+- filename: src/domain/entity/finding.py
+  checksum: 09266c0dadc65a46a8a9d65979f9f74b8dd416ccec0de586db6c9247b946179e
+- filename: src/domain/entity/project_management.py
+  checksum: ff01a21ea2e816a50f7f4d667c9f3c2e034a580bba31e601673fdd0a6fb8996a
+- filename: src/domain/entity/user_access.py
+  checksum: a9e55c78a4d874764beb7e58a01ecd692d841a999ebe733df575b145f5061a53
+>>>>>>> 068f86b (Fix - DB ondelete=cascade issue & custom plugin)
 version: ""

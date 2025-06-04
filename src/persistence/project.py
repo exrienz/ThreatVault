@@ -21,6 +21,7 @@ class ProjectRepository(BaseRepository[Project]):
 
     async def get(self, item_id: UUID) -> Project | None:
         stmt = select(Project).where(Project.id == item_id)
+        stmt = self._options(stmt)
         query = await self.session.execute(stmt)
         return query.scalars().one_or_none()
 

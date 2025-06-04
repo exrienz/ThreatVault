@@ -26,6 +26,7 @@ class PluginService:
         if file.filename is None:
             raise
         data["name"] = file.filename.split(".")[0]
+        data["type"] = "custom"
         await self.upload_plugin(data, file)
         return await self.repository.create(data)
 
