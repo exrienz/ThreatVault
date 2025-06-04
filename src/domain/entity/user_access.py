@@ -42,8 +42,10 @@ class Permission(Base):
 class RolePermission(Base):
     __tablename__ = "role_permission"
 
-    role_id: Mapped[UUID] = mapped_column(ForeignKey("role.id"))
-    permission_id: Mapped[UUID] = mapped_column(ForeignKey("permission.id"))
+    role_id: Mapped[UUID] = mapped_column(ForeignKey("role.id", ondelete="CASCADE"))
+    permission_id: Mapped[UUID] = mapped_column(
+        ForeignKey("permission.id", ondelete="CASCADE")
+    )
 
     permissions = relationship("Permission")
 
@@ -51,8 +53,12 @@ class RolePermission(Base):
 class ProductUserAccess(Base):
     __tablename__ = "product_user_access"
 
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_user.id", ondelete="CASCADE")
+    )
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
+    )
     granted: Mapped[bool] = mapped_column(server_default="f")
 
     user = relationship("User")

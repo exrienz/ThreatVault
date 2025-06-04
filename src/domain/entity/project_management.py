@@ -28,7 +28,9 @@ class Environment(Base):
     project_id: Mapped[UUID] = mapped_column(ForeignKey("project.id"))
 
     project = relationship("Project")
-    products = relationship("Product", back_populates="environment")
+    products = relationship(
+        "Product", back_populates="environment", cascade="all, delete-orphan"
+    )
 
 
 class Product(Base):
@@ -44,11 +46,17 @@ class Product(Base):
     environment_id: Mapped[UUID] = mapped_column(ForeignKey("environment.id"))
     environment = relationship("Environment", back_populates="products")
 
-    accesses = relationship("ProductUserAccess", back_populates="products")
+    accesses = relationship(
+        "ProductUserAccess", back_populates="products", cascade="all, delete-orphan"
+    )
 
 
 #
 class ProductEscalationPoint(Base):
     __tablename__ = "product_escalation_point"
-    product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("auth_user.id"))
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_user.id", ondelete="CASCADE")
+    )
