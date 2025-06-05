@@ -2,7 +2,9 @@
       hx-post="{{ product.id if product is defined else product_id }}/upload"
       id="upload_fn_id"
       hx-swap="none"
-      hx-on::after-request="document.querySelector('#upload_fn_id').reset()">
+      hx-disabled-elt="find button"
+      hx-on::after-request="document.querySelector('#upload_fn_id').reset()"
+      >
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
