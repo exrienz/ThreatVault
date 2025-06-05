@@ -10,7 +10,7 @@
     <td align="center" class="text-bold-500">
       <ul>
       {%for cve in finding.finding_name.cves%}
-      <li><a href="https://www.tenable.com/cve/{{cve}}">{{cve}}</a></li>
+      <li><a href="https://www.tenable.com/cve/{{cve.name}}">{{cve.name}}</a></li>
       {%endfor%}
       </ul>
     </td>
