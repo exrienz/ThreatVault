@@ -22,7 +22,6 @@ class PluginService:
         return await self.repository.get_all_by_filter({"is_active": True})
 
     async def create(self, data: dict, file: UploadFile):
-        data["is_custom"] = True
         if file.filename is None:
             raise
         data["name"] = file.filename.split(".")[0]
