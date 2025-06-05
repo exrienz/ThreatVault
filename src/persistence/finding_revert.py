@@ -8,6 +8,7 @@ from sqlalchemy.orm import aliased
 
 from src.domain.entity import Finding, FindingName, FindingRevertPoint
 from src.domain.entity.finding import Log
+from src.domain.entity.project_management import Environment, Product
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository
 
@@ -48,6 +49,8 @@ class FindingRevertRepository(BaseRepository):
         query = await self.session.execute(stmt)
         return query.scalar()
 
+    # async def get_
+
     async def revert_point_clear(self, product_id: UUID, commit: bool = True):
         revert_point = (
             select(FindingRevertPoint)
@@ -86,6 +89,34 @@ class FindingRevertRepository(BaseRepository):
         ).subquery()
 
         delete_stmt = delete(Log).where(Log.id == sub.c.id)
+        await self.session.execute(delete_stmt)
+
+        await self.session.commit()
+
+    async def delete_by_product_id(self, product_id: UUID):
+        sub = (
+            select(FindingRevertPoint)
+            .join(FindingName, FindingName.id == FindingRevertPoint.finding_name_id)
+            .where(FindingName.product_id == product_id)
+        ).subquery()
+        delete_stmt = delete(FindingRevertPoint).where(
+            FindingRevertPoint.id.in_(select(sub.c.id))
+        )
+        await self.session.execute(delete_stmt)
+
+        await self.session.commit()
+
+    async def delete_by_project_id(self, project_id: UUID):
+        sub = (
+            select(FindingRevertPoint)
+            .join(FindingName, FindingName.id == FindingRevertPoint.finding_name_id)
+            .join(Product, Product.id == FindingName.product_id)
+            .join(Environment, Environment.id == Product.environment_id)
+            .where(Environment.project_id == project_id)
+        ).subquery()
+        delete_stmt = delete(FindingRevertPoint).where(
+            FindingRevertPoint.id.in_(select(sub.c.id))
+        )
         await self.session.execute(delete_stmt)
 
         await self.session.commit()

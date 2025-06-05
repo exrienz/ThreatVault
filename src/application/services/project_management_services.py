@@ -6,6 +6,7 @@ from fastapi import Depends
 from src.domain.entity import Product, Project
 from src.persistence import (
     EnvRepository,
+    FindingRevertRepository,
     LogRepository,
     ProductRepository,
     ProjectRepository,
@@ -22,12 +23,14 @@ class ProjectManagementService:
         userRepository: UserRepository = Depends(),
         envRepository: EnvRepository = Depends(),
         logRepository: LogRepository = Depends(),
+        fnRevertRepository: FindingRevertRepository = Depends(),
     ):
         self.projectRepository = projectRepository
         self.productRepository = productRepository
         self.userRepository = userRepository
         self.envRepository = envRepository
         self.LogRepository = logRepository
+        self.fnRevertRepository = fnRevertRepository
 
     async def get_project_extended(
         self, project_id: UUID | None = None
@@ -54,6 +57,7 @@ class ProjectManagementService:
         project = await self.projectRepository.get(item_id)
         if project is None:
             raise
+        await self.fnRevertRepository.delete_by_project_id(project.id)
         await self.projectRepository.delete(item_id)
         return await self.projectRepository.get_all()
 
@@ -78,6 +82,7 @@ class ProjectManagementService:
         return await self.productRepository.create(data)
 
     async def delete_product(self, product_id: UUID):
+        await self.fnRevertRepository.delete_by_product_id(product_id)
         await self.productRepository.delete(product_id)
 
     async def get_all(self) -> Sequence[Project]:
