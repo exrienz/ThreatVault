@@ -16,12 +16,6 @@
     "url": "/coming-soon"
   },
   {
-    "name": "Threat Intelligence",
-    "key": "threat-intel",
-    "icon": "fingerprint",
-    "url": "/thread-intelligence"
-  },
-  {
     "name": "User Management",
     "key": "/manage",
     "icon": "people-fill",

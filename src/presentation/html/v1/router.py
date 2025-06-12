@@ -13,7 +13,7 @@ from .product import router as Product
 from .project_management import router as PM
 from .self_service import router as SelfService
 from .setting import router as Setting
-from .thread_intelligence import router as TI
+# from .thread_intelligence import router as TI
 
 v1_router_with_auth = APIRouter(prefix="", dependencies=[Depends(PermissionChecker())])
 
@@ -28,7 +28,7 @@ v1_router_with_auth.include_router(Setting)
 v1_router_with_auth.include_router(SelfService)
 v1_router_with_auth.include_router(APIManager)
 v1_router_with_auth.include_router(Host)
-v1_router_with_auth.include_router(TI)
+# v1_router_with_auth.include_router(TI)
 
 v1_router = APIRouter(prefix="")
 v1_router.include_router(Auth)
