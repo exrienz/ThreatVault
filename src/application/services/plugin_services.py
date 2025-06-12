@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import Depends
 from fastapi.datastructures import UploadFile
 
+from src.application.exception.error import InvalidFile
 from src.domain.entity import Plugin
 from src.persistence.plugin import PluginRepository
 
@@ -36,7 +37,7 @@ class PluginService:
 
     async def upload_plugin(self, data: dict, file: UploadFile):
         if file.content_type != "text/x-python":
-            raise
+            raise InvalidFile("Python")
         filepath = f"public/plugins/{data.get('type')}/{data.get('name')}.py"
         with open(filepath, "wb") as f:
             file_data = await file.read()

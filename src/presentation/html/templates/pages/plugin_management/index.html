@@ -21,7 +21,7 @@
           </div>
           <div class="card-body">
             <div class="d-flex justify-content-end">
-              <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#danger">
+              <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPluginModal">
                 Add Plugin
               </a>
               {% include "pages/plugin_management/form/create.html" %}
@@ -70,8 +70,5 @@
 
 {% endblock %}
 {% block js %}
-<script src="assets/extensions/dayjs/dayjs.min.js"></script>
-<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="assets/static/js/pages/ui-apexchart.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 {% endblock %}

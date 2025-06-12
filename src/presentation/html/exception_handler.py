@@ -5,6 +5,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from src.application.exception.error import (
     InactiveUser,
     InvalidAuthentication,
+    InvalidFile,
     SchemaException,
     UnauthorizedError,
 )
@@ -67,6 +68,15 @@ async def schema_invalid_handler(request: Request, exc: SchemaException):
     )
 
 
+async def invalid_file_upload(request: Request, exc: InvalidFile):
+    return templates.TemplateResponse(
+        request,
+        "error/toast.html",
+        {"msg": exc.msg},
+        status_code=422,
+    )
+
+
 exception_handlers = {
     UnauthorizedError: unauthorize,
     InvalidAuthentication: invalidAuthentication,
@@ -74,4 +84,5 @@ exception_handlers = {
     HTTPException: httpException,
     SchemaException: schema_invalid_handler,
     StarletteHTTPException: httpException,
+    InvalidFile: invalid_file_upload,
 }
