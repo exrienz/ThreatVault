@@ -6,6 +6,13 @@ from pydantic import BaseModel
 from src.domain.constant import SeverityEnum
 
 
+class FindingUploadSchema(BaseModel):
+    scan_date: datetime
+    plugin: UUID
+    process_new_finding: bool = False
+    sync_update: bool = False
+
+
 class ManualFindingUploadSchema(BaseModel):
     finding_name: str
     host: str

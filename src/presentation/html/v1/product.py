@@ -18,6 +18,7 @@ from src.application.dependencies import (
 from src.application.middlewares.user_context import get_current_user
 from src.application.schemas.finding import (
     FindingFiltersSchema,
+    FindingUploadSchema,
     ManualFindingUploadSchema,
 )
 from src.application.services import FileUploadService
@@ -139,12 +140,11 @@ async def finding_action(
 async def upload_file(
     request: Request,
     session: Annotated[AsyncSession, Depends(get_session)],
-    log_service: LogServiceDep,
-    user_service: UserServiceDep,
+    service: LogServiceDep,
     product_id: UUID,
+    formFile: Annotated[UploadFile, File()],
     scan_date: Annotated[datetime, Form()],
     plugin: Annotated[UUID, Form()],
-    formFile: Annotated[UploadFile, File()],
     process_new_finding: Annotated[bool, Form()] = False,
     sync_update: Annotated[bool, Form()] = False,
 ):
@@ -153,27 +153,26 @@ async def upload_file(
         - All the error handling
         - Sync Update
     """
-    fileupload = FileUploadService(
-        session,
-        formFile,
-        plugin,
-        scan_date,
-        product_id,
-        process_new_finding,
-        sync_update,
-    )
+    data_dict = {
+        "scan_date": scan_date,
+        "plugin": plugin,
+        "process_new_finding": process_new_finding,
+        "sync_update": sync_update,
+    }
+    data = FindingUploadSchema(**data_dict)
+    fileupload = FileUploadService(session, formFile, product_id, data)
     await fileupload.upload()
     tSeverity = 1
-    logs = await log_service.calculate(product_id, fileupload.scan_date)
-    user = None
+    logs = await service.calculate(product_id, fileupload.scan_date)
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
-        user = await user_service.get_by_id(logs.uploader_id)
+    else:
+        tSeverity = 1
     return templates.TemplateResponse(
         request,
         "pages/product/response/fileupload.html",
         headers={"HX-Trigger": "reload-findings"},
-        context={"logs": logs, "totalSeverity": tSeverity, "user": user},
+        context={"logs": logs, "totalSeverity": tSeverity, "user": get_current_user()},
     )
 
 
@@ -192,12 +191,13 @@ async def manual_upload(
         {"name": data.finding_name, "product_id": product_id},
         data.model_dump(exclude={"finding_name"}),
     )
-    tSeverity = 1
     logs = await log_service.calculate(
         product_id, data.finding_date.replace(hour=0, minute=0, second=0, microsecond=0)
     )
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
+    else:
+        tSeverity = 1
     return templates.TemplateResponse(
         request,
         "pages/product/response/fileupload.html",
@@ -359,7 +359,8 @@ async def revert(
     user = None
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
-        user = await user_service.get_by_id(logs.uploader_id)
+        if logs.uploader_id:
+            user = await user_service.get_by_id(logs.uploader_id)
 
     return templates.TemplateResponse(
         request,

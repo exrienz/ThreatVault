@@ -1,7 +1,6 @@
 import importlib.util
 import pathlib
 import sys
-from datetime import datetime
 from types import ModuleType
 from uuid import UUID
 
@@ -19,6 +18,7 @@ from sqlalchemy.dialects._typing import (
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.application.schemas.finding import FindingUploadSchema
 from src.domain.constant import FnStatusEnum, PluginFunction, SeverityEnum
 from src.domain.entity import CVE, Finding, FindingName
 from src.domain.entity.finding import Plugin
@@ -78,21 +78,18 @@ class FileUploadService:
         self,
         session: AsyncSession,
         file: UploadFile,
-        plugin_id: UUID,
-        scan_date: datetime,
         product_id: UUID,
-        process_new_finding: bool,
-        sync_update: bool,
+        data: FindingUploadSchema,
     ):
         self.session: AsyncSession = session
         self.file = file
-        self.plugin_id = plugin_id
-        self.scan_date = scan_date.replace(
+        self.plugin_id = data.plugin
+        self.scan_date = data.scan_date.replace(
             hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.utc
         )
         self.product_id = product_id
         self.finding_lf = pl.LazyFrame()
-        self.process_new_finding = process_new_finding
+        self.process_new_finding = data.process_new_finding
         self.plugin: PluginFunction | ModuleType | None = None
 
     async def scan_date_validation(self):

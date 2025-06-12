@@ -3,6 +3,7 @@
       id="upload_fn_id"
       hx-swap="none"
       hx-disabled-elt="find button"
+      hx-on::before-request="SweetAlert('Upload in Progress', 'This page will be updated once file successfully uploaded', 'info')"
       hx-on::after-request="document.querySelector('#upload_fn_id').reset()"
       >
     <div class="row">

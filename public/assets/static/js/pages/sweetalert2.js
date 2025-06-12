@@ -29,3 +29,12 @@ function ToastCustom(msg, icon) {
     title: msg,
   });
 }
+
+function SweetAlert(title, msg, icon) {
+  Swal.fire({
+    icon: icon,
+    title: title,
+    text: msg,
+    timer: 3500,
+  });
+}
