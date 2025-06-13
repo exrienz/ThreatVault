@@ -15,8 +15,9 @@ from src.application.dependencies import (
     ProductServiceDep,
     UserServiceDep,
 )
-from src.application.middlewares.user_context import get_current_user
 from src.application.schemas.finding import (
+    FindingActionInternalSchema,
+    FindingActionRequestSchema,
     FindingFiltersSchema,
     FindingUploadSchema,
     ManualFindingUploadSchema,
@@ -106,25 +107,17 @@ async def get_findings(
 )
 async def finding_action(
     request: Request,
-    finding_name_id: Annotated[UUID, Form()],
-    choices: Annotated[list[str], Form()],
-    action: Annotated[str, Form()],
-    delayUntill: Annotated[datetime, Form()],
-    remarks: Annotated[str, Form()],
+    data: Annotated[FindingActionRequestSchema, Form()],
     finding_service: FindingServiceDep,
 ):
     try:
-        status = FnStatusEnum(action.upper())
+        status = FnStatusEnum(data.action.upper())
     except Exception:
         status = FnStatusEnum.OTHER
-        remarks = remarks + f"\n System: {action}"
+        data.remarks += f"\n System: {data.action}"
 
-    data = {
-        "status": status,
-        "delay_untill": delayUntill,
-        "remark": remarks,
-    }
-    await finding_service.update(finding_name_id, choices, data)
+    internal = FindingActionInternalSchema(status=status, **data.model_dump())
+    await finding_service.update(data.finding_name_id, internal)
     return templates.TemplateResponse(
         request,
         "empty.html",
@@ -171,8 +164,8 @@ async def upload_file(
     return templates.TemplateResponse(
         request,
         "pages/product/response/fileupload.html",
-        headers={"HX-Trigger": "reload-findings"},
-        context={"logs": logs, "totalSeverity": tSeverity, "user": get_current_user()},
+        headers={"HX-Trigger": "reload-findings, reload-stats"},
+        context={"logs": logs, "totalSeverity": tSeverity},
     )
 
 
@@ -201,8 +194,16 @@ async def manual_upload(
     return templates.TemplateResponse(
         request,
         "pages/product/response/fileupload.html",
-        headers={"HX-Trigger": "reload-findings"},
-        context={"logs": logs, "totalSeverity": tSeverity, "user": get_current_user()},
+        headers={"HX-Trigger": "reload-findings, reload-stats"},
+        context={"logs": logs, "totalSeverity": tSeverity},
+    )
+
+
+@router.get("/{product_id}/stats", response_class=HTMLResponse)
+async def product_stats(request: Request, product_id: UUID, service: LogServiceDep):
+    logs = await service.get_by_product_id(product_id)
+    return templates.TemplateResponse(
+        request, "pages/product/response/stats.html", {"logs": logs}
     )
 
 

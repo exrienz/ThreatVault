@@ -4,8 +4,9 @@
       hx-swap="none"
       hx-disabled-elt="find button"
       hx-on::before-request="SweetAlert('Upload in Progress', 'This page will be updated once file successfully uploaded', 'info')"
-      hx-on::after-request="document.querySelector('#upload_fn_id').reset()"
+      hx-on::after-request="if (event.detail.xhr.status === 200){this.reset();}"
       >
+    {% set min_date = logs.log_date.strftime('%Y-%m-%d') if logs else "DD-MM-YYYY" %}
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
@@ -15,7 +16,9 @@
                        id="scan_date"
                        class="form-control"
                        placeholder="Scan Date"
-                       required="True" />
+                       min={{min_date}}
+                       max={{now.strftime('%Y-%m-%d')}}
+                       required />
             </div>
             <br />
             <div class="form-group">

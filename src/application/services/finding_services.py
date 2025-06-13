@@ -4,6 +4,7 @@ from uuid import UUID
 import pytz
 from fastapi import Depends
 
+from src.application.schemas.finding import FindingActionInternalSchema
 from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.domain.entity.finding import Finding, FindingName
 from src.persistence import (
@@ -92,8 +93,10 @@ class FindingService:
         return sla_mapping
 
     # TODO: Fix this, rearrange
-    async def update(self, item_id: UUID, host_list: list, data: dict):
-        await self.repository.update(item_id, data, host_list)
+    async def update(
+        self, item_id: UUID, hosts: list, data: FindingActionInternalSchema
+    ):
+        await self.repository.update(item_id, data.model_dump(), hosts)
 
     async def bulk_update(self, filters: dict, data: dict):
         await self.repository.bulk_update(filters, data)

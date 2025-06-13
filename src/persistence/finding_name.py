@@ -27,7 +27,6 @@ class FindingNameRepository(BaseRepository[FindingName]):
     async def get_by_filter(self, filters: dict) -> FindingName | None:
         stmt = (
             select(FindingName)
-            .join(Finding)
             .join(Product)
             .options(
                 selectinload(FindingName.findings), selectinload(FindingName.product)
@@ -38,7 +37,7 @@ class FindingNameRepository(BaseRepository[FindingName]):
         if finding_name_id := filters.get("finding_name_id"):
             stmt = stmt.where(FindingName.id == finding_name_id)
         if severity := filters.get("severity"):
-            stmt = stmt.where(Finding.severity == severity)
+            stmt = stmt.join(Finding).where(Finding.severity == severity)
         if finding_name := filters.get("name"):
             stmt = stmt.where(FindingName.name.ilike(finding_name))
         if product_id := filters.get("product_id"):

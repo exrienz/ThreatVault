@@ -13,86 +13,14 @@
     {{ product.name }} Findings Dashboard
     <span class="badge bg-success">{{ product.environment.name | title }}</span>
   </h3>
-  <div id="finding_header_id">
-    Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs.log_date is defined else 'DD-MM-YYYY' }}
+  <div id="finding_header_id" data-upload-date={{logs.log_date.strftime('%Y-%m-%d') if logs else "DD-MM-YYYY" }}>
+    Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs else "DD-MM-YYYY"}}
     <code>|</code>
     {{logs.uploader.username | title if logs.uploader is defined}}
   </div>
 </div>
 <div class="page-content">
-  <!--Row1-->
-  <section class="row">
-    <!-- Card 1 -->
-    <div class="col-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="stats-icon red mb-2 me-3">
-              <!-- Added margin-right -->
-              <i class="fas fa-frown"></i>
-            </div>
-            <div>
-              <h6 class="text-muted font-semibold">New Vulnerability</h6>
-              <h6 id="log_new_id" class="font-extrabold mb-0">{{logs.tNew | default(0)}}</h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Card 2 -->
-    <div class="col-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="stats-icon red mb-2 me-3">
-              <!-- Added margin-right -->
-              <i class="fas fa-grimace"></i>
-            </div>
-            <div>
-              <h6 class="text-muted font-semibold">Aging Vulnerability</h6>
-              <h6 id="log_open_id" class="font-extrabold mb-0">{{ logs.tOpen | default(0) }}</h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Card 3 -->
-    <div class="col-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="stats-icon black mb-2 me-3">
-              <!-- Added margin-right -->
-              <i class="fas fa-grin-beam-sweat"></i>
-            </div>
-            <div>
-              <h6 class="text-muted font-semibold">Exempted Vulnerability</h6>
-              <h6 id="log_examption_id" class="font-extrabold mb-0">{{logs.tExamption | default(0)}}</h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Card 4 -->
-    <div class="col-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="stats-icon black mb-2 me-3">
-              <!-- Added margin-right -->
-              <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <div>
-              <h6 class="text-muted font-semibold">Total Vulnerability</h6>
-              <h6 id="log_total_id" class="font-extrabold mb-0">
-                {{logs.tNew | default(0) + logs.tOpen | default(0) + logs.tExamption | default(0)}}</h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!--E1 Row-->
+  {%include "pages/product/component/stats.html"%}
   <!--Row2-->
   {% if "finding:action" in permissions or "all" in permissions %}
   <section class="row">
@@ -182,59 +110,7 @@
           <div class="table-responsive" id="tableDivID">
             {% include "pages/product/component/tables/index.html" %}
           </div>
-          <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
-              <form id="finding_action_form" class="modal-content" hx-post="finding/action">
-                <div class="modal-header bg-danger">
-                  <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <i data-feather="x"></i>
-                  </button>
-                </div>
-                <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
-                <div class="modal-body">
-                  <div class="form-group" align="left">
-                    <label for="name" class="form-label">Host (default: all)</label>
-                    <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
-                      <optgroup label="Select affected host">
-                      </optgroup>
-                    </select>
-                  </div>
-                  <div class="form-group" align="left">
-                    <div class="form-group">
-                      <label for="selectOption">Action</label>
-                      <select name="action" class="form-control" id="selectOptionz" required>
-                        <option value="" disabled selected>Select an action</option>
-                        <option value="Examption">Examption</option>
-                        <option value="Not Applicable">Not Applicable</option>
-                        <option value="Invalid">Invalid</option>
-                        <option value="Duplicate">Duplicate</option>
-                      </select>
-                    </div>
-                    <div class="form-group" align="left">
-                      <label for="birthday" class="form-label">Action valid until</label>
-                      <input type="date" name="delayUntill" class="form-control" placeholder="Target Remediation Date">
-                    </div>
-                    <div class="form-group" align="left">
-                      <label for="birthday" class="form-label">Remarks</label>
-                      <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                      <i class="bx bx-x d-block d-sm-none"></i>
-                      <span class="d-none d-sm-block">Close</span>
-                    </button>
-                    <button type="submit" class="btn btn-danger ms-1" data-bs-dismiss="modal">
-                      <i class="bx bx-check d-block d-sm-none"></i>
-                      <span class="d-none d-sm-block">Confirm</span>
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
+          {% include "pages/product/form/action.html" %}
         </div>
       </div>
   </section>

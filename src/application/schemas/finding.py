@@ -1,9 +1,10 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
 
-from src.domain.constant import SeverityEnum
+from src.domain.constant import FnStatusEnum, SeverityEnum
 
 
 class FindingUploadSchema(BaseModel):
@@ -37,3 +38,18 @@ class ITSRemark(BaseModel):
     reason: str
     remark: str
     product_id: UUID
+
+
+class FindingActionRequestSchema(BaseModel):
+    finding_name_id: UUID
+    choices: list[str]
+    action: str
+    delayUntill: Optional[datetime]
+    remarks: str = ""
+
+
+class FindingActionInternalSchema(BaseModel):
+    status: FnStatusEnum
+    delayUntill: Optional[datetime]
+    remarks: str = ""
+    host_list: list[str]

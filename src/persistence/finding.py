@@ -197,12 +197,13 @@ class FindingRepository(BaseRepository):
         stmt = (
             update(Finding)
             .where(
-                Finding.host.in_(hosts),
                 Finding.finding_name_id == item_id,
                 Finding.status != FnStatusEnum.CLOSED,
             )
             .values(data)
         )
+        if hosts:
+            stmt = stmt.where(Finding.host.in_(hosts))
         await self.session.execute(stmt)
         await self.session.commit()
 

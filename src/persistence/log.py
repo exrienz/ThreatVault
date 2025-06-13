@@ -91,6 +91,7 @@ class LogRepository(BaseRepository[Log]):
             .where(
                 Log.product_id == product_id, Log.log_date == subquery.columns.log_date
             )
+            .order_by(Log.created_at.desc())
         )
 
         query = await self.session.execute(stmt)

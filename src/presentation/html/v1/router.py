@@ -13,6 +13,7 @@ from .product import router as Product
 from .project_management import router as PM
 from .self_service import router as SelfService
 from .setting import router as Setting
+
 # from .thread_intelligence import router as TI
 
 v1_router_with_auth = APIRouter(prefix="", dependencies=[Depends(PermissionChecker())])

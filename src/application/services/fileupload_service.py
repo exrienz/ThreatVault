@@ -1,6 +1,7 @@
 import importlib.util
 import pathlib
 import sys
+from datetime import datetime
 from types import ModuleType
 from uuid import UUID
 
@@ -18,6 +19,7 @@ from sqlalchemy.dialects._typing import (
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.application.exception.error import InvalidInput
 from src.application.schemas.finding import FindingUploadSchema
 from src.domain.constant import FnStatusEnum, PluginFunction, SeverityEnum
 from src.domain.entity import CVE, Finding, FindingName
@@ -93,28 +95,34 @@ class FileUploadService:
         self.plugin: PluginFunction | ModuleType | None = None
 
     async def scan_date_validation(self):
+        future_date = self.scan_date > datetime.now(tz=pytz.utc).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        if future_date:
+            raise InvalidInput("Finding date cannot be future date")
         stmt = (
-            select(Finding.finding_date)
+            select(Finding.last_update)
             .join(FindingName)
             .where(
-                Finding.finding_date > self.scan_date,
+                Finding.last_update > self.scan_date,
                 FindingName.product_id == self.product_id,
             )
+            .order_by(Finding.last_update.desc())
         )
         query = await self.session.execute(stmt)
         res = query.scalars().first()
         if res is not None:
-            raise
+            raise InvalidInput(
+                f"Finding date must be greater than {res.strftime('%d-%m-%Y')}"
+            )
 
     async def file_validation(self):
         if self.file.content_type is None or self.file.filename is None:
-            raise
+            raise InvalidInput("Invalid file. File metadata seems missing")
 
         file_type = self.file.content_type.split("/")[-1]
         if file_type != "csv":
-            raise
-
-        # TODO: Validation
+            raise InvalidInput("Invalid file type. Currently we only support (csv)")
 
     async def get_plugin(self):
         stmt = select(Plugin).where(Plugin.id == self.plugin_id)
@@ -347,8 +355,11 @@ class FileUploadService:
     async def upload(self):
         # TODO: Restructure this, make it more readable
         await self.scan_date_validation()
-        await self.file_validation()
-        await self.run_plugin()
+        # await self.file_validation()
+        # await self.run_plugin()
+        verify = await self.plugin_verification()
+        if not verify:
+            raise InvalidInput("Plugin didn't match the file uploaded!")
         await self.new_finding_check()
         await self.finding_name_process()
         await self.cve_process()

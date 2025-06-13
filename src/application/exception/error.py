@@ -15,6 +15,10 @@ class InvalidFile(Exception):
         self.msg = f"Expected file format: {file_type}"
 
 
+class InvalidInput(Exception):
+    pass
+
+
 class SchemaException(Exception):
     def __init__(self, msg: str) -> None:
         self.msg = msg

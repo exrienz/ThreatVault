@@ -57,6 +57,24 @@ def get_sidebar_items():
     return sidebar_items
 
 
+def timeago(dt):
+    now = datetime.utcnow()
+    diff = now - dt
+
+    if diff > timedelta(days=1):
+        return None
+
+    seconds = int(diff.total_seconds())
+    if seconds < 60:
+        return f"{seconds} seconds ago"
+    elif seconds < 3600:
+        minutes = seconds // 60
+        return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+    else:
+        hours = seconds // 3600
+        return f"{hours} hour{'s' if hours != 1 else ''} ago"
+
+
 templates.env.filters["startsWith"] = startsWith
 templates.env.filters["findingSeverityMap"] = findingSeverityMap
 templates.env.filters["slaCalc"] = slaCalc
@@ -66,3 +84,5 @@ templates.env.globals["is_admin"] = is_admin
 templates.env.globals["get_user_info"] = get_current_user
 templates.env.globals["get_user_permissions"] = get_user_permissions
 templates.env.globals["get_sidebar_items"] = get_sidebar_items
+templates.env.globals["now"] = datetime.utcnow()
+templates.env.filters["timeago"] = timeago
