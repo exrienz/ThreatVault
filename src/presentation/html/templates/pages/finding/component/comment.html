@@ -3,7 +3,7 @@
 <tr class="comment" data-comment-date='{{comment.created_at}}' data-comment-id="{{comment.id}}">
   <td class="col-auto">
     <div>
-      <div>
+      <div class="d-flex justify-content-between">
         <small>
           <strong style="color:blue">{{ comment.commentor.username | title }}</strong>
           &nbsp;•&nbsp;
@@ -17,7 +17,7 @@
                                            hx-swap="delete"
                                            hx-confirm="Delete this comment: {{comment.comment}}"
                                            hx-target="closest tr">
-            <i class="fas fa-solid fa-trash-alt"></i>
+            <i class="bi bi-trash"></i>
           </a>
         </div>
         {% elif comment.commentor.id | string == user_info.userid %}
@@ -26,7 +26,7 @@
                                            hx-swap="delete"
                                            hx-confirm="Delete this comment: {{comment.comment}}"
                                            hx-target="closest tr">
-            <i class="fas fa-solid fa-trash-alt"></i>
+            <i class="bi bi-trash"></i>
           </a>
         </div>
         {% endif %}
