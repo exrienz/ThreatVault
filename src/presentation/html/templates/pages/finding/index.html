@@ -75,13 +75,15 @@
       {% include "pages/finding/component/remark.html"%}
       <!-- Start: Comments -->
       <div class="card">
-        <div hx-get="{{data.id}}/comments" hx-indicator="#spinner" hx-trigger="load">
+        <div hx-get="{{data.id}}/comments" hx-indicator="#spinner" hx-trigger="load"
+          hx-on::after-settle="commentDateUpdate()">
           {% include "pages/finding/component/comments.html" %}
         </div>
 
         {% if "comment:create" in permissions or "all" in permissions %}
         <div class="card">
-          <form hx-post="{{ data.id }}/comment" hx-swap="beforeend" hx-target="#comments_table_id">
+          <form hx-post="{{ data.id }}/comment" hx-swap="beforeend" hx-target="#comments_table_id"
+            hx-on::after-request="this.reset();">
             <div class="card-body">
               <div class="form-group mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Comment:</label>
@@ -107,4 +109,13 @@
 <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
 
 <script src="/assets/static/js/pages/form-element-select.js"></script>
+<script>
+  function commentDateUpdate() {
+    const comments = document.querySelectorAll(".comment");
+    comments.forEach(el => {
+      document.getElementById(`comment_timer_${el.dataset.commentId}`).textContent = timeago(el.dataset.commentDate);
+    })
+  }
+  setInterval(commentDateUpdate, 60000);
+</script>
 {% endblock %}
