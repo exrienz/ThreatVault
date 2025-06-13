@@ -17,9 +17,9 @@ class FindingUploadSchema(BaseModel):
 class ManualFindingUploadSchema(BaseModel):
     finding_name: str
     host: str
-    port: str
+    port: int
     severity: SeverityEnum
-    vpr_score: str
+    vpr_score: int
     evidence: str
     remediation: str
     finding_date: datetime
