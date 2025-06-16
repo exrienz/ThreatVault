@@ -1,18 +1,20 @@
 <div class="modal fade text-left" id="danger" tabindex="-1" role="dialog" style="display: none"
                                                                           aria-hidden="true">
   <div class="modal-dialog modal-dialog-left modal-dialog-scrollable" role="document">
-    <form id="finding_action_form" class="modal-content" hx-post="finding/action">
+    <form id="finding_action_form" class="modal-content" hx-post="{{product.id}}/action" hx-swap="none"
+      hx-on::after-request="if (event.detail.xhr.status === 200){this.reset();}">
       <div class="modal-header bg-danger">
-        <h5 class="modal-title white" id="myModalLabel120">High Risk Action</h5>
+        <h5 class="modal-title white">High Risk Action</h5>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <i data-feather="x"></i>
         </button>
       </div>
       <input type="hidden" id="fn_name_action_id" name="finding_name_id"></input>
+      <input type="hidden" id="current_status" name="current_status"></input>
       <div class="modal-body">
         <div class="form-group" align="left">
           <label for="name" class="form-label">Host (default: all)</label>
-          <select id="choices" name="choices" class="form-select multiple-remove" multiple="multiple">
+          <select id="hosts" name="hosts" class="form-select multiple-remove" multiple="multiple">
             <optgroup label="Select affected host">
             </optgroup>
           </select>
@@ -22,7 +24,7 @@
             <label for="selectOption">Action</label>
             <select name="action" class="form-control" id="selectOptionz" required>
               <option value="" disabled selected>Select an action</option>
-              <option value="Examption">Examption</option>
+              <option value="Exemption">Exemption</option>
               <option value="Not Applicable">Not Applicable</option>
               <option value="Invalid">Invalid</option>
               <option value="Duplicate">Duplicate</option>
@@ -30,11 +32,12 @@
           </div>
           <div class="form-group" align="left">
             <label for="birthday" class="form-label">Action valid until</label>
-            <input type="date" name="delayUntill" class="form-control" placeholder="Target Remediation Date" min={{now.strftime('%Y-%m-%d')}}>
+            <input type="date" name="delay_untill" class="form-control" placeholder="Target Remediation Date"
+            >
           </div>
           <div class="form-group" align="left">
             <label for="birthday" class="form-label">Remarks</label>
-            <input type="text" class="form-control" name="remarks" placeholder="Remarks, evidence URL">
+            <input type="text" class="form-control" name="remark" placeholder="Remarks, evidence URL">
           </div>
         </div>
         <div class="modal-footer">

@@ -150,7 +150,7 @@ async def create_remark(
     update_dict = {
         "delay_untill": data.target_date,
         "remark": remarks,
-        "status": FnStatusEnum.EXAMPTION,
+        "status": FnStatusEnum.EXEMPTION,
     }
     await finding_service.bulk_update(filters, update_dict)
     return templates.TemplateResponse(

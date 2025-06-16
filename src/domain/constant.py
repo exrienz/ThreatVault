@@ -21,8 +21,8 @@ class FnStatusEnum(Enum):
     NEW = "NEW"
     OPEN = "OPEN"
     CLOSED = "CLOSED"
-    EXAMPTION = "EXAMPTION"
-    OTHER = "OTHER"
+    EXEMPTION = "EXEMPTION"
+    OTHERS = "OTHERS"
 
 
 # class RoleEnum(Enum):

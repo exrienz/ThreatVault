@@ -137,16 +137,20 @@
   {% endif %}
 </script>
 <script>
-  var el = document.querySelector("#choices");
+  var el = document.querySelector("#hosts");
   var hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
   function mapHostChoice(value, idx, el) {
     return {value: value, label: value}
   }
-  function setChoices(hosts, finding_name_id) {
+  function setChoices(hosts, finding_name_id, current_status) {
     mapped = hosts.map(mapHostChoice);
     hostChoices.setChoices(mapped, "value", "label", true);
+
     fm = document.querySelector("#fn_name_action_id")
     fm.setAttribute("value", `${finding_name_id}`)
+
+    fn_status = document.querySelector("#current_status")
+    fm_status.setAttribute("value", `${current_status}`)
   }
 </script>
 

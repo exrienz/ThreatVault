@@ -103,25 +103,39 @@ async def get_findings(
 
 
 @router.post(
-    "/finding/action", dependencies=[Depends(PermissionChecker(["finding:action"]))]
+    "/{product_id}/action",
+    dependencies=[Depends(PermissionChecker(["finding:action"]))],
 )
 async def finding_action(
     request: Request,
+    product_id: UUID,
     data: Annotated[FindingActionRequestSchema, Form()],
     finding_service: FindingServiceDep,
+    log_service: LogServiceDep,
 ):
     try:
         status = FnStatusEnum(data.action.upper())
     except Exception:
-        status = FnStatusEnum.OTHER
-        data.remarks += f"\n System: {data.action}"
+        status = FnStatusEnum.OTHERS
+        data.remark += f"\n System: {data.action}"
+        data.delay_untill = None
+
+    if data.delay_untill and status != FnStatusEnum.OTHER:
+        data.remark += f"\n Remediation Date: {data.delay_untill.strftime('%d-%m-%Y')}"
 
     internal = FindingActionInternalSchema(status=status, **data.model_dump())
-    await finding_service.update(data.finding_name_id, internal)
+
+    filters = {
+        "hosts": data.hosts,
+        "current_status": data.current_status,
+    }
+    await finding_service.update(data.finding_name_id, filters, internal)
+
+    await log_service.calculate(product_id, datetime.now())
     return templates.TemplateResponse(
         request,
         "empty.html",
-        headers={"HX-Trigger": "reload-findings"},
+        headers={"HX-Trigger": "reload-findings, reload-stats"},
     )
 
 
@@ -327,7 +341,7 @@ async def revert_modal(
 ):
     current = await service.get_by_product_id(product_id)
     prev = await service.get_prev_by_product_id(product_id)
-    keys = ["tNew", "tOpen", "tClosed", "tExamption", "tOthers"]
+    keys = ["tNew", "tOpen", "tClosed", "tExemption", "tOthers"]
     can_revert = await finding_service.can_revert(product_id)
     return templates.TemplateResponse(
         request,
@@ -396,7 +410,7 @@ async def get_hosts(
             "label": v.title(),
             "selected": v in selected.get("status", []),
         }
-        for v in ("NEW", "OPEN", "CLOSED", "EXAMPTION")
+        for v in ("NEW", "OPEN", "CLOSED", "EXEMPTION")
     ]
 
     severity = [

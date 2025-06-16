@@ -83,12 +83,11 @@
     document.addEventListener("htmx:responseError", function (e) {
       const xhr = e.detail.xhr
 
-      Swal.fire({
-        icon: "error",
-        title: xhr.status,
-        text: JSON.parse(xhr.responseText),
-        timer: 3500,
-      });
+      let msg = JSON.parse(xhr.responseText);
+      if (msg instanceof Object) {
+        msg = msg.detail[0].msg;
+      }
+      ToastCustom(`Code ${xhr.status} - ${msg}`, "error")
     })
   </script>
   <script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>

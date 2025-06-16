@@ -71,8 +71,8 @@ class LogRepository(BaseRepository[Log]):
             .collect()
             .to_dict(as_series=False)
         )
-
         log_data = {k: v for k, v in zip(dct["value"], dct["total"])}
+        print("\n\nLOG DATA\n", log_data)
         log_data["product_id"] = product_id
         log_data["log_date"] = scan_date
         log_data["uploader_id"] = uploader_id
@@ -168,7 +168,7 @@ class LogRepository(BaseRepository[Log]):
         ).alias()
         t_new = func.sum(sub.c.tNew)
         t_open = func.sum(sub.c.tOpen)
-        t_exemption = func.sum(sub.c.tExamption)
+        t_exemption = func.sum(sub.c.tExemption)
         t_closed = func.sum(sub.c.tClosed)
         t_others = func.sum(sub.c.tOthers)
 

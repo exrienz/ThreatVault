@@ -81,7 +81,8 @@ class FindingRepository(BaseRepository):
                     FindingName.name,
                     Finding.severity,
                     Finding.status,
-                    func.max(Finding.remark).label("remark"),
+                    Finding.remark,
+                    # func.max(Finding.remark).label("remark"),
                     func.max(Finding.finding_date),
                     func.array_agg(
                         func.distinct(Finding.plugin_id), type_=ARRAY(SQL_UUID)
@@ -91,7 +92,7 @@ class FindingRepository(BaseRepository):
                     ).label("hosts"),
                 ).join(FindingName)
             )
-            .group_by(FindingName.id, Finding.severity, Finding.status)
+            .group_by(FindingName.id, Finding.severity, Finding.status, Finding.remark)
             .order_by(Finding.severity)
         )
         if product_id:
@@ -184,7 +185,7 @@ class FindingRepository(BaseRepository):
             .join(FindingName)
             .where(
                 FindingName.product_id == product_id,
-                Finding.status.not_in([FnStatusEnum.CLOSED, FnStatusEnum.EXAMPTION]),
+                Finding.status.not_in([FnStatusEnum.CLOSED, FnStatusEnum.EXEMPTION]),
                 Finding.severity == severity,
                 func.extract("day", Finding.finding_date - today) < sub,
             )
@@ -193,7 +194,7 @@ class FindingRepository(BaseRepository):
         query = await self.session.execute(stmt)
         return query.all()
 
-    async def update(self, item_id: UUID, data: dict, hosts: list):
+    async def update(self, item_id: UUID, filters: dict, data: dict):
         stmt = (
             update(Finding)
             .where(
@@ -202,8 +203,10 @@ class FindingRepository(BaseRepository):
             )
             .values(data)
         )
-        if hosts:
+        if hosts := filters.get("hosts"):
             stmt = stmt.where(Finding.host.in_(hosts))
+        if c_status := filters.get("current_status"):
+            stmt = stmt.where(Finding.status == c_status)
         await self.session.execute(stmt)
         await self.session.commit()
 

@@ -1,7 +1,7 @@
 <div id="log_new_id" hx-swap-oob="innerHTML">{{ logs.tNew | default(0) }}</div>
 <div id="log_open_id" hx-swap-oob="innerHTML">{{ logs.tOpen | default(0) }}</div>
-<div id="log_examption_id" hx-swap-oob="innerHTML">{{ logs.tExamption | default(0) }}</div>
-<div id="log_total_id" hx-swap-oob="innerHTML">{{ logs.tNew | default(0) + logs.tOpen | default(0) + logs.tExamption | default(0) }}</div>
+<div id="log_exemption_id" hx-swap-oob="innerHTML">{{ logs.tExemption | default(0) }}</div>
+<div id="log_total_id" hx-swap-oob="innerHTML">{{ logs.tNew | default(0) + logs.tOpen | default(0) + logs.tExemption | default(0) }}</div>
 {% if logs.log_date is defined %}
 <div id="finding_header_id" hx-swap-oob="outerHTML" data-upload-date={{logs.log_date.strftime("%Y-%m-%d")}}>
     Last Update : {{ logs.log_date.strftime("%d-%m-%Y") }} <code>|</code> {{ logs.uploader.username | default() | title }}

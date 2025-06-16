@@ -92,11 +92,10 @@ class FindingService:
             ).days
         return sla_mapping
 
-    # TODO: Fix this, rearrange
     async def update(
-        self, item_id: UUID, hosts: list, data: FindingActionInternalSchema
+        self, item_id: UUID, filters: dict, data: FindingActionInternalSchema
     ):
-        await self.repository.update(item_id, data.model_dump(), hosts)
+        await self.repository.update(item_id, filters, data.model_dump())
 
     async def bulk_update(self, filters: dict, data: dict):
         await self.repository.bulk_update(filters, data)

@@ -152,7 +152,7 @@ class Log(Base):
     tNew: Mapped[int] = mapped_column(default=0)
     tOpen: Mapped[int] = mapped_column(default=0)
     tClosed: Mapped[int] = mapped_column(default=0)
-    tExamption: Mapped[int] = mapped_column(default=0)
+    tExemption: Mapped[int] = mapped_column(default=0)
     tOthers: Mapped[int] = mapped_column(default=0)
     bCrit: Mapped[int] = mapped_column(default=0)
     bHigh: Mapped[int] = mapped_column(default=0)

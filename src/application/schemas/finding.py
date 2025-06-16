@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from pydantic_core import PydanticCustomError
 
 from src.domain.constant import FnStatusEnum, SeverityEnum
 
@@ -42,14 +42,30 @@ class ITSRemark(BaseModel):
 
 class FindingActionRequestSchema(BaseModel):
     finding_name_id: UUID
-    choices: list[str]
+    hosts: list[str] | None = None
     action: str
-    delayUntill: Optional[datetime]
-    remarks: str = ""
+    delay_untill: datetime | None = None
+    remark: str = ""
+    current_status: str | None = None
+
+    @field_validator("delay_untill", mode="after")
+    @classmethod
+    def datetime_validator(cls, value: datetime | None) -> datetime | None:
+        if value is not None:
+            today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            if value < today:
+                raise PydanticCustomError(
+                    "Invalid datetime range",
+                    "{value} must be greater than today date ({today}).",
+                    {
+                        "value": value.strftime("%d-%m-%Y"),
+                        "today": today.strftime("%d-%m-%Y"),
+                    },
+                )
+        return value
 
 
 class FindingActionInternalSchema(BaseModel):
     status: FnStatusEnum
-    delayUntill: Optional[datetime]
-    remarks: str = ""
-    host_list: list[str]
+    delay_untill: datetime | None = None
+    remark: str = ""
