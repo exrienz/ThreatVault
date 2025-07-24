@@ -5,11 +5,12 @@ from uuid import UUID
 import polars as pl
 import pytz
 from fastapi import Depends
-from sqlalchemy import Float, Integer, Select, func, select
+from sqlalchemy import Float, Integer, Row, Select, and_, case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.domain.entity import Environment, Finding, FindingName, Log, Product, Project
+from src.domain.entity.setting import GlobalConfig
 from src.infrastructure.database import sync_engine
 from src.infrastructure.database.session import get_session
 from src.persistence.base import BaseRepository
@@ -39,9 +40,8 @@ class LogRepository(BaseRepository[Log]):
                 Finding.status.label("value"),
                 func.count(Finding.id).label("total"),
             )
-            .join(FindingName)
             .group_by(Finding.status)
-            .where(FindingName.product_id == product_id)
+            .where(Finding.product_id == product_id)
         )
         status_calc = pl.read_database(status_stmt, connection=sync_engine).lazy()
 
@@ -53,7 +53,7 @@ class LogRepository(BaseRepository[Log]):
             .join(FindingName)
             .group_by(Finding.severity)
             .where(
-                FindingName.product_id == product_id,
+                Finding.product_id == product_id,
                 # Finding.last_update == scan_date,
             )
         )
@@ -72,11 +72,53 @@ class LogRepository(BaseRepository[Log]):
             .to_dict(as_series=False)
         )
         log_data = {k: v for k, v in zip(dct["value"], dct["total"])}
-        print("\n\nLOG DATA\n", log_data)
         log_data["product_id"] = product_id
         log_data["log_date"] = scan_date
         log_data["uploader_id"] = uploader_id
+        sla_breach = await self.calculate_breach(product_id, scan_date)
+        log_data.update(sla_breach)
         return await self.create(log_data)
+
+    async def calculate_breach(self, product_id: UUID, scan_date: datetime) -> dict:
+        status_excludes = ["CLOSED", "OTHERS"]
+
+        sub = select(
+            GlobalConfig.sla_critical.label("CRITICAL"),
+            GlobalConfig.sla_high.label("HIGH"),
+            GlobalConfig.sla_medium.label("MEDIUM"),
+            GlobalConfig.sla_low.label("LOW"),
+        ).subquery()
+
+        sla_count = []
+
+        for status in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
+            sub_c_status = getattr(sub.c, status)
+            sub_stmt = func.count(
+                case(
+                    (
+                        and_(
+                            Finding.severity == status,
+                            func.date_part("day", scan_date - Finding.finding_date)
+                            > sub_c_status,
+                            Finding.status.not_in(status_excludes),
+                        ),
+                        1,
+                    )
+                )
+            ).label(f"b{status.title()}")
+            sla_count.append(sub_stmt)
+        stmt = (
+            select(
+                *sla_count,
+            )
+            .select_from(Finding)
+            .join(FindingName)
+        ).where(Finding.product_id == product_id)
+        query = await self.session.execute(stmt)
+        data = query.one_or_none()
+        if data:
+            return data._asdict()
+        return {}
 
     async def get_by_product_id(self, product_id: UUID):
         subquery = (
@@ -233,19 +275,35 @@ class LogRepository(BaseRepository[Log]):
         return query.all()
 
     async def statistics_by_environment(
-        self, env_id: UUID, year: int | None = None, month: int | None = None
+        self,
+        env_id: UUID,
+        year: int | None = None,
+        month: int | None = None,
+        type_: str = "severity",
     ):
         if year is None:
             year = datetime.now().year
         sub = self._statistics()
-        slct = (
-            sub.c.environment_id,
-            sub.c.month,
-            func.sum(sub.c.tCritical).label("tCritical"),
-            func.sum(sub.c.tHigh).label("tHigh"),
-            func.sum(sub.c.tMedium).label("tMedium"),
-            func.sum(sub.c.tLow).label("tLow"),
-        )
+
+        if type_ == "severity":
+            slct = (
+                sub.c.environment_id,
+                sub.c.month,
+                func.sum(sub.c.tCritical).label("tCritical"),
+                func.sum(sub.c.tHigh).label("tHigh"),
+                func.sum(sub.c.tMedium).label("tMedium"),
+                func.sum(sub.c.tLow).label("tLow"),
+            )
+        else:
+            slct = (
+                sub.c.environment_id,
+                sub.c.month,
+                func.sum(sub.c.tNew).label("tNew"),
+                func.sum(sub.c.tOpen).label("tOpen"),
+                func.sum(sub.c.tClosed).label("tClosed"),
+                func.sum(sub.c.tExemption).label("tExemption"),
+                func.sum(sub.c.tOthers).label("tOthers"),
+            )
         stmt = (
             select(*slct)
             .where(
@@ -280,6 +338,25 @@ class LogRepository(BaseRepository[Log]):
         query = await self.session.execute(stmt)
         return query.all()
 
+    async def compare_stats(self, filters: dict):
+        product_ids: list[UUID] = filters.get("product_ids", [])
+        curr_date: datetime = filters.get("curr_date", datetime.now())
+
+        subquery = (
+            select(Log)
+            .where(func.extract("month", Log.log_date) == curr_date.month - 1)
+            .subquery()
+        )
+        stmt = select(
+            Log.product_id, Log.tClosed - func.coalesce(subquery.c.tClosed)
+        ).where(
+            Log.product_id.in_(product_ids),
+            func.extract("month", Log.log_date) == curr_date.month,
+        )
+
+        query = await self.session.execute(stmt)
+        return query.all()
+
     def _project_allowed_ids(self, stmt: Select) -> Select:
         if self.allowed_project_ids is None:
             return stmt
@@ -289,3 +366,91 @@ class LogRepository(BaseRepository[Log]):
         if self.allowed_product_ids is None:
             return stmt
         return stmt.where(Product.id.in_(self.allowed_product_ids))
+
+    async def get_by_project_id(
+        self,
+        project_id: UUID,
+        year: int | None = None,
+        month: int | None = None,
+        page: int = 1,
+    ):
+        today = datetime.now()
+        if year is None:
+            year = today.year
+        if month is None:
+            month = today.month
+
+        sub = self._statistics()
+
+        sub_product_ids = (
+            select(Product.id)
+            .join(Environment)
+            .where(Environment.project_id == project_id)
+        )
+
+        stmt = select(sub).where(
+            sub.c.rank == 1,
+            sub.c.product_id.in_(sub_product_ids),
+            func.extract("year", sub.c.log_date) == year,
+            func.extract("month", sub.c.log_date) == month,
+        )
+        return await self.pagination(stmt, page)
+
+    async def get_total_by_project_id(
+        self,
+        project_id: UUID,
+        filters: dict,
+        year: int | None = None,
+        month: int | None = None,
+    ) -> Row:
+        today = datetime.now()
+        if year is None:
+            year = today.year
+        if month is None:
+            month = today.month
+
+        sub = self._statistics()
+
+        sub_product_ids = (
+            select(Product.id)
+            .join(Environment)
+            .where(Environment.project_id == project_id)
+        )
+
+        if env_name := filters.get("env_type"):
+            sub_product_ids = sub_product_ids.where(Environment.name == env_name)
+
+        sum_status = [
+            func.sum(sub.c.tCritical).label("CRITICAL"),
+            func.sum(sub.c.tHigh).label("HIGH"),
+            func.sum(sub.c.tMedium).label("MEDIUM"),
+            func.sum(sub.c.tLow).label("LOW"),
+        ]
+        stmt = select(*sum_status).where(
+            sub.c.rank == 1,
+            sub.c.product_id.in_(sub_product_ids),
+            func.extract("year", sub.c.log_date) == year,
+            func.extract("month", sub.c.log_date) == month,
+        )
+
+        query = await self.session.execute(stmt)
+        return query.one()
+
+    async def get_yearly_log_by_product_id(self, product_id: UUID, year: int | None):
+        if year is None:
+            year = datetime.now().year
+
+        sub = self._statistics()
+
+        stmt = (
+            select(sub)
+            .where(
+                sub.c.rank == 1,
+                sub.c.product_id == product_id,
+                func.extract("year", sub.c.log_date) == year,
+            )
+            .order_by(sub.c.month)
+        )
+
+        query = await self.session.execute(stmt)
+        return query.all()

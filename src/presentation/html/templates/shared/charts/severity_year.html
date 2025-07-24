@@ -1,0 +1,29 @@
+<script>
+  chartOptions = {
+    ...areaOptions,
+    series: [
+      {
+        name: "Critical",
+        data: {{chart.Critical}},
+      },
+      {
+        name: "High",
+        data: {{chart.High}},
+      },
+      {
+        name: "Medium",
+        data: {{chart.Medium}},
+      },
+      {
+        name: "Low",
+        data: {{chart.Low}},
+      },
+    ],
+  }
+
+  var chart = new ApexCharts(
+    document.getElementById(`{{env}}-year-chart`),
+    chartOptions
+  )
+  chart.render()
+</script>

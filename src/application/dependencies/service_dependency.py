@@ -5,13 +5,16 @@ from fastapi import Depends
 from ..services import (
     AuthService,
     CommentService,
+    CVEService,
     EnvService,
     FindingService,
     GlobalService,
     LogService,
+    ManagementViewService,
     PluginService,
     ProductService,
     ProjectManagementService,
+    RemarkService,
     RoleService,
     TokenService,
     UserService,
@@ -29,6 +32,9 @@ CommentServiceDep = Annotated[CommentService, Depends()]
 ProjectManagementServiceDep = Annotated[ProjectManagementService, Depends()]
 EnvServiceDep = Annotated[EnvService, Depends()]
 TokenServiceDep = Annotated[TokenService, Depends()]
+MVServiceDep = Annotated[ManagementViewService, Depends()]
+CVEServiceDep = Annotated[CVEService, Depends()]
+RemarkServiceDep = Annotated[RemarkService, Depends()]
 
 __all__ = [
     "AuthServiceDep",
@@ -43,4 +49,7 @@ __all__ = [
     "UserServiceDep",
     "EnvServiceDep",
     "TokenServiceDep",
+    "MVServiceDep",
+    "CVEServiceDep",
+    "RemarkServiceDep",
 ]

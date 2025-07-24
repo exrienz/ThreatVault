@@ -16,6 +16,21 @@
     "url": "/coming-soon"
   },
   {
+    "name": "Management Dashboard",
+    "icon": "slack",
+    "key": "/management-view",
+    "submenu": [
+      {
+        "name": "VAPT",
+        "url": "/management-view/vapt"
+      },
+      {
+        "name": "Compliance",
+        "url": "/management-view/compliance"
+      }
+    ]
+  },
+  {
     "name": "User Management",
     "key": "/manage",
     "icon": "people-fill",

@@ -1,0 +1,59 @@
+{% set title = "VAPT - Management View" %}
+{% set filename = "management-view/vapt" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>VAPT - Management View</h3>
+</div>
+<div class="page-content">
+  <!--Row-->
+  <!-- Row -->
+  <section class="row">
+    <div class="row">
+      <!-- Middle side columns -->
+      <form id="detail-form" hx-get="overall">
+        <div class="row">
+          <div class="col-8 mb-1">
+            <div class="input-group mb-3">
+              <label class="input-group-text">Project</label>
+              <select class="form-select" id="project-select" name="project_id" hx-get="detail" hx-target="#mv-card">
+                <option value="">Select Project</option>
+                {% for project in projects %}
+                <option value={{project.id}}>
+                  {{project.name}}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-4 mb-1">
+            <div class="input-group mb-3">
+              <label class="input-group-text">Year</label>
+              <select class="form-select" name="year" id="year-select">
+                {% for i in range(min_year - now.year + 1) %}
+                <option value=2025>{{now.year - i}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div id="hidden-input">
+      </div>
+    </div>
+    <div class="col-12">
+      {% include "pages/management_view/vapt/component/tabs.html"%}
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block js %}
+<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="/assets/static/js/pages/ui-apexchart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script id="overall-chart-js"></script>
+{% endblock %}

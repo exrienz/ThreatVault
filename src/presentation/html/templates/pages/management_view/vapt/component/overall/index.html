@@ -1,0 +1,69 @@
+{% extends 'pages/management_view/vapt/component/detail.html' %}
+
+{% block content %}
+<section class="row">
+  <div class="col-4 mb-1">
+    <div class="input-group mb-3">
+      <label class="input-group-text">View</label>
+      <select class="form-select" id="overall-type" name="view" hx-get="overall">
+        <option value="severity" {%if view=="severity" %} selected {%endif%}>Severity</option>
+        <option value="status" {%if view=="status" %} selected {%endif%}>Status</option>
+      </select>
+    </div>
+  </div>
+</section>
+<section class="row" id="overall-prod" hx-trigger="load" hx-include="#overall-type">
+  <div class="col-12" hx-get="/chart/project/{{project.id}}" hx-trigger="load" hx-swap="afterend"
+    hx-target="#overall-chart-js">
+    <div class="card">
+      <div class="card-header">
+        <h4>Production Progress</h4>
+      </div>
+      <div class="card-body">
+        <div id="prod-year-chart"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row" hx-vals='js:{env_id: document.getElementById("production-id").value}'>
+    <div class="col-6">
+      <div id="prod_prev" hx-target="#prod_prev">
+        <div hx-get="/chart/env?month={{now.month - 1}}" hx-trigger="load">
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div id="prod_curr" hx-target="#prod_curr">
+        <div hx-get="/chart/env?month={{now.month}}" hx-trigger="load">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="row" id="overall-non-prod" hx-include="#overall-type">
+  <div class="col-12" hx-get="/chart/project/{{project.id}}?env=non-production" hx-trigger="load" hx-swap="afterend"
+    hx-target="#overall-chart-js">
+    <div class="card">
+      <div class="card-header">
+        <h4>Non-Production Progress</h4>
+      </div>
+      <div class="card-body">
+        <div id="non-production-year-chart"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row" hx-vals='js:{env_id: document.getElementById("non-production-id").value}'>
+    <div class="col-6">
+      <div id="non-prod_prev" hx-target="#non-prod_prev">
+        <div hx-get="/chart/env?month={{now.month - 1}}" hx-trigger="load">
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div id="non-prod_curr" hx-target="#non-prod_curr">
+        <div hx-get="/chart/env?month={{now.month}}" hx-trigger="load">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

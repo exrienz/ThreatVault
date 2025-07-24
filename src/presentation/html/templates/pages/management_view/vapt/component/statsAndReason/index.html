@@ -1,0 +1,36 @@
+{% extends 'pages/management_view/vapt/component/detail.html' %}
+
+{% block content %}
+<section class="section">
+  <div class="row" id="table-striped">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Stats And Reason</h4>
+        </div>
+        <div class="card-content" hx-include="#month-selector">
+          <div class="input-group" id="month-selector">
+            <input type="hidden" name="project_id" value="{{project_id}}" />
+            <input type="hidden" name="year" value="{{year}}" />
+            <select class="form-select" name="month">
+              <option selected value={{now.month}}>Select Date...</option>
+              {% for date_option in range(1, now.month + 1) %}
+              <option value="{{'{:02d}'.format(date_option | int) }}" {% if date_option==month %} selected {%endif%}>
+                {{ '{:02d}'.format(date_option | int) }}
+              </option>
+              {% endfor %}
+            </select>
+            <label class="input-group-text">Options</label>
+          </div>
+          {% include "pages/management_view/vapt/component/statsAndReason/table_v2.html" %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="add-remark-modal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+{% endblock content %}

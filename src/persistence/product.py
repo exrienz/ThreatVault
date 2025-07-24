@@ -10,7 +10,6 @@ from sqlalchemy.orm import selectinload
 from src.domain.entity import (
     Environment,
     Finding,
-    FindingName,
     Product,
     ProductUserAccess,
     User,
@@ -110,12 +109,7 @@ class ProductRepository(BaseRepository[Product]):
         await self.session.delete(permission)
 
     async def get_hosts(self, product_id: UUID) -> Sequence[str]:
-        stmt = (
-            select(Finding.host)
-            .join(FindingName)
-            .where(FindingName.product_id == product_id)
-            .distinct()
-        )
+        stmt = select(Finding.host).where(Finding.product_id == product_id).distinct()
         query = await self.session.execute(stmt)
         return query.scalars().all()
 

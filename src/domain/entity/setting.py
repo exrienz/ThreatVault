@@ -37,3 +37,5 @@ class GlobalConfig(Base):
     smtp_port: Mapped[Optional[str]]
     smtp_username: Mapped[Optional[str]]
     smtp_password: Mapped[Optional[str]]
+
+    sensitive_hosts: Mapped[Optional[str]]

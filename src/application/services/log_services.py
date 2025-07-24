@@ -40,6 +40,21 @@ class LogService:
             month,
         )
 
+    async def get_products_by_env_view(
+        self, env_id: UUID, year: int | None = None, month: int | None = None
+    ):
+        today = datetime.now()
+        if year is None:
+            year = today.year
+        if month is None:
+            month = today.month
+
+        return (
+            await self.repository.get_products_by_env(env_id, year, month),
+            year,
+            month,
+        )
+
     async def get_available_date_by_env(self, env_id: UUID):
         return await self.repository.get_date_options_by_env(env_id)
 
@@ -74,3 +89,51 @@ class LogService:
             dct["Medium"][mnt] = c.tMedium
             dct["Low"][mnt] = c.tLow
         return dct, year, month
+
+    async def get_statistic_by_env_filters(
+        self,
+        env_id: UUID,
+        year: int | None = None,
+        month: int | None = None,
+        type_: str = "severity",
+    ):
+        today = datetime.now()
+        if year is None:
+            year = today.year
+
+        chart_data = await self.repository.statistics_by_environment(
+            env_id, year, month, type_
+        )
+
+        if type_ == "severity":
+            dct = {
+                "Critical": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "High": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "Medium": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "Low": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            }
+            for c in chart_data:
+                mnt = int(c.month) - 1
+                dct["Critical"][mnt] = c.tCritical
+                dct["High"][mnt] = c.tHigh
+                dct["Medium"][mnt] = c.tMedium
+                dct["Low"][mnt] = c.tLow
+        else:
+            dct = {
+                "Open": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "New": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "Closed": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "Exempted": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                "Other": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            }
+            for c in chart_data:
+                mnt = int(c.month) - 1
+                dct["Open"][mnt] = c.tOpen
+                dct["New"][mnt] = c.tNew
+                dct["Closed"][mnt] = c.tClosed
+                dct["Exempted"][mnt] = c.tExemption
+                dct["Other"][mnt] = c.tOthers
+        return dct, year, month
+
+    async def get_logs_yearly(self, product_id: UUID, year: int | None):
+        return await self.repository.get_yearly_log_by_product_id(product_id, year)

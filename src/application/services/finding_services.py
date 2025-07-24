@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime, timedelta
 from uuid import UUID
 
@@ -5,6 +6,7 @@ import pytz
 from fastapi import Depends
 
 from src.application.schemas.finding import FindingActionInternalSchema
+from src.application.schemas.management_view import PriorityAPISchema
 from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.domain.entity.finding import Finding, FindingName
 from src.persistence import (
@@ -15,6 +17,7 @@ from src.persistence import (
     PluginRepository,
 )
 from src.persistence.base import Pagination
+from src.persistence.log import LogRepository
 
 
 class FindingService:
@@ -25,15 +28,60 @@ class FindingService:
         revert_repository: FindingRevertRepository = Depends(),
         global_repository: GlobalRepository = Depends(),
         plugin_repository: PluginRepository = Depends(),
+        log_repository: LogRepository = Depends(),
     ):
         self.repository = repository
         self.findingname_repository = findingname_repository
         self.revert_repository = revert_repository
         self.global_repository = global_repository
         self.plugin_repository = plugin_repository
+        self.log_repository = log_repository
 
     async def get_by_product_id(self, product_id: UUID):
         return await self.repository.get_by_product_id_extended(product_id)
+
+    async def get_by_project_id(self, project_id: UUID) -> Sequence[Finding]:
+        return await self.repository.get_all_by_project_id(project_id)
+
+    async def get_sla_breach_chart_data(
+        self, project_id: UUID, filters: dict, page: int = 1
+    ) -> Pagination:
+        return await self.log_repository.get_by_project_id(
+            project_id, filters.get("year"), filters.get("month"), page=page
+        )
+
+    async def get_sla_breach_summary(self, project_id: UUID, filters: dict):
+        return await self.log_repository.get_total_by_project_id(
+            project_id, filters, filters.get("year"), filters.get("month")
+        )
+
+    async def get_sla_breach_status(
+        self, project_id: UUID, env: str | None = "prod"
+    ) -> Sequence:
+        return await self.repository.get_sla_breach_status(project_id, {"env": env})
+
+    async def get_by_priority_threshold(
+        self, data: PriorityAPISchema, priorities: list[str]
+    ):
+        sensitive_hosts = None
+        if data.sensitive_hosts_view:
+            sensitive_hosts = []
+            settings = await self.global_repository.get()
+            if settings and settings.sensitive_hosts:
+                sensitive_hosts = settings.sensitive_hosts.split(",")
+        return await self.repository.get_by_priority_list(
+            data.project_id,
+            priorities,
+            {"hosts": sensitive_hosts},
+            page=data.page,
+        )
+
+    async def compare_status_stats(
+        self, product_ids: list[UUID], curr_date: datetime | None = None
+    ):
+        return await self.log_repository.compare_stats(
+            {"product_ids": product_ids, "curr_date": curr_date}
+        )
 
     async def get_group_by_severity_status(
         self,

@@ -2,12 +2,15 @@ from fastapi import APIRouter, Depends
 
 from ..dependencies import PermissionChecker
 from .auth import router as Auth
+from .chart import router as Chart
+from .cve import router as CVE
 from .dashboard import router as Dashboard
 from .finding import router as Finding
 from .host import router as Host
 from .manage_api import router as APIManager
 from .manage_owner import router as OwnerManagement
 from .manage_user import router as User
+from .mv_vapt import router as MV_VAPT
 from .plugin_management import router as Plugin
 from .product import router as Product
 from .project_management import router as PM
@@ -29,6 +32,9 @@ v1_router_with_auth.include_router(Setting)
 v1_router_with_auth.include_router(SelfService)
 v1_router_with_auth.include_router(APIManager)
 v1_router_with_auth.include_router(Host)
+v1_router_with_auth.include_router(MV_VAPT)
+v1_router_with_auth.include_router(Chart)
+v1_router_with_auth.include_router(CVE)
 # v1_router_with_auth.include_router(TI)
 
 v1_router = APIRouter(prefix="")

@@ -1,0 +1,34 @@
+<div class="modal-dialog modal-dialog-left modal-dialog-scrollable"
+     role="document">
+  {{data}}
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Update Remark</h5>
+        </div>
+        <form class="modal-content" hx-post="remark?product_id={{product_id}}" hx-target="#remark-{{product_id}}">
+        <div class="modal-body">
+            <div class="form-group" align="left">
+                <div class="form-group" align="left">
+                  <label class="form-label">Remark</label>
+                  {%- set nl = '\n' -%}
+                  {% if data %}
+                  <textarea style="height: 120px;padding-left: 0;" rows="3" name="remark" class="form-control">{{data.remark}}</textarea>
+                  {%else%}
+                  <textarea style="height: 120px;" rows="3" name="remark" class="form-control">Engineer: {{ nl }}Absent From Meeting: {{ nl }}Delay Reason (if any):</textarea>
+                  {%endif%}
+                </div>
+                <input type="hidden" name="label" value="{{label}}">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                    <i class="bx bx-x d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Close</span>
+                </button>
+                <button type="submit" class="btn btn-primary ms-1" data-bs-dismiss="modal">
+                    <i class="bx bx-check d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Confirm</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

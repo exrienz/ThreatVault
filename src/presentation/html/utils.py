@@ -17,14 +17,19 @@ def startsWith(text: str, word: str):
     return text.startswith(word)
 
 
-def findingSeverityMap(status: SeverityEnum):
+def findingSeverityMap(status: SeverityEnum | str):
+    if isinstance(status, SeverityEnum):
+        status_str = status.value
+    else:
+        status_str = status
+
     dct = {
-        SeverityEnum.CRITICAL: "maroon",
-        SeverityEnum.HIGH: "red",
-        SeverityEnum.MEDIUM: "orange",
-        SeverityEnum.LOW: "green",
+        "CRITICAL": "maroon",
+        "HIGH": "red",
+        "MEDIUM": "orange",
+        "LOW": "green",
     }
-    return dct.get(status)
+    return dct.get(status_str)
 
 
 def timedelta_filter(val, days=0):
@@ -84,5 +89,5 @@ templates.env.globals["is_admin"] = is_admin
 templates.env.globals["get_user_info"] = get_current_user
 templates.env.globals["get_user_permissions"] = get_user_permissions
 templates.env.globals["get_sidebar_items"] = get_sidebar_items
-templates.env.globals["now"] = datetime.utcnow()
+templates.env.globals["now"] = datetime.now(tz=pytz.utc)
 templates.env.filters["timeago"] = timeago

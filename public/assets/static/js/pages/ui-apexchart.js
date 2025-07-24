@@ -542,3 +542,32 @@ var aging = new ApexCharts(
   areaOptions
 )
 aging.render()
+
+
+var stackedColumnOpts = {
+  chart: {
+    type: 'bar',
+    height: 350,
+    stacked: true,
+    zoom: {
+      enabled: true
+    }
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      borderRadius: 10,
+      borderRadiusApplication: 'end', // 'around', 'end'
+      borderRadiusWhenStacked: 'last', // 'all', 'last'
+      dataLabels: {
+        total: {
+          enabled: true,
+          style: {
+            fontSize: '13px',
+            fontWeight: 900
+          }
+        }
+      }
+    },
+  },
+};

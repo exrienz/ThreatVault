@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -45,6 +45,15 @@ class ProjectRepository(BaseRepository[Project]):
         await self.session.commit()
         await self.session.refresh(db_data)
         return db_data
+
+    async def min_year(self) -> int | None:
+        stmt = (
+            select(func.extract("year", Project.created_at))
+            .order_by(Project.created_at)
+            .limit(1)
+        )
+        query = await self.session.execute(stmt)
+        return query.scalars().one_or_none()
 
     def _product_allowed_ids(self, stmt: Select) -> Select:
         return super()._product_allowed_ids(stmt)

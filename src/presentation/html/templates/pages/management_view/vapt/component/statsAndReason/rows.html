@@ -1,0 +1,41 @@
+{% set permissions = get_user_permissions() %}
+{% set remark_permission= "mv-remark:create" in permissions or "all" in permissions %}
+
+{% for d in data.data %}
+{%- set product = products.get(d.product_id) %}
+<tr style="text-align: center;">
+  <td>{{d.product_name}}</td>
+  <td>{%if product%}{{product.environment.name | title }}{%endif%}</td>
+  <td class="text-wrap">{{d.bCritical + d.bHigh + d.bMedium}}</td>
+  <td>{{d.tClosed + d.tExemption + d.tOthers}}</td>
+  <td id="remark-{{d.product_id}}">
+    {%- set remark_str = remarks.get(d.product_id, "").split("\n") -%}
+    {% for rmstr in remark_str %}
+    <p class="m-0">{{rmstr}}</p>
+    {% endfor %}
+  </td>
+  {% if remark_permission %}
+  <td><a class="btn icon btn-primary"
+         data-bs-toggle="modal"
+         data-bs-target="#add-remark-modal"
+         hx-trigger="click"
+         hx-target="#add-remark-modal"
+         hx-get="remark?product_id={{d.product_id}}&label=stats-and-reason"><i class="bi bi-pencil"></i></a></td>
+  {% endif %}
+</tr>
+{% else %}
+<tr style="text-align: center;"><td colspan="10">No Data</td></tr>
+{% endfor %}
+<nav id="page-controller" hx-swap-oob="innerHTML">
+  <ul class="pagination pagination-primary  justify-content-end">
+    <li class="page-item {%if data.page == 1 %} disabled {%endif%}">
+      <a class="page-link" hx-get="priority/table?page={{data.page - 1}}"tabindex="-1" aria-disabled="true">Previous</a>
+    </li>
+    {% for p in range(1,data.total_page+1)%}
+    <li class="page-item {%if data.page == p %} active {%endif%}"><a class="page-link" hx-get="priority/table?page={{p}}">{{p}}</a></li>
+    {%endfor%}
+    <li class="page-item {%if data.page == data.total_page %} disabled {%endif%}">
+      <a class="page-link" hx-get="priority/table?page={{data.page+1}}">Next</a>
+    </li>
+  </ul>
+</nav>

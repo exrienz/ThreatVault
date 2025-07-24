@@ -28,10 +28,14 @@ class Finding(Base):
     last_update: Mapped[datetime] = mapped_column(DateTime(True))  # Latest Scan Date
     delay_untill: Mapped[Optional[datetime]] = mapped_column(DateTime(True))
     closing_effort: Mapped[Optional[int]]
+    closed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(True))
     label: Mapped[Optional[str]]
 
-    # product_id: Mapped[UUID] = mapped_column(ForeignKey("product.id"))
     plugin_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("plugin.id"))
+
+    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("product.id"))
+    product = relationship("Product")
+
     finding_name_id: Mapped[UUID] = mapped_column(
         ForeignKey("finding_name.id", ondelete="CASCADE")
     )
@@ -44,6 +48,7 @@ class Finding(Base):
             "host",
             "port",
             "plugin_id",
+            "product_id",
             unique=True,
             postgresql_where=(Column("status") != FnStatusEnum.CLOSED.value),
         ),
@@ -64,6 +69,7 @@ class FindingRevertPoint(Base):
     finding_date: Mapped[datetime] = mapped_column(DateTime(True))
     last_update: Mapped[datetime] = mapped_column(DateTime(True))
     label: Mapped[Optional[str]]
+    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("product.id"))
 
     finding_name_id: Mapped[UUID] = mapped_column(ForeignKey("finding_name.id"))
 
@@ -88,10 +94,11 @@ class FindingName(Base):
 
     description: Mapped[Optional[str]]
 
-    product_id: Mapped[UUID] = mapped_column(
-        ForeignKey("product.id", ondelete="CASCADE")
-    )
-    product = relationship("Product")
+    # TODO: remove product and findings
+    # product_id: Mapped[UUID] = mapped_column(
+    #     ForeignKey("product.id", ondelete="CASCADE")
+    # )
+    # product = relationship("Product")
     findings = relationship("Finding", back_populates="finding_name")
 
     cves = relationship("CVE", back_populates="finding_name")
@@ -100,7 +107,6 @@ class FindingName(Base):
         Index(
             "idx_finding_name_product",
             "name",
-            "product_id",
             unique=True,
         ),
     )
@@ -110,10 +116,12 @@ class CVE(Base):
     __tablename__ = "cve"
 
     name: Mapped[str]
-    priority: Mapped[str]  # TODO: enum?
-    epss: Mapped[Optional[str]]
-    kevList: Mapped[bool] = mapped_column(server_default="f")
-    severity: Mapped[SeverityEnum] = mapped_column(default=SeverityEnum.LOW)
+    priority: Mapped[Optional[str]]
+    epss: Mapped[Optional[float]]
+    cvss: Mapped[Optional[float]]
+    cvss_version: Mapped[Optional[str]]
+    kevList: Mapped[Optional[str]]
+    severity: Mapped[Optional[str]]
     vector: Mapped[Optional[str]]
 
     finding_name_id: Mapped[Optional[UUID]] = mapped_column(
@@ -133,9 +141,11 @@ class Comment(Base):
     __tablename__ = "comment"
 
     comment: Mapped[str]
+
     findingName_id: Mapped[UUID] = mapped_column(
         ForeignKey("finding_name.id", ondelete="CASCADE")
     )
+
     commentor_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("auth_user.id"))
     commentor = relationship("User")
 
@@ -147,23 +157,40 @@ class Log(Base):
     tHigh: Mapped[int] = mapped_column(default=0)
     tMedium: Mapped[int] = mapped_column(default=0)
     tLow: Mapped[int] = mapped_column(default=0)
-    tPass: Mapped[int] = mapped_column(default=0)
-    tFail: Mapped[int] = mapped_column(default=0)
+
+    tPass: Mapped[int] = mapped_column(default=0)  # HA
+    tFail: Mapped[int] = mapped_column(default=0)  # HA
+    # tWarning: Mapped[int] = mapped_column(default=0)  # HA
+
     tNew: Mapped[int] = mapped_column(default=0)
     tOpen: Mapped[int] = mapped_column(default=0)
     tClosed: Mapped[int] = mapped_column(default=0)
     tExemption: Mapped[int] = mapped_column(default=0)
     tOthers: Mapped[int] = mapped_column(default=0)
-    bCrit: Mapped[int] = mapped_column(default=0)
+
+    bCritical: Mapped[int] = mapped_column(default=0)
     bHigh: Mapped[int] = mapped_column(default=0)
     bMedium: Mapped[int] = mapped_column(default=0)
     bLow: Mapped[int] = mapped_column(default=0)
 
+    log_date: Mapped[datetime] = mapped_column(DateTime(True))
+
     product_id: Mapped[UUID] = mapped_column(
         ForeignKey("product.id", ondelete="CASCADE")
     )
-    log_date: Mapped[datetime] = mapped_column(DateTime(True))
+    product = relationship("Product")
+
     uploader_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("auth_user.id"))
     uploader = relationship("User")
 
+
+class AdditionalRemark(Base):
+    __tablename__ = "additional_remark"
+    label: Mapped[Optional[str]]
+    remark: Mapped[Optional[str]]
+
+    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("product.id"))
     product = relationship("Product")
+
+    finding_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("finding.id"))
+    finding = relationship("Finding")

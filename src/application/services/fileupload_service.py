@@ -1,4 +1,5 @@
 import importlib.util
+import logging
 import pathlib
 import sys
 from datetime import datetime
@@ -26,6 +27,9 @@ from src.domain.entity import CVE, Finding, FindingName
 from src.domain.entity.finding import Plugin
 from src.infrastructure.database import sync_engine
 from src.persistence.finding_revert import FindingRevertRepository
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
 
 
 def insert_conflict_do_nothing(table, conn, keys, data_iter):
@@ -91,6 +95,7 @@ class FileUploadService:
         )
         self.product_id = product_id
         self.finding_lf = pl.LazyFrame()
+        self.finding_name_lf = pl.LazyFrame()
         self.process_new_finding = data.process_new_finding
         self.plugin: PluginFunction | ModuleType | None = None
 
@@ -102,10 +107,9 @@ class FileUploadService:
             raise InvalidInput("Finding date cannot be future date")
         stmt = (
             select(Finding.last_update)
-            .join(FindingName)
             .where(
                 Finding.last_update > self.scan_date,
-                FindingName.product_id == self.product_id,
+                Finding.product_id == self.product_id,
             )
             .order_by(Finding.last_update.desc())
         )
@@ -152,7 +156,7 @@ class FileUploadService:
         query = (
             select(Finding.port, Finding.host, FindingName.name)
             .join(FindingName)
-            .where(FindingName.product_id == self.product_id)
+            .where(Finding.product_id == self.product_id)
         )
         df = pl.read_database(query, connection=sync_engine).lazy()
         fmt_expression = (
@@ -173,33 +177,28 @@ class FileUploadService:
         the findingName table first since we need it's id to match with the finding
         table.
         """
-        total = (
-            (
-                self.finding_lf.select(pl.col("name"), pl.col("description"))
-                .with_columns(product_id=pl.lit(str(self.product_id)))
-                .group_by(pl.col("name"), pl.col("description"))
-                .agg(pl.first("product_id"))
-            )
-            .collect()
-            .write_database(
-                table_name=FindingName.__tablename__,
-                connection=sync_engine,
-                if_table_exists="append",
-                # engine_options={"method": insert_conflict_do_nothing},
-                engine_options={
-                    "method": insert_conflict_do_update(
-                        idx_element=("name", "product_id"),
-                    )
-                },
-            )
+        self.finding_name_lf = (
+            self.finding_lf.select(pl.col("name"), pl.col("description"))
+            .group_by(pl.col("name"))
+            .agg(pl.first("description"))
         )
-        print(f"Added {total} new finding names")
+        total = self.finding_name_lf.collect().write_database(
+            table_name=FindingName.__tablename__,
+            connection=sync_engine,
+            if_table_exists="append",
+            engine_options={"method": insert_conflict_do_nothing},
+        )
+        logger.info(f"Added {total} new finding names")
 
     async def cve_process(self):
+        fn_names = self.finding_name_lf.select(pl.col("name")).collect()["name"]
         fn_stmt = select(FindingName.id, FindingName.name).where(
-            FindingName.product_id == self.product_id
+            FindingName.name.in_(fn_names)
         )
         finding_name_lf = pl.read_database(fn_stmt, connection=sync_engine).lazy()
+
+        if finding_name_lf.collect().is_empty():
+            return
 
         q = self.finding_lf.join(finding_name_lf, on="name", how="left").rename(
             {"id": "finding_name_id"}
@@ -209,7 +208,7 @@ class FileUploadService:
             q.filter(pl.col("cve").is_not_null())
             .group_by(pl.col("cve").alias("name"), pl.col("finding_name_id"))
             .agg(pl.first("risk").str.to_uppercase().alias("severity"))
-            .with_columns(pl.col("severity").cast(SeverityEnum), priority=pl.lit("Low"))
+            .with_columns(pl.col("severity").cast(SeverityEnum))
         )
 
         total = q.collect().write_database(
@@ -224,21 +223,22 @@ class FileUploadService:
         """
         CSV - DB Mapping
         """
+        fn_names = self.finding_name_lf.select(pl.col("name")).collect()["name"]
         fn_stmt = select(FindingName.id, FindingName.name).where(
-            FindingName.product_id == self.product_id
+            FindingName.name.in_(fn_names)
         )
         finding_name_lf = pl.read_database(fn_stmt, connection=sync_engine).lazy()
 
         self.finding_lf = self.finding_lf.join(
             finding_name_lf, on="name", how="left"
         ).rename({"id": "finding_name_id"})
-
         self.finding_lf = self.finding_lf.with_columns(
             status=pl.lit(FnStatusEnum.NEW),
             severity=pl.col("risk").str.to_uppercase().cast(SeverityEnum),
             finding_date=pl.lit(self.scan_date),
             last_update=pl.lit(self.scan_date),
             plugin_id=pl.lit(self.plugin_id),
+            product_id=pl.lit(str(self.product_id)),
         )
 
         self.finding_lf = self.finding_lf.select(
@@ -265,7 +265,13 @@ class FileUploadService:
             if_table_exists="append",
             engine_options={
                 "method": insert_conflict_do_update(
-                    idx_element=("finding_name_id", "host", "port", "plugin_id"),
+                    idx_element=(
+                        "finding_name_id",
+                        "host",
+                        "port",
+                        "plugin_id",
+                        "product_id",
+                    ),
                     idx_where=(Finding.status != FnStatusEnum.CLOSED),
                     no_update_cols=["finding_date", "finding_name_id"],
                     update_dict={"status": FnStatusEnum.OPEN.value},
@@ -281,6 +287,7 @@ class FileUploadService:
             .where(
                 Finding.finding_date == Finding.last_update,
                 Finding.status.not_in([FnStatusEnum.NEW, FnStatusEnum.CLOSED]),
+                Finding.product_id == self.product_id,
             )
             .values(status=FnStatusEnum.NEW)
         )
@@ -294,14 +301,21 @@ class FileUploadService:
                 Finding.last_update < self.scan_date,
                 Finding.status != FnStatusEnum.CLOSED,
                 Finding.plugin_id == self.plugin_id,
+                Finding.product_id == self.product_id,
             )
-            .values(status=FnStatusEnum.CLOSED, last_update=self.scan_date)
+            .values(
+                status=FnStatusEnum.CLOSED,
+                last_update=self.scan_date,
+                closed_at=self.scan_date,
+                closing_effort=func.extract(
+                    "day", (self.scan_date - Finding.finding_date)
+                ),
+            )
         )
         await self.session.execute(stmt)
         await self.session.commit()
 
     async def reopen_finding(self):
-        # TODO: Add reopen_at
         subquery_max = (
             select(
                 Finding.finding_name_id,
@@ -323,6 +337,7 @@ class FileUploadService:
                 Finding.port == subquery_max.c.port,
                 Finding.finding_date == subquery_max.c.latest_date,
                 Finding.plugin_id == self.plugin_id,
+                Finding.product_id == self.product_id,
             )
             .values(
                 internal_remark=(
@@ -345,6 +360,7 @@ class FileUploadService:
                 Finding.finding_date == subquery_max.c.first_discovered_date,
                 Finding.status == FnStatusEnum.CLOSED,
                 Finding.plugin_id == self.plugin_id,
+                Finding.product_id == self.product_id,
             )
             .values(reopen=True)
         )
@@ -355,15 +371,15 @@ class FileUploadService:
     async def upload(self):
         # TODO: Restructure this, make it more readable
         await self.scan_date_validation()
-        # await self.file_validation()
-        # await self.run_plugin()
         verify = await self.plugin_verification()
         if not verify:
             raise InvalidInput("Plugin didn't match the file uploaded!")
         await self.new_finding_check()
         await self.finding_name_process()
-        await self.cve_process()
-        await self.final_preprocess()
+
+        if not self.finding_name_lf.collect().is_empty():
+            await self.cve_process()
+            await self.final_preprocess()
         await self.finding_revert_point()
         await self.process()
         await self.update_new_same_date_scan()

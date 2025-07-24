@@ -38,6 +38,15 @@ class ProductService:
             {"environment_id": env_id}
         )
 
+    async def get_one_by_filter(self, filters: dict) -> Product | None:
+        return await self.productRepository.get_by_filter(filters)
+
+    async def get_all_by_filter(self, filters: dict) -> Sequence[Product]:
+        return await self.productRepository.get_all_by_filter(filters)
+
+    async def get_all_by_ids(self, product_ids: list[UUID]) -> Sequence[Product]:
+        return await self.productRepository.get_all_by_filter({"id": product_ids})
+
     async def manage_product_access(
         self, product_id: UUID, user_id: UUID, granted: bool = True
     ) -> ProductUserAccess | None:

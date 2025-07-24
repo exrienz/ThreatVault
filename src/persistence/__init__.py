@@ -1,6 +1,8 @@
+from .additional_remark import AdditionalRemarkRepository
 from .auth import AuthRepository
 from .comment import CommentRepository
 from .config import GlobalRepository
+from .cve import CVERepository
 from .environment import EnvRepository
 from .finding import FindingRepository
 from .finding_name import FindingNameRepository
@@ -28,4 +30,6 @@ __all__ = [
     "UserRepository",
     "TokenRepository",
     "FindingRevertRepository",
+    "CVERepository",
+    "AdditionalRemarkRepository",
 ]

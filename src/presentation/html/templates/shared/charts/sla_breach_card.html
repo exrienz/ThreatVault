@@ -1,0 +1,32 @@
+<script>
+  let stackedColumnOpts = {
+    chart: {
+      type: 'bar',
+      height: 350,
+      stacked: true,
+      toolbar: {
+        show: true
+      },
+      zoom: {
+        enabled: true
+      }
+    },
+    xaxis: {
+      type: 'datetime',
+      categories: ['01/01/2011 GMT', '01/02/2011 GMT', '01/03/2011 GMT', '01/04/2011 GMT'],
+    },
+    legend: {
+      position: 'right',
+      offsetY: 40
+    }
+  };
+
+  window["{{request.headers['hx-target']}}-var"] = new ApexCharts(
+    document.getElementById("{{request.headers['hx-target']}}"),
+    {
+      ...stackedColumnOpts,
+      series: [{name: "FPX", data: [0, 2, 31, 67]}]
+    }
+  );
+  window["{{request.headers['hx-target']}}-var"].render()
+</script>

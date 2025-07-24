@@ -1,17 +1,33 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.application.middlewares import RequestMiddleware
-from src.application.utils import startup_db
+from src.application.utils import scheduler, startup_db
 from src.presentation.html.exception_handler import exception_handlers
 from src.routes import router
 
 from .config import settings
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    startup_db()
+    scheduler.scheduler.start()
+    await scheduler.scheduler_tasks()
+    for job in scheduler.scheduler.get_jobs():
+        print(job)
+    yield
+    scheduler.scheduler.shutdown()
+
+
 app = FastAPI(
-    title="Sentinel", on_startup=[startup_db], exception_handlers=exception_handlers
+    title="Sentinel",
+    exception_handlers=exception_handlers,
+    lifespan=lifespan,
 )
 
 app.add_middleware(RequestMiddleware)

@@ -1,7 +1,8 @@
 from datetime import datetime
+from typing import Generic, TypeVar
 from uuid import UUID
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, NonNegativeInt, field_validator
 from pydantic_core import PydanticCustomError
 
 from src.domain.constant import FnStatusEnum, SeverityEnum
@@ -69,3 +70,28 @@ class FindingActionInternalSchema(BaseModel):
     status: FnStatusEnum
     delay_untill: datetime | None = None
     remark: str = ""
+
+
+DataSchema = TypeVar("DataSchema")
+
+
+class Pagination(BaseModel, Generic[DataSchema]):
+    total: NonNegativeInt
+    size: NonNegativeInt
+    page: NonNegativeInt
+    total_page: NonNegativeInt
+    data: list[DataSchema]
+
+
+class FindingPrioritySchema(BaseModel):
+    finding_name: str
+    hosts: list[str]
+    name: str
+    priority: str | None = None
+    epss: float | None = None
+    cvss: float | None = None
+    kevList: bool | None = None
+    severity: str | None = None
+
+    class Config:
+        from_attribute = True

@@ -27,10 +27,9 @@ class FindingNameRepository(BaseRepository[FindingName]):
     async def get_by_filter(self, filters: dict) -> FindingName | None:
         stmt = (
             select(FindingName)
+            .join(Finding)
             .join(Product)
-            .options(
-                selectinload(FindingName.findings), selectinload(FindingName.product)
-            )
+            .options(selectinload(FindingName.findings), selectinload(Finding.product))
         )
 
         # TODO: generalize/simplify
@@ -41,6 +40,6 @@ class FindingNameRepository(BaseRepository[FindingName]):
         if finding_name := filters.get("name"):
             stmt = stmt.where(FindingName.name.ilike(finding_name))
         if product_id := filters.get("product_id"):
-            stmt = stmt.where(FindingName.product_id == product_id)
+            stmt = stmt.where(Finding.product_id == product_id)
         query = await self.session.execute(stmt)
         return query.scalars().first()

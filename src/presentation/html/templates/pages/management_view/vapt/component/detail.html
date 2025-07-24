@@ -1,0 +1,11 @@
+<div id="project-name" hx-swap-oob="innerHTML">
+  {{project.name}}
+</div>
+
+<div id="hidden-input" hx-swap-oob="innerHTML">
+  {% for env in project.environment %}
+  <input type="hidden" id="{{env.name}}-id" value={{env.id}}>
+  {% endfor %}
+</div>
+
+{% block content %}{% endblock %}

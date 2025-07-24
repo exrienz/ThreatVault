@@ -18,20 +18,16 @@ class FindingRevertRepository(BaseRepository):
         super().__init__(FindingRevertPoint, session)
 
     async def get_by_product_id(self, product_id: UUID):
-        stmt = (
-            select(FindingRevertPoint)
-            .join(FindingName)
-            .where(FindingName.product_id == product_id)
+        stmt = select(FindingRevertPoint).where(
+            FindingRevertPoint.product_id == product_id
         )
 
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
     async def get_one_by_product_id(self, product_id: UUID):
-        stmt = (
-            select(FindingRevertPoint)
-            .join(FindingName)
-            .where(FindingName.product_id == product_id)
+        stmt = select(FindingRevertPoint).where(
+            FindingRevertPoint.product_id == product_id
         )
 
         query = await self.session.execute(stmt)
@@ -40,8 +36,7 @@ class FindingRevertRepository(BaseRepository):
     async def get_latest_date_by_product_id(self, product_id: UUID):
         stmt = (
             select(FindingRevertPoint.last_update)
-            .join(FindingName)
-            .where(FindingName.product_id == product_id)
+            .where(FindingRevertPoint.product_id == product_id)
             .order_by(FindingRevertPoint.last_update.desc())
             .limit(1)
         )
@@ -54,8 +49,7 @@ class FindingRevertRepository(BaseRepository):
     async def revert_point_clear(self, product_id: UUID, commit: bool = True):
         revert_point = (
             select(FindingRevertPoint)
-            .join(FindingName)
-            .where(FindingName.product_id == product_id)
+            .where(FindingRevertPoint.product_id == product_id)
             .cte()
         )
 
@@ -95,9 +89,9 @@ class FindingRevertRepository(BaseRepository):
 
     async def delete_by_product_id(self, product_id: UUID):
         sub = (
-            select(FindingRevertPoint)
-            .join(FindingName, FindingName.id == FindingRevertPoint.finding_name_id)
-            .where(FindingName.product_id == product_id)
+            select(FindingRevertPoint).where(
+                FindingRevertPoint.product_id == product_id
+            )
         ).subquery()
         delete_stmt = delete(FindingRevertPoint).where(
             FindingRevertPoint.id.in_(select(sub.c.id))
@@ -109,8 +103,7 @@ class FindingRevertRepository(BaseRepository):
     async def delete_by_project_id(self, project_id: UUID):
         sub = (
             select(FindingRevertPoint)
-            .join(FindingName, FindingName.id == FindingRevertPoint.finding_name_id)
-            .join(Product, Product.id == FindingName.product_id)
+            .join(Product, Product.id == FindingRevertPoint.product_id)
             .join(Environment, Environment.id == Product.environment_id)
             .where(Environment.project_id == project_id)
         ).subquery()
@@ -128,16 +121,13 @@ class FindingRevertRepository(BaseRepository):
         old_cols = [getattr(Finding, attr) for attr in cols]
 
         old_findings = (
-            select(*old_cols)
-            .join(FindingName)
-            .where(FindingName.product_id == product_id)
-            .cte()
+            select(*old_cols).where(FindingRevertPoint.product_id == product_id).cte()
         )
 
         subquery = (
             select(FindingRevertPoint.id)
             .join(FindingName)
-            .where(FindingName.product_id == product_id)
+            .where(FindingRevertPoint.product_id == product_id)
         ).subquery()
 
         delete_stmt = delete(FindingRevertPoint).where(

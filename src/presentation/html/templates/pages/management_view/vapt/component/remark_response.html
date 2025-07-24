@@ -1,0 +1,4 @@
+{% for rmstr in data.remark.split("\n") %}
+<p class="m-0">{{rmstr}}</p>
+{% endfor %}
+<script id="toast-global-id" hx-swap-oob="true">ToastSuccessCustom("Remark Updated!");</script>

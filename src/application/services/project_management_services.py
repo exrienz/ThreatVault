@@ -90,3 +90,9 @@ class ProjectManagementService:
 
     async def get_all_with_logs(self):
         return await self.LogRepository.get_project_list()
+
+    async def get_all_by_filters(self, filters: dict) -> Sequence[Project]:
+        return await self.projectRepository.get_all_by_filter(filters)
+
+    async def min_year(self) -> int | None:
+        return await self.projectRepository.min_year()

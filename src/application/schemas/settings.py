@@ -24,3 +24,5 @@ class GlobalConfigSchema(BaseModel):
     smtp_port: Optional[str]
     smtp_username: Optional[str]
     smtp_password: Optional[str]
+
+    sensitive_hosts: Optional[str]

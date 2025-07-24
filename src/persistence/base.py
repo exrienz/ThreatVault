@@ -79,8 +79,17 @@ class BaseRepository(Generic[Entity]):
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
+    # TODO: add pagination options
     async def get_all_by_filter(self, filters: dict) -> Sequence[Entity]:
-        stmt = select(self.model).filter_by(**filters)
+        stmt = select(self.model)
+        filters_ = {}
+        for k, v in filters.items():
+            if isinstance(v, list):
+                stmt = stmt.where(getattr(self.model, k).in_(v))
+            else:
+                filters_[k] = v
+
+        stmt = stmt.filter_by(**filters_)
         stmt = self._options(stmt)
         stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)

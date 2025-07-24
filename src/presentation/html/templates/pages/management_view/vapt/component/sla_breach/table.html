@@ -1,0 +1,55 @@
+<table id="sla_table" class="display" data-page-length='25'>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>SLA Breach</th>
+      <th>Active</th>
+      <th>Remediated</th>
+      <th>Remarks</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+</table>
+<script>
+  $(document).ready( function () {
+    $('#sla_table').DataTable( {
+      serverSide: true,
+      columns: [
+        {data: 'product_name'},
+        {data: 'sla_count', searchable: false},
+        {data: null, searchable: false, render: function(data, type){
+          return data.Open + data.New;
+        }},
+        {data: null, orderable: false, searchable: false, render: function(data,type){
+          return data.Closed + data.Exemption + data.Others;
+        }},
+        {data: null, orderable: false, searchable: false, render: function(data, type){
+          return ""
+        }},
+        {data: null, orderable: false, searchable: false, render: function (data, type) {
+          return '<a class="btn icon btn-primary"><i class="bi bi-pencil"></i></a>'
+        }},
+      ],
+      columnDefs: [{"className": "dt-center", "targets": "_all"}],
+      lengthMenu: [],
+      ajax: {
+        url: "sla-breach/api?project_id={{project_id}}&year={{year}}",
+        type: "GET",
+        data: function(d) {
+          if (d.search.value != "") {
+            d.product_name = d.search.value;
+          }
+          let order = d.order[0];
+          d.order_by = order.name;
+          d.order_direction = order.dir;
+        },
+        dataSrc: function(json) {
+          json.recordsFiltered = json.total;
+          json.recordsTotal = json.total;
+          return json.data;
+        }
+      },
+    } );
+    $(".dt-length").remove();
+  } );
+</script>
