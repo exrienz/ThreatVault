@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
 from src.application.services import EnvService, ProjectManagementService
-from src.presentation.html.dependencies import PermissionChecker
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
@@ -28,17 +28,21 @@ router = APIRouter(
 projectService = Annotated[ProjectManagementService, Depends()]
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("", response_class=HTMLResponse)
 async def project_management(
-    request: Request,
-    service: projectService,
+    request: Request, service: projectService, type_: str | None = "VA"
 ):
-    projects = await service.get_project_extended()
+    if type_ not in {"VA", "HA"}:
+        raise
+    projects = await service.get_all_by_filters({"type_": type_})
+    assessment_map = {"VA": "VAPT", "HA": "Compliance"}
     return templates.TemplateResponse(
         request,
         "pages/project_management/index.html",
         {
             "projects": projects,
+            "assessment_type": assessment_map.get(type_),
+            "type_": type_,
         },
     )
 
@@ -50,7 +54,6 @@ async def create_project(
     project_type: Annotated[str, Form()],
     service: projectService,
 ):
-    # TODO: idx?
     project = await service.create_project({"name": name, "type_": project_type})
     return templates.TemplateResponse(
         request,

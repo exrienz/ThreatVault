@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +15,10 @@ from src.application.dependencies import (
     ProductServiceDep,
     UserServiceDep,
 )
+from src.application.dependencies.service_dependency import (
+    EnvServiceDep,
+    ProjectManagementServiceDep,
+)
 from src.application.schemas.finding import (
     FindingActionInternalSchema,
     FindingActionRequestSchema,
@@ -22,10 +26,12 @@ from src.application.schemas.finding import (
     FindingUploadSchema,
     ManualFindingUploadSchema,
 )
-from src.application.services import FileUploadService
+from src.application.services.fileupload_service import (
+    UploadFileServiceGeneral,
+)
 from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.infrastructure.database.session import get_session
-from src.presentation.html.dependencies import PermissionChecker
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
@@ -41,8 +47,12 @@ async def get_product(
     product_id: UUID,
 ):
     product = await service.get_by_id(product_id)
+    if product is None:
+        raise HTTPException(404, "Project is not exists!")
     logs = await log_service.get_by_product_id(product_id)
-    plugins = await plugin_service.get_all_activated()
+    plugins = await plugin_service.get_all_activated(
+        {"env": product.environment.project.type_}
+    )
     tSeverity = 1
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
@@ -81,6 +91,7 @@ async def get_findings(
     severity: SeverityEnum = SeverityEnum.CRITICAL,
     page: PositiveInt = 1,
 ):
+    # TODO: Use hx-include instead
     filters = request.session.get("finding-selected")
     if filters and not isinstance(filters, dict):
         filters = json.loads(filters)
@@ -120,7 +131,7 @@ async def finding_action(
         data.remark += f"\n System: {data.action}"
         data.delay_untill = None
 
-    if data.delay_untill and status != FnStatusEnum.OTHER:
+    if data.delay_untill and status != FnStatusEnum.OTHERS:
         data.remark += f"\n Remediation Date: {data.delay_untill.strftime('%d-%m-%Y')}"
 
     internal = FindingActionInternalSchema(status=status, **data.model_dump())
@@ -154,6 +165,7 @@ async def upload_file(
     plugin: Annotated[UUID, Form()],
     process_new_finding: Annotated[bool, Form()] = False,
     sync_update: Annotated[bool, Form()] = False,
+    overwrite: Annotated[bool, Form()] = False,
 ):
     """
     TODO:
@@ -165,10 +177,11 @@ async def upload_file(
         "plugin": plugin,
         "process_new_finding": process_new_finding,
         "sync_update": sync_update,
+        "overwrite": overwrite,
     }
     data = FindingUploadSchema(**data_dict)
-    fileupload = FileUploadService(session, formFile, product_id, data)
-    await fileupload.upload()
+    uploader = UploadFileServiceGeneral(session, formFile, product_id, data)
+    fileupload = await uploader.upload()
     tSeverity = 1
     logs = await service.calculate(product_id, fileupload.scan_date)
     if logs:
@@ -214,37 +227,22 @@ async def manual_upload(
 
 
 @router.get("/{product_id}/stats", response_class=HTMLResponse)
-async def product_stats(request: Request, product_id: UUID, service: LogServiceDep):
+async def product_stats(
+    request: Request,
+    product_id: UUID,
+    service: LogServiceDep,
+    product_service: ProductServiceDep,
+    project_service: ProjectManagementServiceDep,
+):
+    product = await product_service.get_by_id(product_id)
+    if product is None:
+        raise
+    project = await project_service.get_project_by_id(product.environment.project_id)
+    if project is None:
+        raise
     logs = await service.get_by_product_id(product_id)
     return templates.TemplateResponse(
-        request, "pages/product/response/stats.html", {"logs": logs}
-    )
-
-
-@router.get("/{product_id}/aging-finding-chart", response_class=HTMLResponse)
-async def aging_finding_chart(
-    request: Request, service: LogServiceDep, product_id: UUID
-):
-    year = datetime.now().year
-    chart_info = await service.statistic(product_id, year)
-
-    dct = {
-        "Critical": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "High": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Medium": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Low": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    }
-    for c in chart_info:
-        mnt = int(c.month) - 1
-        dct["Critical"][mnt] = c.tCritical
-        dct["High"][mnt] = c.tHigh
-        dct["Medium"][mnt] = c.tMedium
-        dct["Low"][mnt] = c.tLow
-
-    return templates.TemplateResponse(
-        request,
-        "pages/product/response/agingChart.html",
-        context={"data": dct},
+        request, f"pages/product/response/{project.type_}_stats.html", {"logs": logs}
     )
 
 
@@ -455,4 +453,20 @@ async def filter_findings(
         request,
         "empty.html",
         headers={"HX-Trigger": "reload-findings"},
+    )
+
+
+@router.get("/{product_id}/pic-list")
+async def get_pic_list(
+    request: Request,
+    service: ProductServiceDep,
+    product_id: UUID,
+):
+    users = await service.get_owners_by_product_id(product_id)
+    return templates.TemplateResponse(
+        request,
+        "pages/finding/component/pic.html",
+        {
+            "data": users,
+        },
     )

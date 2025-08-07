@@ -70,10 +70,22 @@ fileignoreconfig:
   checksum: 216fb9f751735fdf62eff9bca1aae4d6b82cacec708f44d2ae4010a200c60585
 - filename: src/presentation/html/templates/shared/charts/sla_breach_env.html
   checksum: 8027dc1fa3373c34361ee5985236d74d98069ae16998fd00f79c202c927b8773
-- filename: src/presentation/html/templates/layouts/master.html
-  checksum: 63c442afea3a89fad08d90c17b023159c9229bd1a3854f27e2e44b6023fde4e0
+- filename: src/presentation/html/templates/layouts/sidebar.html
+  checksum: 24f770e3d7a5e4be1afa61f59ef31f84fdaaa0a37366cbd8d60f9d5fcfb8eb4e
 - filename: src/default/sidebars.json
-  checksum: d590d0e861a91bf723296897032701bf75704863755a3f7dbd991086fd4f830a
+  checksum: a32d88e27bf66ad2830bc524ffd60ce39d228f1828bd13a9013618c8cec36bbd
+- filename: src/presentation/html/templates/pages/dashboard/index.html
+  checksum: 0533d7351f922b7cb3d51743dd00d05b6bb99c92538d0730c3834efa3ed15cec
+- filename: src/application/services/log_services.py
+  checksum: 331cd65390a339c81cd7a483f4fd3121b0dbbc83306c6a74ca86db391d446b47
+- filename: src/domain/constant.py
+  checksum: a9345c50a717a0b1e0354a9701bb30eb32f94cef5d2b02b09dbc2da23ad5de9f
+- filename: src/presentation/html/templates/shared/charts/status_card.html
+  checksum: f99757dcaf275453cdc614ccfce3635f0d78c3899e0a2f0083fcfb7ee7bc3b4f
+- filename: src/persistence/base.py
+  checksum: df48503e8dadd473287ffa9a761e2f8b2136a09047d2f65e0fc69e72155bf083
+- filename: src/persistence/log.py
+  checksum: 29ab6abd693b9786b0718269a913b50025c5452d25ed37a519ffcd9eff126472
 - filename: src/domain/entity/finding.py
-  checksum: 674589f595a8f9b436e5508fdf8dbd6186d59d05106eb1eae1aed4cb608251ec
+  checksum: 93aeb20d8fcce5ff0559d83c8cea96bea5a444e3bf7cdd8e5ad28eec95f8ad1e
 version: ""

@@ -1,9 +1,11 @@
-{% set title = "Dashboard" %}
+{% set title = type + " Dashboard"%}
 {% set filename = "/" %}
+{% set menuKey = type.lower() %}
 {% extends 'layouts/master.html' %}
 {% block content %}
+{{sidebarkey}}
 <div class="page-heading">
-  <h3>VAPT Dashboard</h3>
+  <h3>{{type}} Dashboard</h3>
 </div>
 <div class="page-content">
   <section class="row">

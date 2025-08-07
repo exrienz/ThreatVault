@@ -7,7 +7,7 @@ from pydantic import PositiveInt
 from src.application.dependencies import (
     FindingServiceDep,
 )
-from src.presentation.html.dependencies import PermissionChecker
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
@@ -45,10 +45,6 @@ async def get_findings(
     host: str,
     page: PositiveInt = 1,
 ):
-    # filters = request.session.get("finding-selected")
-    # if filters and not isinstance(filters, dict):
-    #     filters = json.loads(filters)
-
     data = await service.get_group_by_asset_details(host, {}, page)
     return templates.TemplateResponse(
         request,

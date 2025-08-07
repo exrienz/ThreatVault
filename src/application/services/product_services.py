@@ -76,7 +76,10 @@ class ProductService:
             "apiKey": secrets.token_hex(16),
         }
 
-        return await self.productRepository.update(product_id, data)
+        res = await self.productRepository.update(product_id, data)
+        if res is None:
+            raise
+        return res
 
     async def get_hosts(self, product_id: UUID) -> Sequence[str]:
         return await self.productRepository.get_hosts(product_id)

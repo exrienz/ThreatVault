@@ -19,8 +19,14 @@ class PluginService:
     async def get_by_id(self, item_id: UUID) -> Plugin:
         return await self.repository.get_one_by_id(item_id)
 
-    async def get_all_activated(self) -> Sequence[Plugin]:
-        return await self.repository.get_all_by_filter({"is_active": True})
+    async def get_by_filter(self, filters: dict) -> Plugin | None:
+        return await self.repository.get_by_filter(filters)
+
+    async def get_all_activated(self, filters: dict | None = None) -> Sequence[Plugin]:
+        filters = filters if filters else {}
+        return await self.repository.get_all_by_filter_sequence(
+            {"is_active": True, **filters}
+        )
 
     async def create(self, data: dict, file: UploadFile):
         if file.filename is None:

@@ -2,10 +2,9 @@
   <thead>
     <tr>
       <th>Product</th>
-      <th>Critical</th>
-      <th>High</th>
-      <th>Medium</th>
-      <th>Low</th>
+      {% for label in labels %}
+      <th>{{label | title}}</th>
+      {% endfor %}
     </tr>
   </thead>
   <tbody>

@@ -1,14 +1,4 @@
 <div class="card">
-  <div class="card-header">
-    <h4>
-      {% if env == "production" %}
-      Production
-      {% else %}
-      Non-Production
-      {% endif %}
-       | {{"{:02d}".format(month|int) }}-{{ year }}
-    </h4>
-  </div>
   <div class="card-body">
     <div id="chart_{{ request.headers['hx-target'] }}"></div>
   </div>
@@ -16,17 +6,17 @@
     window["{{request.headers['hx-target']}}-var"] = new ApexCharts(
       document.getElementById("chart_{{request.headers['hx-target']}}"),
       {
-        ...stackedColumnOpts,
-        legend: {
-          position: 'top',
-        },
-        noData: {text: 'No Data'},
-        xaxis: {
-          categories: {{categories | tojson | safe}}
-        },
+        chart: {type: 'line', height: 350},
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
         series: {{data | tojson | safe }}
       }
     );
     window["{{request.headers['hx-target']}}-var"].render()
+
+    {% for name in data %}
+    {% if not loop.first %}
+      window["{{request.headers['hx-target']}}-var"].hideSeries("{{name.get('name')}}")
+    {% endif %}
+    {% endfor %}
   </script>
 </div>

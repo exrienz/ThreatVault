@@ -1,25 +1,8 @@
 <script>
   chartOptions = {
     ...areaOptions,
-    labels: ["Open", "New", "Closed", "Exempted"],
-    series: [
-      {
-        name: "Open",
-        data: {{chart.Open}},
-      },
-      {
-        name: "New",
-        data: {{chart.New}},
-      },
-      {
-        name: "Closed",
-        data: {{chart.Closed}},
-      },
-      {
-        name: "Exempted",
-        data: {{chart.Exempted}},
-      },
-    ],
+    labels: {{labels | safe }},
+    series: {{chart | safe }}
   }
 
   var chart = new ApexCharts(

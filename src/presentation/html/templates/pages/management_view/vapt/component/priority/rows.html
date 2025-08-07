@@ -4,8 +4,8 @@
   <td class="text-wrap">
     {% for host in d.hosts %}
     {%- set product_host = product_map.get(host)%}
-    <a href="/host?host={{host}}">{{host}}{% if product_host %}<span class="badge mx-2 {% if product_host.environment.name == 'production'%} bg-success {% else %} bg-warning {% endif %}">
-        {{product_host.name}} | {{product_host.environment.name | title}}
+    <a href="/host?host={{host.split(':')[0]}}">{{host}}{% if product_host %}<span class="badge mx-2 {% if product_host.environment.name == 'production'%} bg-success {% else %} bg-warning {% endif %}">
+        {{product_host.name}}
       </span>{%endif%}
       {% if not loop.last%}|{% endif %}
     {%endfor%}
@@ -41,9 +41,9 @@
       <a class="page-link" hx-get="priority/table?page={{data.page - 1}}"tabindex="-1" aria-disabled="true">Previous</a>
     </li>
     {% for p in range(1,data.total_page+1)%}
-    <li class="page-item {%if data.page == p %} active {%endif%}"><a class="page-link" hx-get="priority/table?page={{p}}">{{p}}</a></li>
+    <li class="page-item {%if data.page == p %} active disabled {%endif%}"><a class="page-link" hx-get="priority/table?page={{p}}">{{p}}</a></li>
     {%endfor%}
-    <li class="page-item {%if data.page == data.total_page %} disabled {%endif%}">
+    <li class="page-item {%if data.page == data.total_page or data.page <= 1%} disabled {%endif%}">
       <a class="page-link" hx-get="priority/table?page={{data.page+1}}">Next</a>
     </li>
   </ul>

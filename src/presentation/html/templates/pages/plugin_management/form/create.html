@@ -45,8 +45,17 @@
                            placeholder="Configuration"
                            value="{{ plugin.config  if plugin }}">
                 </div>
+                <div class="col-md-6 mb-4">
+                  <label for="config" class="form-label">Environment</label>
+                  <fieldset class="form-group">
+                    <select class="form-select" name="env">
+                      <option selected>VA</option>
+                      <option>HA</option>
+                    </select>
+                  </fieldset>
+                </div>
                 <div class="form-check">
-                    <div class="checkbox">
+                  <div class="checkbox">
                         <input type="checkbox" id="active" name="active" class="form-check-input">
                         <label for="active">Activate?</label>
                     </div>

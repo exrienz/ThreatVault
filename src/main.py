@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.application.middlewares import RequestMiddleware
 from src.application.utils import scheduler, startup_db
 from src.presentation.html.exception_handler import exception_handlers
 from src.routes import router
@@ -30,7 +29,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.add_middleware(RequestMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY)
 
 app.add_middleware(

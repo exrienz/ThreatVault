@@ -10,10 +10,10 @@
     "icon": "grid-fill"
   },
   {
-    "name": "Hardening Dashboard",
-    "key": "hardening",
+    "name": "Compliance Dashboard",
+    "key": "compliance",
     "icon": "shield-shaded",
-    "url": "/coming-soon"
+    "url": "/?type_=compliance"
   },
   {
     "name": "Management Dashboard",
@@ -64,8 +64,8 @@
         "url": "/project-management"
       },
       {
-        "name": "Hardening",
-        "url": "/coming-soon"
+        "name": "Compliance",
+        "url": "/project-management?type_=HA"
       }
     ]
   },

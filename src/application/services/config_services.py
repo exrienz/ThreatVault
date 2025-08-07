@@ -11,7 +11,7 @@ class GlobalService:
     async def get(self) -> GlobalConfig | None:
         return await self.repository.get()
 
-    async def update(self, data: dict) -> GlobalConfig:
+    async def update(self, data: dict) -> GlobalConfig | None:
         config = await self.repository.get()
         if config is None:
             return await self.repository.create(data)

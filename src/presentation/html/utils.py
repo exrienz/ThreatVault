@@ -32,6 +32,14 @@ def findingSeverityMap(status: SeverityEnum | str):
     return dct.get(status_str)
 
 
+def assessmentTypeMap(type_: str):
+    dct = {
+        "VA": "VAPT",
+        "HA": "Compliance",
+    }
+    return dct.get(type_)
+
+
 def timedelta_filter(val, days=0):
     return val + timedelta(days=days)
 
@@ -80,14 +88,32 @@ def timeago(dt):
         return f"{hours} hour{'s' if hours != 1 else ''} ago"
 
 
+def score_filter(value):
+    try:
+        return chr(int(value) + 65)
+    except (ValueError, TypeError):
+        return "?"
+
+
+def score_color(value):
+    lst = ["green", "yellow", "orange", "red", "maroon"]
+    if value is not None and value >= 0 and value < 5:
+        return lst[value]
+    return "gray"
+
+
 templates.env.filters["startsWith"] = startsWith
 templates.env.filters["findingSeverityMap"] = findingSeverityMap
+templates.env.filters["assessmentTypeMap"] = assessmentTypeMap
 templates.env.filters["slaCalc"] = slaCalc
 templates.env.filters["datetime_format"] = datetime_format
+templates.env.filters["score"] = score_filter
+templates.env.filters["score_color"] = score_color
 
 templates.env.globals["is_admin"] = is_admin
 templates.env.globals["get_user_info"] = get_current_user
 templates.env.globals["get_user_permissions"] = get_user_permissions
 templates.env.globals["get_sidebar_items"] = get_sidebar_items
-templates.env.globals["now"] = datetime.now(tz=pytz.utc)
+templates.env.globals["now_utc"] = datetime.now(tz=pytz.utc)
+templates.env.globals["now"] = datetime.now()
 templates.env.filters["timeago"] = timeago

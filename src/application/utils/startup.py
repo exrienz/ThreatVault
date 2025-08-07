@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import func, select
 from sqlalchemy_utils import create_database, database_exists
 
@@ -8,24 +10,28 @@ from src.infrastructure.database import SyncSessionFactory, sync_db_conn, sync_e
 
 from .plugin import upload_builtin_plugin
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
+
 
 def startup_db():
-    print("Creating DB")
+    logger.info("Creating DB")
     if not database_exists(sync_db_conn):
         create_database(sync_db_conn)
     Base.metadata.create_all(bind=sync_engine)
 
-    print("DB Created")
+    logger.info("DB Created")
 
     create_default_roles()
     default_global_setting()
-    upload_builtin_plugin()
+    upload_builtin_plugin(logger)
     creating_default_permission()
     create_role_permissions()
 
 
 def create_default_roles():
-    print("Creating Default Role")
+    logger.info("Creating Default Role")
     with SyncSessionFactory() as session:
         stmt = select(func.count(Role.id))
         roles = session.execute(stmt).scalar_one()
@@ -33,11 +39,11 @@ def create_default_roles():
             role_list = [Role(**data) for data in default_roles]
             session.add_all(role_list)
             session.commit()
-    print("Default Role Created")
+    logger.info("Default Role Created")
 
 
 def creating_default_permission():
-    print("Creating Default Permissions")
+    logger.info("Creating Default Permissions")
     with SyncSessionFactory() as session:
         stmt = select(func.count(Permission.id))
         perm = session.execute(stmt).scalar_one()
@@ -45,11 +51,11 @@ def creating_default_permission():
             role_list = [Permission(**data) for data in default_permissions]
             session.add_all(role_list)
             session.commit()
-    print("Default Permission Created")
+    logger.info("Default Permission Created")
 
 
 def create_role_permissions():
-    print("Assinging Default Permissions")
+    logger.info("Assinging Default Permissions")
     with SyncSessionFactory() as session:
         stmt = select(func.count(RolePermission.id))
         perm = session.execute(stmt).scalar_one()
@@ -65,7 +71,7 @@ def create_role_permissions():
                 for perm_id in perm_ids:
                     session.add(RolePermission(role_id=role, permission_id=perm_id))
             session.commit()
-    print("Default Permission Assigned")
+    logger.info("Default Permission Assigned")
 
 
 def default_global_setting():

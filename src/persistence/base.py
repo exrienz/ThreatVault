@@ -1,14 +1,18 @@
 from collections.abc import Sequence
 from math import ceil
-from typing import Generic, TypeVar
+from types import MethodType
+from typing import Generic, TypeVar, Union
 from uuid import UUID
 
 from pydantic import BaseModel, NonNegativeInt, PositiveInt
-from sqlalchemy import Select, func, select
+from sqlalchemy import Delete, Select, Update, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import InstrumentedAttribute
 
 from src.application.middlewares.user_context import get_current_user
 from src.domain.entity.base import Base
+
+AdvFilterType = dict[Union[MethodType, InstrumentedAttribute], object]
 
 
 class Pagination(BaseModel):
@@ -71,29 +75,56 @@ class BaseRepository(Generic[Entity]):
     async def get_all(self) -> Sequence[Entity]:
         stmt = select(self.model).order_by(self.model.created_at.desc())
         stmt = self._options(stmt)
-
-        # TODO: Generalize this
-        stmt = self._product_allowed_ids(stmt)
-        stmt = self._project_allowed_ids(stmt)
-
+        stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
-    # TODO: add pagination options
-    async def get_all_by_filter(self, filters: dict) -> Sequence[Entity]:
-        stmt = select(self.model)
-        filters_ = {}
-        for k, v in filters.items():
-            if isinstance(v, list):
-                stmt = stmt.where(getattr(self.model, k).in_(v))
-            else:
-                filters_[k] = v
+    async def get_all_by_filter(
+        self,
+        filters: dict,
+        order_by: list | None = None,
+        pagination: bool = False,
+        page: int = 1,
+    ) -> Sequence[Entity] | Pagination:
+        if pagination:
+            return await self.get_all_by_filter_pagination(filters, order_by, page)
+        return await self.get_all_by_filter_sequence(filters, order_by)
 
-        stmt = stmt.filter_by(**filters_)
-        stmt = self._options(stmt)
-        stmt = self._permission_filter(stmt)
+    async def get_all_by_filter_sequence(
+        self,
+        filters: dict,
+        order_by: list | None = None,
+    ) -> Sequence[Entity]:
+        order_cols = ["created_at"]
+        if order_by:
+            order_cols = [getattr(self.model, col) for col in order_by]
+        stmt = self._get(filters).order_by(*order_cols)
         query = await self.session.execute(stmt)
         return query.unique().scalars().all()
+
+    async def get_all_by_filter_pagination(
+        self,
+        filters: dict,
+        order_by: list | None = None,
+        page: int = 1,
+    ) -> Pagination:
+        order_cols = ["created_at"]
+        if order_by:
+            order_cols = [getattr(self.model, col) for col in order_by]
+
+        stmt = self._get(filters).order_by(*order_cols)
+        return await self.pagination(stmt, page, scalars=True)
+
+    async def get_by_filter(self, filters: dict) -> Entity | None:
+        stmt = self._get(filters)
+        query = await self.session.execute(stmt)
+        return query.unique().scalar_one_or_none()
+
+    async def get_first_by_filter(self, filters: dict, order_by: list):
+        order_cols = [getattr(self.model, col) for col in order_by]
+        stmt = self._get(filters).order_by(*order_cols)
+        query = await self.session.execute(stmt)
+        return query.scalars().first()
 
     async def get_by_id(self, item_id: UUID) -> Entity | None:
         stmt = (
@@ -115,12 +146,6 @@ class BaseRepository(Generic[Entity]):
         query = await self.session.execute(stmt)
         return query.scalar_one()
 
-    async def get_by_filter(self, filters: dict) -> Entity | None:
-        stmt = select(self.model).filter_by(**filters)
-        stmt = self._options(stmt)
-        query = await self.session.execute(stmt)
-        return query.unique().scalar_one_or_none()
-
     async def create(self, data: dict, *args, **kwargs) -> Entity:
         db = self.model(**data)
         self.session.add(db)
@@ -138,7 +163,7 @@ class BaseRepository(Generic[Entity]):
         if commit:
             await self.session.commit()
 
-    async def update(self, item_id: UUID, data: dict, *args, **kwargs) -> Entity:
+    async def update(self, item_id: UUID, data: dict, *args, **kwargs) -> Entity | None:
         target = await self.get_by_id(item_id)
         if target is None:
             raise
@@ -159,7 +184,6 @@ class BaseRepository(Generic[Entity]):
     def _options(self, stmt: Select) -> Select:
         return stmt
 
-    # TODO: Generalize
     def _permission_filter(self, stmt: Select) -> Select:
         stmt = self._project_allowed_ids(stmt)
         return self._product_allowed_ids(stmt)
@@ -168,4 +192,38 @@ class BaseRepository(Generic[Entity]):
         return stmt
 
     def _product_allowed_ids(self, stmt: Select) -> Select:
+        return stmt
+
+    def _get(self, filters: dict) -> Select:
+        stmt = select(self.model)
+        if filters:
+            key = next(iter(filters))
+            if isinstance(key, (MethodType, InstrumentedAttribute)):
+                stmt = self._advanced_filtering(stmt, filters)
+            else:
+                stmt = self._filters(stmt, filters)
+        stmt = self._options(stmt)
+        stmt = self._permission_filter(stmt)
+        return stmt
+
+    def _filters(self, stmt: Select | Update | Delete, filters: dict) -> Select:
+        stmt = select(self.model)
+        filters_ = {}
+        for k, v in filters.items():
+            if isinstance(v, list):
+                stmt = stmt.where(getattr(self.model, k).in_(v))
+            else:
+                filters_[k] = v
+
+        stmt = stmt.filter_by(**filters_)
+        return stmt
+
+    def _advanced_filtering(self, stmt: Select, filters: AdvFilterType):
+        for k, v in filters.items():
+            if v is None:
+                continue
+            if isinstance(k, InstrumentedAttribute):
+                stmt = stmt.where(k == v)
+            elif isinstance(k, MethodType):
+                stmt = stmt.where(k(v))
         return stmt

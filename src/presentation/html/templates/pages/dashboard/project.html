@@ -1,14 +1,14 @@
-{% set title = "Project" %}
+{% set title = "Project: " + project.name %}
 {% set filename = "project.html" %}
 {% extends 'layouts/master.html' %}
-{% block styles %}
-<link rel="stylesheet" href="/assets/scss/iconly.scss">{% endblock %}
+
 {% block content %}
-<div class="page-heading">
+<div class="page-heading d-flex justify-content-between">
   <h3>{{project.name }} Dashboard</h3>
+  <a class="btn btn-success" hx-post="" hx-confirm="Download Active Findings">Export</a>
 </div>
 <div class="page-content">
-  <!--Row-->
+  <!--Start::Yearly Trend-->
   <section class="row">
     <div class="col-6">
       <div class="card">
@@ -17,7 +17,8 @@
         </div>
 
         <div class="card-body">
-          <div id="prod_aging"></div>
+          <div id="production-year-chart" hx-target="this"></div>
+          <div display:None hx-get="/chart/project/{{project.id}}" hx-trigger="load"></div>
         </div>
       </div>
     </div>
@@ -26,79 +27,37 @@
         <div class="card-header">
           <h4>Non-Production Progress</h4>
         </div>
-        <div class="card-body">
-          <div id="nonprod_aging"></div>
-        </div>
+        <div id="non-production-year-chart" hx-target="this"></div>
+        <div display:None hx-get="/chart/project/{{project.id}}?env=non-production" hx-trigger="load"></div>
       </div>
     </div>
   </section>
-  <!--EO Row-->
-  <!--Row2-->
-  <section class="row">
-    <div class="col-12">
-      <!-- Input Group Select start -->
-      <section class="input-group-select">
-        <div class="row justify-content-end">
-          <!-- Align content to the right -->
-          <div class="col-md-6 mb-4">
-            <div class="input-group mb-3">
-              <select class="form-select" id="inputGroupSelect01">
-                <option selected>Show Dashboard by...</option>
-                <option value="1">Overall Risk</option>
-                <option value="1">Overall Status</option>
-                <option value="1">Overall SLA</option>
-                <option value="2">Breachboard</option>
-                <option value="3">Product Status</option>
-                <option value="3">Statistics</option>
-                <option value="3">CVE Stats</option>
-                <option value="3">Export Active Findings to CSV</option>
-              </select>
-              <label class="input-group-text" for="inputGroupSelect01">Options</label>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- Bootstrap Select end -->
-    </div>
-  </section>
-  <!--EO Row2-->
-  <!--Row3-->
+  <!--End::Yearly Trend-->
+  <!--Start::Card Compare-->
   <section class="row">
     <div class="col-6">
       <div id="prod_prev" hx-target="#prod_prev">
-        <div display:None
-          hx-get="/project/chart/env/{{prod_env.id}}?year={{curr_date.year}}&month={{curr_date.month - 1}}"
+        <div display:None hx-get="/chart/env?env_id={{prod_env.id}}&year={{now.year}}&month={{now.month - 1}}"
           hx-trigger="load"></div>
       </div>
       <div id="nonprod_prev" hx-target="#nonprod_prev">
-        <div display:None
-          hx-get="/project/chart/env/{{nonprod_env.id}}?year={{curr_date.year}}&month={{curr_date.month - 1}}"
+        <div display:None hx-get="/chart/env?env_id={{nonprod_env.id}}&year={{now.year}}&month={{now.month - 1}}"
           hx-trigger="load"></div>
       </div>
     </div>
     <div class="col-6">
       <div id="prod_curr" hx-target="#prod_curr">
-        <div display:None hx-get="/project/chart/env/{{prod_env.id}}?year={{curr_date.year}}&month={{curr_date.month}}"
+        <div display:None hx-get="/chart/env?env_id={{prod_env.id}}&year={{now.year}}&month={{now.month}}"
           hx-trigger="load"></div>
       </div>
       <div id="nonprod_curr" hx-target="#nonprod_curr">
-        <div display:None
-          hx-get="/project/chart/env/{{nonprod_env.id}}?year={{curr_date.year}}&month={{curr_date.month}}"
+        <div display:None hx-get="/chart/env?env_id={{nonprod_env.id}}&year={{now.year}}&month={{now.month}}"
           hx-trigger="load"></div>
       </div>
     </div>
   </section>
-  <!--EO Row3-->
+  <!--End::Card Compare-->
 </div>
 {% endblock %}
 {% block js %}
-<script src="/assets/extensions/dayjs/dayjs.min.js"></script>
-<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="/assets/static/js/pages/ui-apexchart.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-{% include "pages/dashboard/component/aging_chart.html" %}
-<script>
-  var chart_obj = {}
-</script>
 {% endblock %}

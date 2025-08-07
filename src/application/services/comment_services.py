@@ -21,13 +21,21 @@ class CommentService:
         self.user_id = get_current_user_id()
 
     async def get_by_finding_name_id(self, fn_id: UUID) -> Sequence[Comment]:
-        return await self.repository.get_by_finding_name_id(fn_id)
+        return await self.repository.get_all_by_filter_sequence(
+            {"finding_name_id": fn_id}
+        )
 
-    async def create(self, item_id: UUID, comment: str) -> Comment:
+    async def get_all_by_filter(self, filters: dict) -> Sequence[Comment]:
+        return await self.repository.get_all_by_filter_sequence(filters)
+
+    async def create(
+        self, item_id: UUID, comment: str, product_id: UUID | None = None
+    ) -> Comment:
         data = {
             "comment": comment,
             "commentor_id": self.user_id,
-            "findingName_id": item_id,
+            "finding_name_id": item_id,
+            "product_id": product_id,
         }
         created_comment = await self.repository.create(data)
         return await self.repository.get_one_by_id(created_comment.id)

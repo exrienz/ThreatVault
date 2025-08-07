@@ -6,7 +6,7 @@
     </h4>
     <br />
     <div class="input-group mb-3">
-      <select class="form-select" name="date_str" hx-get="/chart/env">
+      <select class="form-select" name="date_str" hx-get="/chart/env?env_id={{env.id}}">
         <option selected disabled>Select Date...</option>
         {% for date_option in date_options %}
         <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01" {% if

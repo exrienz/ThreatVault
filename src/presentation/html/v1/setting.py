@@ -15,6 +15,7 @@ router = APIRouter(prefix="/setting", tags=["Setting"])
 @router.get("")
 async def get_index_page(request: Request, service: GlobalServiceDep):
     data = await service.get()
+    # jobs = scheduler.scheduler.get_jobs()
     return templates.TemplateResponse(
         request,
         "pages/setting/index.html",

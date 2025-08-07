@@ -1,6 +1,6 @@
 <tr>
     <td class="text-bold-500">
-        <a href="/finding/{{ finding.finding_name_id }}">
+      <a href="/finding/{{ finding.finding_name_id }}?product_id={{product_id}}">
             {{ finding.name }} &nbsp;
             {% if finding.severity.value == "CRITICAL" %}
                 <i class="fas fa-biohazard" title="High-Priority" style="color: red"></i>&nbsp;</a>
@@ -11,7 +11,7 @@
       {{source[plugin_id | string ]}}
       {% endfor%}
     </td>
-    <td class="text-bold-500">{{ finding.status.value | title }}</td>
+    <td class="text-bold-500">{{ finding.status | title }}</td>
     <td align="center">
         <span class="badge"
               style="background-color: {{ finding.severity | findingSeverityMap }}">

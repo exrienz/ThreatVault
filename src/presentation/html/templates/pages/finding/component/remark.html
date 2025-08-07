@@ -5,11 +5,11 @@
     <h4>ITS Remarks</h4>
   </div>
   <div class="card-body">
-    <form hx-post="/finding/{{finding_name_id}}/remark" id="remark-form"
+    <form hx-post="/finding/{{finding_name_id}}/remark?product_id={{product_id}}" id="remark-form"
       hx-swap="none"
       hx-on::after-request="document.querySelector('#remark-form').reset()">
       <label for="name" class="form-label">PIC</label>
-      <div class="form-group" hx-trigger="load" hx-get="/finding/{{finding_name_id}}/pic-list" hx-swap="innerHTML">
+      <div class="form-group" hx-trigger="load" hx-get="/product/{{product_id}}/pic-list" hx-swap="innerHTML">
         <select class="choices form-select multiple-remove" multiple="multiple">
           <optgroup label="Owner List">
           </optgroup>

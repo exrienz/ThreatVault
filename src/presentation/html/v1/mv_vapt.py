@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
 from src.application.dependencies.service_dependency import (
+    EnvServiceDep,
     FindingServiceDep,
     LogServiceDep,
     ProductServiceDep,
@@ -14,7 +15,7 @@ from src.application.dependencies.service_dependency import (
 )
 from src.application.schemas import PriorityAPISchema
 from src.application.schemas.management_view import SlaBreachSchema
-from src.presentation.html.dependencies import PermissionChecker
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
@@ -30,7 +31,7 @@ async def index(
     return templates.TemplateResponse(
         request,
         "pages/management_view/vapt/index.html",
-        {"projects": projects, "min_year": int(min_year)},
+        {"projects": projects, "min_year": int(min_year), "type_": "VAPT"},
     )
 
 
@@ -65,9 +66,8 @@ async def overall(
     view: str = "severity",
 ):
     try:
-        project_uuid = UUID(project_id)
-        project = await service.get_project_by_id(project_uuid)
-    except ValueError:
+        project = await service.get_one_by_id(UUID(project_id))
+    except Exception:
         return templates.TemplateResponse(request, "empty.html")
     data = {}
     for env in project.environment:
@@ -88,20 +88,15 @@ async def sla_breach(
     year: int | None = None,
     month: int | None = None,
 ):
-    today = datetime.now()
     if month is None:
+        today = datetime.now()
         month = today.month
     try:
-        project_uuid = UUID(project_id)
-        project = await service.get_project_by_id(project_uuid)
-        products = set()
+        project = await service.get_one_by_id(UUID(project_id))
         env_ids = {}
-        if project:
-            for env in project.environment:
-                env_ids[env.name] = env.id
-                for pr in env.products:
-                    products.add(pr.name)
-    except ValueError:
+        for env in project.environment:
+            env_ids[env.name] = env.id
+    except Exception:
         return templates.TemplateResponse(request, "empty.html")
     return templates.TemplateResponse(
         request,
@@ -111,7 +106,6 @@ async def sla_breach(
             "year": year,
             "project": project,
             "month": month,
-            "products": sorted(products),
             "env_ids": env_ids,
         },
     )
@@ -122,11 +116,13 @@ async def get_sla_breach_table(
     request: Request,
     service: FindingServiceDep,
     remark_service: RemarkServiceDep,
+    env_service: EnvServiceDep,
     data: SlaBreachSchema = Depends(),
 ):
-    today = datetime.now()
     if data.month is None:
+        today = datetime.now()
         data.month = today.month
+
     res = await service.get_sla_breach_chart_data(
         data.project_id, data.model_dump(), data.page
     )
@@ -135,6 +131,8 @@ async def get_sla_breach_table(
     remark_query = await remark_service.get_all_by_product_ids(
         product_ids, {"label": "sla-breach"}
     )
+    env_query = await env_service.get_by_project_id(data.project_id)
+    envs = {e.id: e for e in env_query}
     remarks = {r.product_id: r.remark for r in remark_query}
     return templates.TemplateResponse(
         request,
@@ -145,6 +143,7 @@ async def get_sla_breach_table(
             "remarks": remarks,
             "year": data.year,
             "month": data.month,
+            "envs": envs,
         },
     )
 
@@ -256,9 +255,8 @@ async def priority(
     year: int | None = None,
 ):
     try:
-        project_uuid = UUID(project_id)
-        project = await service.get_project_by_id(project_uuid)
-    except ValueError:
+        project = await service.get_one_by_id(UUID(project_id))
+    except Exception:
         return templates.TemplateResponse(request, "empty.html")
     return templates.TemplateResponse(
         request,
@@ -274,7 +272,7 @@ async def priority_data_table(
     product_service: ProductServiceDep,
     req_data: PriorityAPISchema = Depends(),
 ):
-    data = await service.get_by_priority_threshold(req_data, ["1+", "1", "2", "3"])
+    data = await service.get_by_priority_threshold(req_data, ["1+", "1"])
     products_set = set()
     product_map = {}
 

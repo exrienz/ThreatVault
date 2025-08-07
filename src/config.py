@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     ASYNC_DB_DRIVER: str = "postgresql+asyncpg"
     JWT_SECRET: str = ""
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRED_MINUTES: int = 30
+    JWT_EXPIRED_MINUTES: int = 720
     JWT_EXPIRED_DELTA: timedelta = timedelta(minutes=JWT_EXPIRED_MINUTES)
 
     SESSION_SECRET_KEY: str = "SESSION_SECRET_KEY"

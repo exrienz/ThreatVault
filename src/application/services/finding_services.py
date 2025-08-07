@@ -8,7 +8,7 @@ from fastapi import Depends
 from src.application.schemas.finding import FindingActionInternalSchema
 from src.application.schemas.management_view import PriorityAPISchema
 from src.domain.constant import FnStatusEnum, SeverityEnum
-from src.domain.entity.finding import Finding, FindingName
+from src.domain.entity.finding import Finding
 from src.persistence import (
     FindingNameRepository,
     FindingRepository,
@@ -20,6 +20,7 @@ from src.persistence.base import Pagination
 from src.persistence.log import LogRepository
 
 
+# TODO: Move appropriate services into their own
 class FindingService:
     def __init__(
         self,
@@ -43,6 +44,12 @@ class FindingService:
     async def get_by_project_id(self, project_id: UUID) -> Sequence[Finding]:
         return await self.repository.get_all_by_project_id(project_id)
 
+    async def get_by_filter(self, filters: dict) -> Finding | None:
+        return await self.repository.get_by_filter(filters)
+
+    async def get_all_by_filter(self, filters: dict) -> Sequence[Finding]:
+        return await self.repository.get_all_by_filter_sequence(filters)
+
     async def get_sla_breach_chart_data(
         self, project_id: UUID, filters: dict, page: int = 1
     ) -> Pagination:
@@ -50,9 +57,15 @@ class FindingService:
             project_id, filters.get("year"), filters.get("month"), page=page
         )
 
+    async def get_by_id_extended(self, item_id: UUID) -> Finding | None:
+        return await self.get_by_filter({"finding_name_id": item_id})
+
     async def get_sla_breach_summary(self, project_id: UUID, filters: dict):
         return await self.log_repository.get_total_by_project_id(
-            project_id, filters, filters.get("year"), filters.get("month")
+            project_id,
+            {"type": "breach", **filters},
+            filters.get("year"),
+            filters.get("month"),
         )
 
     async def get_sla_breach_status(
@@ -147,14 +160,6 @@ class FindingService:
 
     async def bulk_update(self, filters: dict, data: dict):
         await self.repository.bulk_update(filters, data)
-
-    async def get_by_id_extended(self, item_id: UUID) -> FindingName:
-        finding_name = await self.findingname_repository.get_by_filter(
-            {"finding_name_id": item_id}
-        )
-        if finding_name is None:
-            raise
-        return finding_name
 
     async def manual_upload(self, fn_data: dict, data: dict) -> Finding:
         finding_name = await self.findingname_repository.get_by_filter(fn_data)

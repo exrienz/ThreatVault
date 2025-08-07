@@ -17,12 +17,27 @@ class EnvEnum(Enum):
     NON_PRODUCTION = "Non-Production"
 
 
+# Deprecated
 class FnStatusEnum(Enum):
     NEW = "NEW"
     OPEN = "OPEN"
     CLOSED = "CLOSED"
     EXEMPTION = "EXEMPTION"
     OTHERS = "OTHERS"
+
+
+class VAStatusEnum(Enum):
+    NEW = "NEW"
+    OPEN = "OPEN"
+    CLOSED = "CLOSED"
+    EXEMPTION = "EXEMPTION"
+    OTHERS = "OTHERS"
+
+
+class HAStatusEnum(Enum):
+    PASSED = "PASSED"
+    FAILED = "FAILED"
+    WARNING = "WARNING"
 
 
 # class RoleEnum(Enum):

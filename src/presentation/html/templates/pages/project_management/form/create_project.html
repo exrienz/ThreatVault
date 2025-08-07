@@ -1,9 +1,9 @@
 <form id="create_project_id"
       class="row g-3"
-      hx-post=""
+      hx-post="/project-management/"
       hx-swap="none"
       hx-on::after-request="document.querySelector('#create_project_id').reset()">
-    <input type="hidden" name="project_type" value="VA" />
+  <input type="hidden" name="project_type" value="{{type_}}" />
     <div class="col-md-12">
         <input type="text"
                name="name"

@@ -28,7 +28,7 @@ class TokenService:
             "product_id": product_id,
             "user_id": user_id,
         }
-        return await self.repository.filter_by_one(filter_by)
+        return await self.repository.get_by_filter(filter_by)
 
     async def delete(self, token_id: UUID):
         await self.repository.delete(token_id)

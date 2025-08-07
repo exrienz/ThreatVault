@@ -1,9 +1,7 @@
-from collections.abc import Sequence
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import Select, select
+from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -18,11 +16,3 @@ class CommentRepository(BaseRepository[Comment]):
 
     def _options(self, stmt: Select):
         return stmt.options(selectinload(Comment.commentor))
-
-    # TODO: Generalize this
-    async def get_by_finding_name_id(self, finding_name_id: UUID) -> Sequence[Comment]:
-        stmt = select(Comment).where(Comment.findingName_id == finding_name_id)
-        stmt = stmt.options(selectinload(Comment.commentor))
-        stmt = stmt.order_by(Comment.created_at)
-        query = await self.session.execute(stmt)
-        return query.scalars().all()

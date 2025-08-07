@@ -1,12 +1,16 @@
 from datetime import datetime
 from typing import Annotated
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 
 from src.application.dependencies.service_dependency import PluginServiceDep
-from src.application.services.fileupload_service import FileUploadService
+from src.application.schemas.finding import FindingUploadSchema
+from src.application.services.fileupload_service import (
+    HAUploadService,
+    VAUploadService,
+)
 
 from ..utils import templates
 
@@ -43,8 +47,16 @@ async def create(
     config: Annotated[str, Form()],
     file: Annotated[UploadFile, File()],
     active: Annotated[bool, Form()] = False,
+    env: Annotated[str, Form()] = "VA",
 ):
-    data = {"description": description, "config": config, "is_active": active}
+    if env not in {"VA", "HA"}:
+        raise
+    data = {
+        "description": description,
+        "config": config,
+        "is_active": active,
+        "env": env,
+    }
     await service.create(data, file)
     return templates.TemplateResponse(
         request,
@@ -70,21 +82,21 @@ async def plugin_verification(
     plugin_id: UUID,
     file: Annotated[UploadFile, File()],
     use_to_verify: Annotated[bool, Form()] = False,
+    type_: str | None = None,
 ):
     plugin_info = await service.get_by_id(plugin_id)
-    plugin_fn = service.plugin_import(
-        plugin_info.name, f"{plugin_info.type}/{plugin_info.name}.py"
-    )
+    data = FindingUploadSchema(scan_date=datetime.now(), plugin=plugin_info.id)
 
-    verified = await FileUploadService(
-        service.repository.session,
-        file,
-        plugin_fn,
-        datetime.now(),
-        uuid4(),
-        True,
-        False,
-    ).plugin_verification()
+    if type_ == "HA":
+        fileupload = HAUploadService(
+            service.repository.session, file, plugin_info.id, data
+        )
+    else:
+        fileupload = VAUploadService(
+            service.repository.session, file, plugin_info.id, data
+        )
+
+    verified = await fileupload.plugin_verification()
     headers = {}
     if use_to_verify:
         await service.update(plugin_id, {"verified": verified})

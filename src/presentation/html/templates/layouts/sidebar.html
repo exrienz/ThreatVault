@@ -47,8 +47,15 @@
       {% else %}
 
       {% if 'all' in permissions or (sidebarItem.permissions | reject("in", permissions) | list | length == 0) %}
+      {% if menuKey %}
+      <li
+        class="sidebar-item
+        {{ 'active' if sidebarItem.key == menuKey}}
+        {{'has-sub' if sidebarItem.submenu is defined }}">
+      {% else %}
       <li
         class="sidebar-item {{ 'active' if (sidebarItem.url == filename or filename|startsWith(sidebarItem.key) ) }} {{'has-sub' if sidebarItem.submenu is defined }}">
+      {% endif %}
         <a href="{{ sidebarItem.url if sidebarItem.url is defined else '#' }}" class="sidebar-link">
           <i class="bi bi-{{ sidebarItem.icon }}"></i>
           <span>{{ sidebarItem.name }}</span>
@@ -57,7 +64,11 @@
         <ul class="submenu {{ 'active' if (filename|startsWith(sidebarItem.key) ) }}">
           {% for sub in sidebarItem.submenu %}
           {% if 'all' in permissions or (sub.permissions | reject("in", permissions) | list | length == 0) %}
+          {% if sidebarname %}
+          <li class="submenu-item {{ 'active' if sub.name == sidebarname}}">
+          {% else %}
           <li class="submenu-item {{ 'active' if sub.url == filename or filename|startsWith(sub.key) }}">
+          {% endif %}
             <a href="{{ sub.url }}" class="submenu-link">{{ sub.name }}</a>
           </li>
           {%endif%}

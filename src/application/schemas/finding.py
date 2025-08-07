@@ -13,6 +13,7 @@ class FindingUploadSchema(BaseModel):
     plugin: UUID
     process_new_finding: bool = False
     sync_update: bool = False
+    overwrite: bool = False
 
 
 class ManualFindingUploadSchema(BaseModel):

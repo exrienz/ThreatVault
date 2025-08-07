@@ -1,5 +1,6 @@
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
+from jwt import ExpiredSignatureError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.application.exception.error import (
@@ -7,6 +8,7 @@ from src.application.exception.error import (
     InvalidAuthentication,
     InvalidFile,
     InvalidInput,
+    JWTExpiredException,
     SchemaException,
     UnauthorizedError,
 )
@@ -47,7 +49,7 @@ async def inactiveUser(request: Request, exc: InactiveUser):
 
 
 async def httpException(request: Request, exc: HTTPException):
-    if exc.status_code in [401, 404, 500]:
+    if exc.status_code in [401, 403, 404, 500]:
         return templates.TemplateResponse(
             request,
             f"error/{exc.status_code}.html",
@@ -87,6 +89,13 @@ async def invalid_input(request: Request, exc: InvalidInput):
     )
 
 
+async def jwt_expired_handler(request: Request, exc: ExpiredSignatureError):
+    return templates.TemplateResponse(
+        request,
+        "error/session_expired.html",
+    )
+
+
 exception_handlers = {
     UnauthorizedError: unauthorize,
     InvalidAuthentication: invalidAuthentication,
@@ -96,4 +105,5 @@ exception_handlers = {
     StarletteHTTPException: httpException,
     InvalidFile: invalid_file_upload,
     InvalidInput: invalid_input,
+    ExpiredSignatureError: jwt_expired_handler,
 }

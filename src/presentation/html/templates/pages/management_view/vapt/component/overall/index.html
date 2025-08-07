@@ -5,7 +5,7 @@
   <div class="col-4 mb-1">
     <div class="input-group mb-3">
       <label class="input-group-text">View</label>
-      <select class="form-select" id="overall-type" name="view" hx-get="overall">
+      <select class="form-select" id="overall-type" name="view_type" hx-get="overall">
         <option value="severity" {%if view=="severity" %} selected {%endif%}>Severity</option>
         <option value="status" {%if view=="status" %} selected {%endif%}>Status</option>
       </select>
@@ -20,7 +20,7 @@
         <h4>Production Progress</h4>
       </div>
       <div class="card-body">
-        <div id="prod-year-chart"></div>
+        <div id="production-year-chart"></div>
       </div>
     </div>
   </div>

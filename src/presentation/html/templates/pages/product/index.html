@@ -8,10 +8,12 @@
 {% endblock %}
 
 {% block content %}
+{% set environment = product.environment %}
 <div class="page-heading">
   <h3>
-    {{ product.name }} Findings Dashboard
-    <span class="badge bg-success">{{ product.environment.name | title }}</span>
+    {{ product.name }} {{environment.project.type_ | assessmentTypeMap }} Dashboard
+    <span class="badge bg-success">{{ environment.name | title }}</span>
+    {% include "pages/product/component/score.html" %}
   </h3>
   <div id="finding_header_id" data-upload-date={{logs.log_date.strftime('%Y-%m-%d') if logs else "DD-MM-YYYY" }}>
     Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs else "DD-MM-YYYY"}}
@@ -57,8 +59,7 @@
           <h4>Aging Finding</h4>
         </div>
         <div class="card-body">
-          <div id="aging"></div>
-          <div display:None hx-get="{{product.id}}/aging-finding-chart" hx-trigger="load"></div>
+          <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ from pydantic import PositiveInt
 
 from src.application.dependencies import RoleServiceDep, UserServiceDep
 from src.application.schemas import UserUpdateSchema
-from src.presentation.html.dependencies import PermissionChecker
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 

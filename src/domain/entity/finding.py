@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, or_
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import DateTime
 
-from src.domain.constant import FnStatusEnum, SeverityEnum
+from src.domain.constant import FnStatusEnum, HAStatusEnum, SeverityEnum, VAStatusEnum
 
 from .base import Base
 
@@ -16,7 +16,7 @@ class Finding(Base):
 
     host: Mapped[str]
     port: Mapped[str]
-    status: Mapped[FnStatusEnum]
+    status: Mapped[str]
     severity: Mapped[SeverityEnum]
     reopen: Mapped[bool] = mapped_column(server_default="f")
     vpr_score: Mapped[Optional[str]]
@@ -50,7 +50,10 @@ class Finding(Base):
             "plugin_id",
             "product_id",
             unique=True,
-            postgresql_where=(Column("status") != FnStatusEnum.CLOSED.value),
+            postgresql_where=or_(
+                Column("status") != VAStatusEnum.CLOSED.value,
+                Column("status") != HAStatusEnum.PASSED.value,
+            ),
         ),
     )
 
@@ -93,12 +96,6 @@ class FindingName(Base):
     name: Mapped[str]
 
     description: Mapped[Optional[str]]
-
-    # TODO: remove product and findings
-    # product_id: Mapped[UUID] = mapped_column(
-    #     ForeignKey("product.id", ondelete="CASCADE")
-    # )
-    # product = relationship("Product")
     findings = relationship("Finding", back_populates="finding_name")
 
     cves = relationship("CVE", back_populates="finding_name")
@@ -142,8 +139,12 @@ class Comment(Base):
 
     comment: Mapped[str]
 
-    findingName_id: Mapped[UUID] = mapped_column(
+    finding_name_id: Mapped[UUID] = mapped_column(
         ForeignKey("finding_name.id", ondelete="CASCADE")
+    )
+
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
     )
 
     commentor_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("auth_user.id"))
@@ -158,9 +159,9 @@ class Log(Base):
     tMedium: Mapped[int] = mapped_column(default=0)
     tLow: Mapped[int] = mapped_column(default=0)
 
-    tPass: Mapped[int] = mapped_column(default=0)  # HA
-    tFail: Mapped[int] = mapped_column(default=0)  # HA
-    # tWarning: Mapped[int] = mapped_column(default=0)  # HA
+    tPassed: Mapped[int] = mapped_column(default=0)  # HA
+    tFailed: Mapped[int] = mapped_column(default=0)  # HA
+    tWarning: Mapped[int] = mapped_column(default=0)  # HA
 
     tNew: Mapped[int] = mapped_column(default=0)
     tOpen: Mapped[int] = mapped_column(default=0)
@@ -172,6 +173,8 @@ class Log(Base):
     bHigh: Mapped[int] = mapped_column(default=0)
     bMedium: Mapped[int] = mapped_column(default=0)
     bLow: Mapped[int] = mapped_column(default=0)
+
+    score: Mapped[Optional[int]]
 
     log_date: Mapped[datetime] = mapped_column(DateTime(True))
 

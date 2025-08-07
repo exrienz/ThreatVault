@@ -33,7 +33,7 @@ from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository, Pagination
 
 
-class FindingRepository(BaseRepository):
+class FindingRepository(BaseRepository[Finding]):
     def __init__(self, session: Annotated[AsyncSession, Depends(get_session)]):
         super().__init__(Finding, session)
 
@@ -46,19 +46,10 @@ class FindingRepository(BaseRepository):
         pagination: bool = False,
         page: int = 1,
     ):
-        stmt = (
-            select(Finding)
-            .options(selectinload(Finding.finding_name))
-            .where(
-                Finding.product_id == product_id,
-                Finding.status != FnStatusEnum.CLOSED,
-            )
-        ).order_by(Finding.severity)
-        if pagination:
-            return await self.pagination(stmt, page, True)
-
-        query = await self.session.execute(stmt)
-        return query.scalars().all()
+        filters = {"product_id": product_id}
+        return await self.get_all_by_filter(
+            filters=filters, order_by=["severity"], pagination=pagination, page=page
+        )
 
     async def get_latest_date_by_product_id(self, product_id: UUID):
         stmt = (
@@ -70,6 +61,20 @@ class FindingRepository(BaseRepository):
 
         query = await self.session.execute(stmt)
         return query.scalar()
+
+    async def get_all_by_project_id(self, project_id: UUID) -> Sequence[Finding]:
+        stmt = (select(Finding).join(Product).join(Environment).join(Project)).where(
+            Project.id == project_id
+        )
+
+        stmt = stmt.options(
+            selectinload(Finding.finding_name)
+            .selectinload(Finding.product)
+            .selectinload(Product.environment)
+        )
+
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
 
     async def get_group_by_severity_status(
         self,
@@ -439,13 +444,7 @@ class FindingRepository(BaseRepository):
             )
             .values(data)
         )
-
-        for k, v in filters.items():
-            key = getattr(Finding, k)
-            if isinstance(v, list):
-                stmt = stmt.where(key.in_(v))
-            else:
-                stmt = stmt.where(key == v)
+        stmt = self._filters(stmt, filters)
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -462,28 +461,6 @@ class FindingRepository(BaseRepository):
             stmt = stmt.where(getattr(Finding, k).in_(v))
         await self.session.execute(stmt)
         await self.session.commit()
-
-    async def adhoc_statitics(self, filters: dict, year: int | None = None):
-        if year is None:
-            ...
-
-    async def get_all_by_project_id(self, project_id: UUID) -> Sequence[Finding]:
-        stmt = (
-            select(Finding)
-            .join(FindingName)
-            .join(Product)
-            .join(Environment)
-            .join(Project)
-        ).where(Project.id == project_id)
-
-        stmt = stmt.options(
-            selectinload(Finding.finding_name)
-            .selectinload(Finding.product)
-            .selectinload(Product.environment)
-        )
-
-        query = await self.session.execute(stmt)
-        return query.scalars().all()
 
     async def get_by_priority_list(
         self, project_id: UUID, priorities: list[str], filters: dict, page: int = 1
@@ -532,3 +509,7 @@ class FindingRepository(BaseRepository):
             stmt = stmt.where(Finding.host.in_(hosts))
 
         return await self.pagination(stmt, page, False)
+
+    async def adhoc_statitics(self, filters: dict, year: int | None = None):
+        if year is None:
+            ...

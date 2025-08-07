@@ -1,4 +1,4 @@
-{% set title = "VAPT - Management View" %}
+{% set title = project_type.upper() + " - Management View" %}
 {% set filename = "management-view/vapt" %}
 {% extends 'layouts/master.html' %}
 {% block styles %}
@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 <div class="page-heading">
-  <h3>VAPT - Management View</h3>
+  <h3>{{project_type}} - Management View</h3>
 </div>
 <div class="page-content">
   <!--Row-->

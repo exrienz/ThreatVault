@@ -17,7 +17,7 @@ from src.domain.entity import (
 from src.domain.entity.user_access import Role
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository
-from src.presentation.html.dependencies import get_allowed_product_ids
+from src.presentation.dependencies import get_allowed_product_ids
 
 
 class ProductRepository(BaseRepository[Product]):
@@ -29,7 +29,9 @@ class ProductRepository(BaseRepository[Product]):
         super().__init__(Product, session, product_ids=product_ids)
 
     def _options(self, stmt: Select):
-        return stmt.options(selectinload(Product.environment))
+        return stmt.options(
+            selectinload(Product.environment).selectinload(Environment.project),
+        )
 
     async def get_by_id_filter(
         self,

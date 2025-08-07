@@ -32,6 +32,7 @@ class ProjectManagementService:
         self.LogRepository = logRepository
         self.fnRevertRepository = fnRevertRepository
 
+    # Deprecated
     async def get_project_extended(
         self, project_id: UUID | None = None
     ) -> Sequence[Project]:
@@ -64,6 +65,9 @@ class ProjectManagementService:
     async def get_project_by_id(self, project_id: UUID) -> Project | None:
         return await self.projectRepository.get_by_id(project_id)
 
+    async def get_one_by_id(self, project_id: UUID) -> Project:
+        return await self.projectRepository.get_one_by_id(project_id)
+
     # TODO: change the function name
     async def get_product_by_project_id(
         self, project_id: UUID | None = None, environment_id: UUID | None = None
@@ -88,11 +92,11 @@ class ProjectManagementService:
     async def get_all(self) -> Sequence[Project]:
         return await self.projectRepository.get_all()
 
-    async def get_all_with_logs(self):
-        return await self.LogRepository.get_project_list()
+    async def get_all_with_logs(self, env: str):
+        return await self.LogRepository.get_project_list(env=env)
 
     async def get_all_by_filters(self, filters: dict) -> Sequence[Project]:
-        return await self.projectRepository.get_all_by_filter(filters)
+        return await self.projectRepository.get_all_by_filter_sequence(filters)
 
     async def min_year(self) -> int | None:
         return await self.projectRepository.min_year()

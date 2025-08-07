@@ -4,10 +4,12 @@
 <div>
   <section class="row" hx-include="#product-name-selector">
     <div class="input-group">
-      <select class="form-select" name="product_name" id="product-name-selector">
-        {% for product_name in products %}
-        <option {% if loop.first %}selected{%endif%}>{{product_name}}</option>
-        {% endfor %}
+      <select class="form-select" name="severity" id="product-name-selector">
+        <option value=none>Mixed</option>
+        <option>Critical</option>
+        <option>High</option>
+        <option>Medium</option>
+        <option>Low</option>
       </select>
       <label class="input-group-text">Options</label>
     </div>
@@ -19,7 +21,7 @@
           </h4>
         </div>
         <div id="prod_sla_product" hx-target="this"
-          hx-get="/chart/sla-breach/product?env_id={{env_ids.get('production')}}"
+          hx-get="/chart/sla-breach/products?env_id={{env_ids.get('production')}}"
           hx-trigger="load, change from:#product-name-selector">
         </div>
       </div>
@@ -32,7 +34,7 @@
           </h4>
         </div>
         <div id="non-prod_sla_product" hx-target="this"
-          hx-get="/chart/sla-breach/product?env_id={{env_ids.get('non-production')}}"
+          hx-get="/chart/sla-breach/products?env_id={{env_ids.get('non-production')}}"
           hx-trigger="load, change from:#product-name-selector">
         </div>
       </div>
@@ -122,7 +124,8 @@
                 </div>
                 <div class="col-4">
                   <div class="input-group mb-3 col-4">
-                    <select class="form-select" name="month" hx-target="#sla_breach_table" hx-get="sla-breach/table">
+                    <select id="table-month-selector" class="form-select" name="month" hx-target="#sla_breach_table"
+                      hx-get="sla-breach/table">
                       {% for date_option in range(1, now.month + 1) %}
                       <option value="{{'{:02d}'.format(date_option | int) }}" {% if date_option==month %} selected
                         {%endif%}>

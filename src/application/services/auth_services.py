@@ -62,7 +62,7 @@ class AuthService:
 
     def create_access_token(self, data: TokenDataSchema) -> str:
         to_encode = data.model_dump()
-        expired_at = datetime.now() + timedelta(settings.JWT_EXPIRED_MINUTES)
+        expired_at = datetime.now() + timedelta(minutes=settings.JWT_EXPIRED_MINUTES)
         to_encode.update({"exp": expired_at})
         encoded_jwt = jwt.encode(
             to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
