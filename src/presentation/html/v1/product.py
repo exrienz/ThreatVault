@@ -192,7 +192,11 @@ async def upload_file(
         request,
         "pages/product/response/fileupload.html",
         headers={"HX-Trigger": "reload-findings, reload-stats"},
-        context={"logs": logs, "totalSeverity": tSeverity},
+        context={
+            "logs": logs,
+            "totalSeverity": tSeverity,
+            "filename": uploader.file.filename,
+        },
     )
 
 

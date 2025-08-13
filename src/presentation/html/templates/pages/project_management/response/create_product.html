@@ -3,5 +3,6 @@
     <a href="/product/{{ product.id }}">{{ product.name }}</a>
   </li>
 </div>
-{# Update Remove Project #}
-<script id="pm_script" hx-swap-oob>ToastSuccessCustom("Created Product: {{product.name}}");</script>
+<script id="toast-global-id" hx-swap-oob="true">
+  ToastCustom("Created Product: {{product.name}}", "success");
+</script>

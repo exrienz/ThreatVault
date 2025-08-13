@@ -80,8 +80,6 @@ fileignoreconfig:
   checksum: f99757dcaf275453cdc614ccfce3635f0d78c3899e0a2f0083fcfb7ee7bc3b4f
 - filename: src/persistence/base.py
   checksum: df48503e8dadd473287ffa9a761e2f8b2136a09047d2f65e0fc69e72155bf083
-- filename: src/domain/entity/finding.py
-  checksum: 93aeb20d8fcce5ff0559d83c8cea96bea5a444e3bf7cdd8e5ad28eec95f8ad1e
 - filename: src/presentation/html/templates/pages/management_view/vapt/index.html
   checksum: 3389475d15fe9c8eae5d7372bd61a7d1aea6cf85aead9e3496f5548ddbfe5ef1
 - filename: src/persistence/log.py
@@ -90,4 +88,6 @@ fileignoreconfig:
   checksum: 5d03d4062acaeba919c87d3fed04aea1f6fc62e167634a5a13ab0dc679f53af7
 - filename: src/presentation/html/templates/pages/user_setting/index.html
   checksum: 15eb4a47e184b5356622b21bf271db4f7e0d6d1f77408c2b8eacfba9f533b62c
+- filename: src/domain/entity/finding.py
+  checksum: 0de112cf9e55989ce4535898ab790fbdf95f196301e6b72fa8696a81c17b7a3d
 version: ""

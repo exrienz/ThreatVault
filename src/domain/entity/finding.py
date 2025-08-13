@@ -31,9 +31,13 @@ class Finding(Base):
     closed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(True))
     label: Mapped[Optional[str]]
 
-    plugin_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("plugin.id"))
+    plugin_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey("plugin.id", ondelete="CASCADE")
+    )
 
-    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("product.id"))
+    product_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
+    )
     product = relationship("Product")
 
     finding_name_id: Mapped[UUID] = mapped_column(
@@ -192,8 +196,12 @@ class AdditionalRemark(Base):
     label: Mapped[Optional[str]]
     remark: Mapped[Optional[str]]
 
-    product_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("product.id"))
+    product_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey("product.id", ondelete="CASCADE")
+    )
     product = relationship("Product")
 
-    finding_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("finding.id"))
+    finding_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey("finding.id", ondelete="CASCADE")
+    )
     finding = relationship("Finding")
