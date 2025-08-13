@@ -9,10 +9,10 @@ from src.application.schemas.auth import UserResetPasswordSchema
 
 from ..utils import templates
 
-router = APIRouter(prefix="/self-service", tags=["Self-Service"])
+router = APIRouter(prefix="/setting", tags=["Self-Service"])
 
 
-@router.get("")
+@router.get("/account")
 async def get_index_page(
     request: Request,
     service: UserServiceDep,

@@ -42,8 +42,6 @@ fileignoreconfig:
   checksum: 316c376d1cc319619e82ad577573fee5083227ddebbaeaa6bca46a83e166b1b1
 - filename: src/presentation/html/v1/auth.py
   checksum: a9b3f5a351787425f25e4cd36e1c5edc38cc7e06a924ab923ebc26a84a920ffd
-- filename: src/presentation/html/templates/pages/user_setting/index.html
-  checksum: 9800a96aabfee955b183a43494cbf702f7829e70b73073f687a1858ef6f58862
 - filename: src/persistence/environment.py
   checksum: abe134b73d1b7af0c1066ebbb5221a4e1c72564e9284c53f3b28aa42149ccfc1
 - filename: src/presentation/html/templates/error/403.html
@@ -72,8 +70,6 @@ fileignoreconfig:
   checksum: 8027dc1fa3373c34361ee5985236d74d98069ae16998fd00f79c202c927b8773
 - filename: src/presentation/html/templates/layouts/sidebar.html
   checksum: 24f770e3d7a5e4be1afa61f59ef31f84fdaaa0a37366cbd8d60f9d5fcfb8eb4e
-- filename: src/default/sidebars.json
-  checksum: a32d88e27bf66ad2830bc524ffd60ce39d228f1828bd13a9013618c8cec36bbd
 - filename: src/presentation/html/templates/pages/dashboard/index.html
   checksum: 0533d7351f922b7cb3d51743dd00d05b6bb99c92538d0730c3834efa3ed15cec
 - filename: src/application/services/log_services.py
@@ -84,8 +80,14 @@ fileignoreconfig:
   checksum: f99757dcaf275453cdc614ccfce3635f0d78c3899e0a2f0083fcfb7ee7bc3b4f
 - filename: src/persistence/base.py
   checksum: df48503e8dadd473287ffa9a761e2f8b2136a09047d2f65e0fc69e72155bf083
-- filename: src/persistence/log.py
-  checksum: 29ab6abd693b9786b0718269a913b50025c5452d25ed37a519ffcd9eff126472
 - filename: src/domain/entity/finding.py
   checksum: 93aeb20d8fcce5ff0559d83c8cea96bea5a444e3bf7cdd8e5ad28eec95f8ad1e
+- filename: src/presentation/html/templates/pages/management_view/vapt/index.html
+  checksum: 3389475d15fe9c8eae5d7372bd61a7d1aea6cf85aead9e3496f5548ddbfe5ef1
+- filename: src/persistence/log.py
+  checksum: e5a1fb18dee90cf5f856effa8d0a325b9e376ac1e307c832a73864534de8e0f5
+- filename: src/default/sidebars.json
+  checksum: 5d03d4062acaeba919c87d3fed04aea1f6fc62e167634a5a13ab0dc679f53af7
+- filename: src/presentation/html/templates/pages/user_setting/index.html
+  checksum: 15eb4a47e184b5356622b21bf271db4f7e0d6d1f77408c2b8eacfba9f533b62c
 version: ""

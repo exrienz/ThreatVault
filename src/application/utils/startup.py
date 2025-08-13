@@ -79,5 +79,11 @@ def default_global_setting():
         stmt = select(func.count(GlobalConfig.id))
         config = session.execute(stmt).scalar_one()
         if config == 0:
-            session.add(GlobalConfig())
+            default = {
+                "sla_critical": 120,
+                "sla_high": 90,
+                "sla_medium": 60,
+                "sla_low": 30,
+            }
+            session.add(GlobalConfig(**default))
             session.commit()

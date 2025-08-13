@@ -97,9 +97,9 @@
     ]
   },
   {
-    "name": "Self-Service",
-    "key": "/self-service",
-    "url": "/self-service",
+    "name": "Account Setting",
+    "key": "Account Setting",
+    "url": "/setting/account",
     "icon": "wrench"
   }
 ]

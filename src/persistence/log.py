@@ -182,7 +182,7 @@ class LogRepository(BaseRepository[Log]):
         return await self.create(log_data)
 
     async def calculate_breach(self, product_id: UUID, scan_date: datetime) -> dict:
-        status_excludes = ["CLOSED", "OTHERS"]
+        status_excludes = ["CLOSED", "OTHERS", "PASSED", "EXEMPTION"]
 
         sub = select(
             GlobalConfig.sla_critical.label("CRITICAL"),

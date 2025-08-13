@@ -65,7 +65,7 @@
           {% for sub in sidebarItem.submenu %}
           {% if 'all' in permissions or (sub.permissions | reject("in", permissions) | list | length == 0) %}
           {% if sidebarname %}
-          <li class="submenu-item {{ 'active' if sub.name == sidebarname}}">
+          <li class="submenu-item {{ 'active' if sub.name.lower() == sidebarname.lower()}}">
           {% else %}
           <li class="submenu-item {{ 'active' if sub.url == filename or filename|startsWith(sub.key) }}">
           {% endif %}
