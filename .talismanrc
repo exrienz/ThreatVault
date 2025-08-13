@@ -1,6 +1,4 @@
 fileignoreconfig:
-- filename: .env.dev
-  checksum: 089560526a856cb8dcf6c2194a497d07276f4e3ff45d5f590ae0fa1d8f8c7010
 - filename: src/application/security/oauth2/password.py
   checksum: d2840536fffc3a798d3392818594f74d5dc24892e4f27ccfff36be2e0699e835
 - filename: src/application/services/env_service.py
@@ -88,4 +86,13 @@ fileignoreconfig:
   checksum: 29ab6abd693b9786b0718269a913b50025c5452d25ed37a519ffcd9eff126472
 - filename: src/domain/entity/finding.py
   checksum: 93aeb20d8fcce5ff0559d83c8cea96bea5a444e3bf7cdd8e5ad28eec95f8ad1e
+- filename: .env.dev
+  checksum: caf82791a541007d8664518e733fb8d3b9acf9506e93ee09f5c973f9a6eccd1e
+- filename: grafana/provisioning/dashboard/fastapi-dashboard.json
+  checksum: 84f501a530abe29d3b1e12a88479604e62d467aa21420a1450d47fa1a8216a7b
+- filename: docker-compose.dev.yml
+  checksum: f09f300866c5c058743b36468aa8622835524640ce3770ed99919994ff4b1ec4
+- filename: stress_test.js
+  checksum: 2ccaa98fc182f455b5a3ecf06ef6b7dc41533c6c035e4cb169766ce12efe1a94
+version: ""
 version: ""

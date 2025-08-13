@@ -13,4 +13,3 @@ COPY ./public/ ./public
 # CMD ["uvicorn", "src.main:app", "--port", "8000", "--reload"]
 
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
-

@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     SESSION_SECRET_KEY: str = "SESSION_SECRET_KEY"
     NEWEST_CVE_URL: str = "https://www.tenable.com/cve/feeds?sort=newest"
 
+    ENABLE_PROMOTHEUS: bool = True
+
 
 settings = Settings()
 
