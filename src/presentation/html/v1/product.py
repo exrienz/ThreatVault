@@ -246,7 +246,9 @@ async def product_stats(
         raise
     logs = await service.get_by_product_id(product_id)
     return templates.TemplateResponse(
-        request, f"pages/product/response/{project.type_}_stats.html", {"logs": logs}
+        request,
+        f"pages/product/response/{project.type_.lower()}_stats.html",
+        {"logs": logs},
     )
 
 

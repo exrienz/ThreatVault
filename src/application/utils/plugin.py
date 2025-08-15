@@ -17,7 +17,7 @@ def upload_builtin_plugin(logger: Logger):
         }
         stmt = select(Plugin).where(Plugin.type == "builtin")
         db_plugins = session.execute(stmt).scalars().all()
-        db_plugins_lst = {f"{p.env}/{p.name}" for p in db_plugins}
+        db_plugins_lst = {f"{str(p.env).lower()}/{p.name}" for p in db_plugins}
         need_to_update = file_set.difference(db_plugins_lst)
         if len(need_to_update) == 0:
             logger.info("All Plugins Updated")

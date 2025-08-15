@@ -144,7 +144,8 @@ class FileUploadService(ABC):
         if plugin is None:
             raise
         self.plugin = self.plugin_import(
-            plugin.name, f"{plugin.type}/{plugin.env}/{plugin.name}.py"
+            plugin.name,
+            f"{plugin.type.lower()}/{str(plugin.env).lower()}/{plugin.name}.py",
         )
         return self.plugin
 
@@ -177,8 +178,9 @@ class FileUploadService(ABC):
         await FindingRevertRepository.create_revert_point(self.session, self.product_id)
 
     def plugin_import(self, name: str, filename: str) -> ModuleType:
-        ph = pathlib.Path(__file__).cwd()
-        path = f"{ph}/public/plugins/{filename}"
+        # ph = pathlib.Path(__file__).cwd()
+        # ph = pathlib.Path(__file__).resolve().parent
+        path = f"/public/plugins/{filename}"
         spec = importlib.util.spec_from_file_location(name, path)
         if spec is None or spec.loader is None:
             raise
