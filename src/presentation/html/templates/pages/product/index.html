@@ -13,7 +13,6 @@
   <h3>
     {{ product.name }} {{environment.project.type_ | assessmentTypeMap }} Dashboard
     <span class="badge bg-success">{{ environment.name | title }}</span>
-    {% include "pages/product/component/score.html" %}
   </h3>
   <div id="finding_header_id" data-upload-date={{logs.log_date.strftime('%Y-%m-%d') if logs else "DD-MM-YYYY" }}>
     Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs else "DD-MM-YYYY"}}

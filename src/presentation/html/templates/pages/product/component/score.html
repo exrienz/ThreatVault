@@ -1,9 +1,19 @@
-<span id="product_score_id" class="badge"
-      style="background-color: {{ logs.score | score_color if logs.score else 'gray' }}"
-      title="A – Excellent: Only a few low-risk issues
+<div class="card flex-fill" style="min-width: 200px;"
+title="A – Excellent: Only a few low-risk issues
 B – Good: Some medium and low-risk findings
 C – Fair: Moderate risks; some weak controls
 D – Poor: Major deficiencies; urgent fix needed
 E – Inadequate: Widespread and serious failures">
-  Score: {{ logs.score | int | score if logs.score else '?' }}
-</span>
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <div class="stats-icon mb-2 me-3"
+          style="background-color: {{ logs.score | score_color if logs.score else 'gray' }}">
+          <i class="fas fa-certificate"></i>
+        </div>
+        <div>
+          <h6 class="text-muted font-semibold">Score</h6>
+          <h6 id="score" class="font-extrabold mb-0">{{ logs.score | int | score if logs.score else '?' }}</h6>
+        </div>
+      </div>
+    </div>
+</div>

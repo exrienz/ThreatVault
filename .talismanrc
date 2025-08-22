@@ -94,4 +94,8 @@ fileignoreconfig:
   checksum: ac39ff94acccbc9a01b829f5990319abe3c7aea81ef3f5d76762174589bc857f
 - filename: src/presentation/html/utils.py
   checksum: 757db523ddf076eaa8348c01a1710242051165d49399d3c5a820a0f35767117a
+- filename: src/presentation/html/templates/pages/product/component/ha_stats.html
+  checksum: fa0df6547bb627514f164bd2f413a4053e31058bd3031e1d6527fd6ce9563ec8
+- filename: src/presentation/html/templates/pages/product/response/ha_stats.html
+  checksum: b0046003f18eddb7f85eddf5119889de02fa2314cb019ef2d429149cd743a60a
 version: ""
