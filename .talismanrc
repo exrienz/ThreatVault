@@ -98,4 +98,6 @@ fileignoreconfig:
   checksum: fa0df6547bb627514f164bd2f413a4053e31058bd3031e1d6527fd6ce9563ec8
 - filename: src/presentation/html/templates/pages/product/response/ha_stats.html
   checksum: b0046003f18eddb7f85eddf5119889de02fa2314cb019ef2d429149cd743a60a
+- filename: alembic/versions/bbcfd4ec42a8_create_initial_table_01.py
+  checksum: 951a1d721f502f42601bef3f37627acdd355978fe1fbdc3628de0771babbc9c5
 version: ""
