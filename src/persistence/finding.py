@@ -12,6 +12,7 @@ from sqlalchemy import (
     case,
     cast,
     func,
+    or_,
     select,
     update,
 )
@@ -24,7 +25,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.constant import FnStatusEnum, SeverityEnum
+from src.domain.constant import FnStatusEnum, HAStatusEnum, SeverityEnum
 from src.domain.entity import Finding, FindingName
 from src.domain.entity.finding import CVE
 from src.domain.entity.project_management import Environment, Product, Project
@@ -425,7 +426,10 @@ class FindingRepository(BaseRepository[Finding]):
             update(Finding)
             .where(
                 Finding.finding_name_id == item_id,
-                Finding.status != FnStatusEnum.CLOSED,
+                or_(
+                    Finding.status != FnStatusEnum.CLOSED.value,
+                    Finding.status != HAStatusEnum.PASSED.value,
+                ),
             )
             .values(data)
         )

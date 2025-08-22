@@ -99,6 +99,7 @@ class BaseRepository(Generic[Entity]):
         if order_by:
             order_cols = [getattr(self.model, col) for col in order_by]
         stmt = self._get(filters).order_by(*order_cols)
+        stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)
         return query.unique().scalars().all()
 
@@ -113,6 +114,7 @@ class BaseRepository(Generic[Entity]):
             order_cols = [getattr(self.model, col) for col in order_by]
 
         stmt = self._get(filters).order_by(*order_cols)
+        stmt = self._permission_filter(stmt)
         return await self.pagination(stmt, page, scalars=True)
 
     async def get_by_filter(self, filters: dict) -> Entity | None:

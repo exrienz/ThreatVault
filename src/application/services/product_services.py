@@ -34,7 +34,7 @@ class ProductService:
         return await self.productRepository.get_by_id(product_id)
 
     async def get_by_env_id(self, env_id: UUID) -> Sequence[Product]:
-        return await self.productRepository.get_all_by_filter(
+        return await self.productRepository.get_all_by_filter_sequence(
             {"environment_id": env_id}
         )
 
@@ -42,10 +42,12 @@ class ProductService:
         return await self.productRepository.get_by_filter(filters)
 
     async def get_all_by_filter(self, filters: dict) -> Sequence[Product]:
-        return await self.productRepository.get_all_by_filter(filters)
+        return await self.productRepository.get_all_by_filter_sequence(filters)
 
     async def get_all_by_ids(self, product_ids: list[UUID]) -> Sequence[Product]:
-        return await self.productRepository.get_all_by_filter({"id": product_ids})
+        return await self.productRepository.get_all_by_filter_sequence(
+            {"id": product_ids}
+        )
 
     async def manage_product_access(
         self, product_id: UUID, user_id: UUID, granted: bool = True

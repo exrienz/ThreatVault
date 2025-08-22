@@ -3,11 +3,11 @@ from typing import Annotated
 import jwt
 from fastapi import Cookie
 
-from src.config import settings
 from src.application.middlewares.user_context import (
     current_user_id_var,
     current_user_var,
 )
+from src.config import settings
 
 
 class SetContextUser:

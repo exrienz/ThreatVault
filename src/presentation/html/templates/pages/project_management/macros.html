@@ -2,12 +2,14 @@
     <div class="accordion-item" id="id_accordion_proj_{{ project.id }}">
         <h2 class="accordion-header"
             id="{{ 'headingOne' if idx == 1 else 'heading_' ~ idx}}">
-            <button class="accordion-button {{ 'collapsed' if idx != 1 }}"
+            <button class="accordion-button {{ 'collapsed' if idx != 1 }} text-wrap"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="{{ '#collapseOne' if idx == 1 else '#collapse_' ~ idx}}"
                     aria-expanded="true"
-                    aria-controls="{{ 'collapseOne' if idx == 1 else 'collapse_' ~ idx}}">{{ project.name }}</button>
+                    aria-controls="{{ 'collapseOne' if idx == 1 else 'collapse_' ~ idx}}">
+            <span class="text-wrap">{{ project.name }}</span>
+            </button>
         </h2>
         <div id="{{ 'collapseOne' if idx == 1 else 'collapse_' ~ idx}}"
              class="accordion-collapse collapse {{'show' if idx == 1}}"

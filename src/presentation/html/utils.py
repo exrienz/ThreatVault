@@ -32,6 +32,16 @@ def findingSeverityMap(status: SeverityEnum | str):
     return dct.get(status_str)
 
 
+def statusBadgeMap(status: str):
+    dct = {
+        "failed": "maroon",
+        "warning": "red",
+        "exemption": "orange",
+        "passed": "green",
+    }
+    return dct.get(status.lower(), "orange")
+
+
 def assessmentTypeMap(type_: str):
     dct = {
         "VA": "VAPT",
@@ -109,6 +119,7 @@ templates.env.filters["slaCalc"] = slaCalc
 templates.env.filters["datetime_format"] = datetime_format
 templates.env.filters["score"] = score_filter
 templates.env.filters["score_color"] = score_color
+templates.env.filters["statusBadgeMap"] = statusBadgeMap
 
 templates.env.globals["is_admin"] = is_admin
 templates.env.globals["get_user_info"] = get_current_user

@@ -86,17 +86,6 @@
     ]
   },
   {
-    "name": "Audit Log",
-    "key": "system",
-    "icon": "unlock-fill",
-    "submenu": [
-      {
-        "name": "Assessment Log",
-        "url": "/coming-soon"
-      }
-    ]
-  },
-  {
     "name": "Account Setting",
     "key": "Account Setting",
     "url": "/setting/account",

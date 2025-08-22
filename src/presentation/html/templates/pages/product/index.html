@@ -96,8 +96,10 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <h4>Findings</h4>
-          <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal"
+          <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+            {#
             hx-get="{{ product.id }}/finding-filters" hx-target="#finding-filter-script-id" hx-trigger="click">
+            #}
 
             <i class="bi bi-filter"></i>
             Filter

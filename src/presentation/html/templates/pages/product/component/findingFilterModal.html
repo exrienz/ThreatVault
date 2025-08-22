@@ -1,3 +1,4 @@
+{% set status_list = ["NEW", "OPEN", "CLOSED", "EXEMPTION", "OTHERS"] if environment.project.type_ == "VA" else  ["FAILED", "WARNING", "EXEMPTION", "PASSED", "OTHERS"]%}
 <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header">
@@ -12,6 +13,9 @@
                             class="form-select multiple-remove"
                             multiple="multiple">
                         <optgroup>
+                          {% for plugin in plugins%}
+                          <option value={{plugin.id}}>{{plugin.name | title}}</option>
+                          {% endfor %}
                         </optgroup>
                     </select>
                 </div>
@@ -22,16 +26,22 @@
                             class="form-select multiple-remove"
                             multiple="multiple">
                         <optgroup>
+                          {% for status in status_list%}
+                          <option>{{status}}</option>
+                          {% endfor %}
                         </optgroup>
                     </select>
                 </div>
                 <div class="form-group" align="left">
                     <label class="form-label">Severity</label>
-                    <select name="severity"
+                    <select name="severity_filter"
                             id="severity-choices"
                             class="form-select multiple-remove"
                             multiple="multiple">
                         <optgroup>
+                          {% for severity in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]%}
+                          <option>{{severity}}</option>
+                          {% endfor %}
                         </optgroup>
                     </select>
                 </div>
@@ -42,13 +52,18 @@
                             class="form-select multiple-remove"
                             multiple="multiple">
                         <optgroup>
+                          {% for host in host_list%}
+                          <option>{{host}}</option>
+                          {% endfor %}
                         </optgroup>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="clearChoices();">Clear</button>
-                <button hx-post={{product.id}}/finding-filters hx-swap="none" type="submit" class="btn btn-danger" data-bs-dismiss="modal">Apply</button>
+              <button type="button" class="btn btn-secondary" onclick="clearChoices();">Clear</button>
+              <button hx-trigger="click"
+                hx-on:click="htmx.trigger(document.body, 'reload-findings')"
+                type="submit" class="btn btn-danger" data-bs-dismiss="modal">Apply</button>
             </div>
         </form>
     </div>

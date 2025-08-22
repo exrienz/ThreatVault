@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, NonNegativeInt, field_validator
 from pydantic_core import PydanticCustomError
 
-from src.domain.constant import FnStatusEnum, SeverityEnum
+from src.domain.constant import SeverityEnum
 
 
 class FindingUploadSchema(BaseModel):
@@ -68,7 +68,7 @@ class FindingActionRequestSchema(BaseModel):
 
 
 class FindingActionInternalSchema(BaseModel):
-    status: FnStatusEnum
+    status: str
     delay_untill: datetime | None = None
     remark: str = ""
 

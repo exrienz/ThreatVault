@@ -1,6 +1,5 @@
 import importlib.util
 import logging
-import pathlib
 import sys
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -180,7 +179,7 @@ class FileUploadService(ABC):
     def plugin_import(self, name: str, filename: str) -> ModuleType:
         # ph = pathlib.Path(__file__).cwd()
         # ph = pathlib.Path(__file__).resolve().parent
-        path = f"/public/plugins/{filename}"
+        path = f"./public/plugins/{filename}"
         spec = importlib.util.spec_from_file_location(name, path)
         if spec is None or spec.loader is None:
             raise
@@ -216,6 +215,10 @@ class FileUploadService(ABC):
 
     @abstractmethod
     async def upload(self):
+        pass
+
+    @abstractmethod
+    async def upload_background(self):
         pass
 
     @abstractmethod
@@ -438,6 +441,18 @@ class VAUploadService(FileUploadService):
         await self.close_finding()
         await self.reopen_finding()
 
+    async def upload_background(self):
+        await self.new_finding_check()
+        await self.finding_name_process()
+        await self.remove_uploaded_new_finding()
+        if not self.finding_name_lf.collect().is_empty():
+            await self.cve_process()
+            await self.final_preprocess()
+        await self.process()
+        await self.update_new_finding_status()
+        await self.close_finding()
+        await self.reopen_finding()
+
     async def plugin_verification(self):
         await self.file_validation()
         await self.run_plugin()
@@ -563,6 +578,7 @@ class HAUploadService(FileUploadService):
                 "status": pl.String(),
             }
         )
+
         lf_schema = self.finding_lf.collect_schema()
         if not sorted(lf_schema.items()) == sorted(df_schema.items()):
             raise InvalidInput("Plugin didn't match the file uploaded!")
@@ -570,6 +586,14 @@ class HAUploadService(FileUploadService):
     async def upload(self):
         await self.scan_date_validation()
         await self.plugin_verification()
+        await self.additional_preprocess()
+        await self.finding_name_process()
+        await self.remove_uploaded_new_finding()
+        await self.preprocess()
+        await self.process()
+        await self.passed_finding()
+
+    async def upload_background(self):
         await self.additional_preprocess()
         await self.finding_name_process()
         await self.remove_uploaded_new_finding()
@@ -612,4 +636,23 @@ class UploadFileServiceGeneral:
             await uploader.upload()
         except pl.exceptions.PolarsError:
             raise InvalidInput("Plugin didn't match the file uploaded!")
+        return uploader
+
+    async def uploader(self) -> FileUploadService:
+        stmt = (
+            select(Project.type_)
+            .join(Environment)
+            .join(Product)
+            .where(Product.id == self.product_id)
+        )
+        query = await self.session.execute(stmt)
+        project_type = query.scalar_one()
+        if project_type == "HA":
+            uploader = HAUploadService(
+                self.session, self.file, self.product_id, self.data
+            )
+        else:
+            uploader = VAUploadService(
+                self.session, self.file, self.product_id, self.data
+            )
         return uploader

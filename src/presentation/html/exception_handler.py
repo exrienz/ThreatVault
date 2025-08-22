@@ -8,7 +8,6 @@ from src.application.exception.error import (
     InvalidAuthentication,
     InvalidFile,
     InvalidInput,
-    JWTExpiredException,
     SchemaException,
     UnauthorizedError,
 )

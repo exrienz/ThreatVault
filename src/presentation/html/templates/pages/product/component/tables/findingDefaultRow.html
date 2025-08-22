@@ -11,7 +11,16 @@
       {{source[plugin_id | string ]}}
       {% endfor%}
     </td>
+    {% if product_type == 'VA' %}
     <td class="text-bold-500">{{ finding.status | title }}</td>
+    {% else %}
+    <td align="center">
+        <span class="badge"
+              style="background-color: {{ finding.status | statusBadgeMap }}">
+            {{ finding.status }}
+        </span>
+    </td>
+    {% endif %}
     <td align="center">
         <span class="badge"
               style="background-color: {{ finding.severity | findingSeverityMap }}">

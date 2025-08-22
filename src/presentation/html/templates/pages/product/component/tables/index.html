@@ -16,7 +16,7 @@
   </thead>
   <tbody id="findings_table"
          hx-get="{{ product.id if product is defined else product_id }}/findings?page=1&view={{view}}"
-         hx-trigger="load, reload-findings from:body" hx-indicator="#spinner">
+         hx-trigger="load, reload-findings from:body" hx-indicator="#spinner" hx-include="#filter-form">
 
     <tr>
       <td colspan="6">

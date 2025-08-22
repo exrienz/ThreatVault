@@ -1,8 +1,9 @@
 from collections.abc import Sequence
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import Depends
 
+from src.application.middlewares.user_context import get_current_user_id
 from src.domain.entity import Product, Project
 from src.persistence import (
     EnvRepository,
@@ -31,6 +32,7 @@ class ProjectManagementService:
         self.envRepository = envRepository
         self.LogRepository = logRepository
         self.fnRevertRepository = fnRevertRepository
+        self.user_id = get_current_user_id()
 
     # Deprecated
     async def get_project_extended(
@@ -42,11 +44,9 @@ class ProjectManagementService:
         return [data]
 
     async def create_project(self, data: dict) -> Project:
-        # TODO: Creator ID
-        creator_id = uuid4()
         data = {
             **data,
-            "creator_id": creator_id,
+            "creator_id": self.user_id,
         }
         project = await self.projectRepository.create_with_env(data)
         project_extended = await self.projectRepository.get_by_id(project.id)
