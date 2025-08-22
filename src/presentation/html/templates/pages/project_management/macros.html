@@ -15,7 +15,7 @@
              class="accordion-collapse collapse {{'show' if idx == 1}}"
              aria-labelledby="{{ 'headingOne' if idx == 1 else 'heading_' ~ idx}}"
              data-bs-parent="#accordionExample">
-            <div class="accordion-body">
+          <div class="accordion-body" id="id_product_list_{{project.id}}">
                 {% for env in project.environment | sort(reverse=true, attribute="name")
                     %}
                     <div class="card-body">

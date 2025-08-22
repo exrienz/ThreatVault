@@ -1,10 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Request
-from fastapi.responses import HTMLResponse
-
-from src.application.dependencies.service_dependency import (
-    CVEServiceDep,
-)
-from src.application.services.cve_services import CVEService
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/cve", tags=["CVE"])
 

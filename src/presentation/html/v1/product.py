@@ -3,7 +3,17 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+)
 from fastapi.responses import HTMLResponse
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,11 +23,8 @@ from src.application.dependencies import (
     LogServiceDep,
     PluginServiceDep,
     ProductServiceDep,
-    UserServiceDep,
-)
-from src.application.dependencies.service_dependency import (
-    EnvServiceDep,
     ProjectManagementServiceDep,
+    UserServiceDep,
 )
 from src.application.schemas.finding import (
     FindingActionInternalSchema,
@@ -47,6 +54,7 @@ async def get_product(
     product_id: UUID,
 ):
     product = await service.get_by_id(product_id)
+    hosts = await service.get_hosts(product_id)
     if product is None:
         raise HTTPException(404, "Project is not exists!")
     logs = await log_service.get_by_product_id(product_id)
@@ -65,6 +73,7 @@ async def get_product(
             "logs": logs,
             "totalSeverity": tSeverity,
             "plugins": plugins,
+            "host_list": hosts,
         },
     )
 
@@ -85,16 +94,23 @@ async def swap_finding_table_view(
 @router.get("/{product_id}/findings", response_class=HTMLResponse)
 async def get_findings(
     request: Request,
+    services: ProductServiceDep,
     finding_service: FindingServiceDep,
     product_id: UUID,
     view: str = "default",
     severity: SeverityEnum = SeverityEnum.CRITICAL,
     page: PositiveInt = 1,
+    host: Annotated[list[str] | None, Query()] = None,
+    status: Annotated[list[str] | None, Query()] = None,
+    severity_filter: Annotated[list[str] | None, Query()] = None,
+    plugin_id: Annotated[list[UUID] | None, Query()] = None,
 ):
-    # TODO: Use hx-include instead
-    filters = request.session.get("finding-selected")
-    if filters and not isinstance(filters, dict):
-        filters = json.loads(filters)
+    filters = {
+        "plugin_id": plugin_id,
+        "status": status,
+        "severity": severity_filter,
+        "host": host,
+    }
 
     fn_dict = {
         "assets": [finding_service.get_group_by_assets, (product_id, page, filters)],
@@ -105,11 +121,22 @@ async def get_findings(
         [finding_service.get_group_by_severity_status, (product_id, page, filters)],
     )
 
+    product = await services.get_by_id(product_id)
+    product_type = None
+    if product:
+        product_type = product.environment.project.type_
+
     data = await fn[0](*fn[1])
     return templates.TemplateResponse(
         request,
         "pages/product/response/findings.html",
-        {"product_id": product_id, "view": view, "severity": severity, **data},
+        {
+            "product_id": product_id,
+            "view": view,
+            "severity": severity,
+            "product_type": product_type,
+            **data,
+        },
     )
 
 
@@ -134,7 +161,7 @@ async def finding_action(
     if data.delay_untill and status != FnStatusEnum.OTHERS:
         data.remark += f"\n Remediation Date: {data.delay_untill.strftime('%d-%m-%Y')}"
 
-    internal = FindingActionInternalSchema(status=status, **data.model_dump())
+    internal = FindingActionInternalSchema(status=status.value, **data.model_dump())
 
     filters = {
         "hosts": data.hosts,
@@ -159,6 +186,7 @@ async def upload_file(
     request: Request,
     session: Annotated[AsyncSession, Depends(get_session)],
     service: LogServiceDep,
+    backgound_tasks: BackgroundTasks,
     product_id: UUID,
     formFile: Annotated[UploadFile, File()],
     scan_date: Annotated[datetime, Form()],
@@ -181,9 +209,25 @@ async def upload_file(
     }
     data = FindingUploadSchema(**data_dict)
     uploader = UploadFileServiceGeneral(session, formFile, product_id, data)
+    # uploader = await UploadFileServiceGeneral(
+    #     session, formFile, product_id, data
+    # ).uploader()
+    #
+    # try:
+    #     await uploader.scan_date_validation()
+    #     await uploader.plugin_verification()
+    # except pl.exceptions.PolarsError:
+    #     raise InvalidInput("Plugin didn't match the file uploaded!")
+    #
+    # async def bg_upload():
+    #     await uploader.upload_background()
+    #     await service.calculate(product_id, uploader.scan_date)
+    #
+    # backgound_tasks.add_task(bg_upload)
+
     fileupload = await uploader.upload()
-    tSeverity = 1
     logs = await service.calculate(product_id, fileupload.scan_date)
+    tSeverity = 1
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
     else:
@@ -360,6 +404,7 @@ async def revert_modal(
     )
 
 
+# Deprecated
 @router.post(
     "/{product_id}/revert",
     dependencies=[Depends(PermissionChecker(["finding:action"]))],
@@ -389,6 +434,7 @@ async def revert(
     )
 
 
+# Deprecated
 @router.get("/{product_id}/finding-filters")
 async def get_hosts(
     request: Request,
@@ -450,6 +496,7 @@ async def get_hosts(
     )
 
 
+# Deprecated
 @router.post("/{product_id}/finding-filters")
 async def filter_findings(
     request: Request, product_id: UUID, filters: Annotated[FindingFiltersSchema, Form()]

@@ -59,6 +59,7 @@ class ProjectManagementService:
         if project is None:
             raise
         await self.fnRevertRepository.delete_by_project_id(project.id)
+        await self.productRepository.delete_by_project_id(item_id)
         await self.projectRepository.delete(item_id)
         return await self.projectRepository.get_all()
 
@@ -84,6 +85,17 @@ class ProjectManagementService:
             raise
         data = {"name": name, "environment_id": envs.id}
         return await self.productRepository.create(data)
+
+    async def create_product_both_env(self, project_id: UUID, name: str):
+        envs = await self.envRepository.get_all_by_filter_sequence(
+            {"project_id": project_id}
+        )
+        if not envs:
+            raise
+        data = []
+        for env in envs:
+            data.append({"name": name, "environment_id": env.id})
+        await self.productRepository.create_bulk(data)
 
     async def delete_product(self, product_id: UUID):
         await self.fnRevertRepository.delete_by_product_id(product_id)

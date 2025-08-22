@@ -4,6 +4,7 @@ from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy import Select, select
+from sqlalchemy import delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -134,3 +135,24 @@ class ProductRepository(BaseRepository[Product]):
 
         query = await self.session.execute(stmt)
         return query.scalars().all()
+
+    async def delete(self, item_id: UUID, target: Product | None = None):
+        sub = (
+            select(Finding.id).where(Finding.product_id == item_id)
+        ).scalar_subquery()
+        stmt = sql_delete(Finding).where(Finding.id.in_(sub))
+        await self.session.execute(stmt)
+        await super().delete(item_id, target)
+
+    async def delete_by_project_id(self, project_id: UUID):
+        sub = (
+            select(Product.id)
+            .join(Environment, Environment.id == Product.environment_id)
+            .where(Environment.project_id == project_id)
+        ).scalar_subquery()
+
+        fn_delete_stmt = sql_delete(Finding).where(Finding.product_id.in_(sub))
+        delete_stmt = sql_delete(Product).where(Product.id.in_(sub))
+        await self.session.execute(fn_delete_stmt)
+        await self.session.execute(delete_stmt)
+        await self.session.commit()

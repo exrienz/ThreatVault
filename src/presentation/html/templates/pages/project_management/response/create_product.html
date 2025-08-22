@@ -1,8 +1,19 @@
-<div id="id_env_accordion_{{ product.environment_id }}" hx-swap-oob="afterend">
-  <li id="id_prod_accordion_{{ product.id }}" class="list-group-item">
-    <a href="/product/{{ product.id }}">{{ product.name }}</a>
-  </li>
+<div class="accordion-body" id="id_product_list_{{project.id}}" hx-swap-oob="innerHTML">
+  {% for env in project.environment | sort(reverse=true, attribute="name")
+  %}
+  <div class="card-body">
+    <ul class="list-group">
+      <li id="id_env_accordion_{{ env.id }}" class="list-group-item active">{{ env.name | title }}</li>
+      {% for product in env.products %}
+      <li id="id_prod_accordion_{{ product.id }}" class="list-group-item">
+        <a href="/product/{{ product.id }}">{{ product.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
 </div>
+
 <script id="toast-global-id" hx-swap-oob="true">
-  ToastCustom("Created Product: {{product.name}}", "success");
+  ToastCustom("Created Product: {{name}} for {{environment_name | title }} Environment", "success");
 </script>

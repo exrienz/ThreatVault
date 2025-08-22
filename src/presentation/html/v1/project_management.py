@@ -113,11 +113,20 @@ async def create_product(
     environment_name: Annotated[str, Form()],
     service: projectService,
 ):
-    product = await service.create_product(project_id, environment_name, name)
+    if environment_name == "all":
+        await service.create_product_both_env(project_id, name)
+    else:
+        await service.create_product(project_id, environment_name, name)
+
+    project = await service.get_project_by_id(project_id)
     return templates.TemplateResponse(
         request,
         "pages/project_management/response/create_product.html",
-        context={"product": product},
+        context={
+            "project": project,
+            "name": name,
+            "environment_name": environment_name,
+        },
     )
 
 
