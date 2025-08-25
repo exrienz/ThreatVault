@@ -101,7 +101,7 @@ fileignoreconfig:
 - filename: alembic/versions/b6d61ecf3d59_add_llm_config_02.py
   checksum: a777195487034f72d0e5bc56852c9d6c0a4416ea80c3b905633aeac012f61ade
 - filename: src/application/services/openai_services.py
-  checksum: 3bd54a451f8a904c364a085de4445d2b4d46b262ad6577fc16675b5ed1b717fd
+  checksum: 972cd8bada40bc57f351ee2bd27f702c1d48f9e757c9786c38578af3778f04bd
 - filename: src/domain/entity/setting.py
   checksum: 87f46d4f311fa60123332a2abd2805a894aa0bbd3194b8f1c265b7f43887f774
 version: ""

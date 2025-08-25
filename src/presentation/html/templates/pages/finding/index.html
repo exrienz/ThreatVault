@@ -37,9 +37,13 @@
           <h4>Description</h4>
         </div>
         <div class="card-body">
-          <pre
-            style=" white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; border: 0px solid #ccc; ">
+          <pre class="m-3 p-3 border rounded text-break font-monospace"
+            style="white-space: pre-wrap; background-color: #f0f0f0">
+            {% if finding_name_info.description -%}
+            {{finding_name_info.description.strip() | safe}}
+            {% else -%}
             {{finding_name_info.description | safe}}
+            {%- endif %}
           </pre>
         </div>
       </div>
@@ -49,22 +53,18 @@
           <h4>Solution</h4>
         </div>
         <div class="card-body">
-          <pre
-            style=" white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; border: 0px solid #ccc; ">
+          <pre class="m-3 p-3 border rounded text-break font-monospace"
+            style="white-space: pre-wrap; background-color: #f0f0f0">
+            {% if data.0.remediation -%}
+            {{data.0.remediation.strip()}}
+            {% else -%}
             {{data.0.remediation}}
+            {%- endif %}
           </pre>
         </div>
       </div>
       <!-- Help Button Card -->
-      <div class="card">
-        <div class="card-body">
-          <div class="buttons">
-            <a href="#" class="btn icon icon-left btn-primary">
-              <i class="fa-solid fa-robot"></i>&nbsp;&nbsp;Unclear? Ask AI for help!
-            </a>
-          </div>
-        </div>
-      </div>
+      {% include "pages/finding/component/ask_ai.html" %}
       {% for host,findings in findings_dict.items() %}
       {% include "pages/finding/component/affected_host.html" %}
       {% endfor %}

@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import Select, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -23,6 +23,9 @@ class FindingNameRepository(BaseRepository[FindingName]):
         # TODO: Can have integrityError: Need to handle
         except IntegrityError:
             pass
+
+    def _options(self, stmt: Select) -> Select:
+        return stmt.options(selectinload(FindingName.findings))
 
     async def get_by_filter(self, filters: dict) -> FindingName | None:
         stmt = (

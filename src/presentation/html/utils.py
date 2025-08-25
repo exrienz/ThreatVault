@@ -8,7 +8,9 @@ from src.config import sidebar_items
 from src.domain.constant import SeverityEnum
 from src.domain.entity import Finding
 
-templates = Jinja2Templates("src/presentation/html/templates/")
+templates = Jinja2Templates(
+    directory="src/presentation/html/templates/", trim_blocks=True, lstrip_blocks=True
+)
 
 
 def startsWith(text: str, word: str):

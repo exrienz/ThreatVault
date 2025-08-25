@@ -117,6 +117,23 @@
         })
     }, false);
   </script>
+  <script>
+  document.body.addEventListener('htmx:sseClose', function (e) {
+      const reason = e.detail.type
+      switch (reason) {
+          case "nodeMissing":
+            break;
+          case "nodeReplaced":
+            break;
+          case "message":
+            const spinner = document.getElementById("sse-spinner");
+            if (spinner) {
+                spinner.remove();
+            }
+            break;
+      }
+  })
+  </script>
 </body>
 
 </html>

@@ -9,6 +9,7 @@ from src.application.exception.error import (
     InvalidAuthentication,
     InvalidFile,
     InvalidInput,
+    LLMException,
     SchemaException,
     UnauthorizedError,
 )
@@ -100,6 +101,10 @@ async def llm_error(request: Request, exc: openai.BadRequestError):
     return JSONResponse(exc.body.get("message"), exc.status_code)
 
 
+async def llm_custom_error(request: Request, exc: LLMException):
+    return JSONResponse(exc.msg, 400)
+
+
 exception_handlers = {
     UnauthorizedError: unauthorize,
     InvalidAuthentication: invalidAuthentication,
@@ -111,4 +116,5 @@ exception_handlers = {
     InvalidInput: invalid_input,
     ExpiredSignatureError: jwt_expired_handler,
     openai.BadRequestError: llm_error,
+    LLMException: llm_custom_error,
 }

@@ -214,8 +214,8 @@
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">LLM Model</span>
-                    <select class="form-select" id="model-select" name="llm_model" disabled>
-                      <option>{{data.llm_model}}</option>
+                    <select class="form-select" id="model-select" name="llm_model">
+                      <option selected>{{data.llm_model}}</option>
                     </select>
                     <button class="btn btn-primary" type="button"
                       hx-get="/setting/model-list" hx-include="#llm-form"

@@ -1,5 +1,3 @@
-
-
 class UnauthorizedError(Exception):
     pass
 
@@ -29,3 +27,8 @@ class SchemaException(Exception):
 class JWTExpiredException(Exception):
     def __init__(self, is_api: bool):
         self.is_api = is_api
+
+
+class LLMException(Exception):
+    def __init__(self, msg: str) -> None:
+        self.msg = msg
