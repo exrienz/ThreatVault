@@ -99,6 +99,7 @@
                     </div>
                 </div>
                 <hr />
+                {#
                 <h6 class="card-title">OKTA Config</h6>
                 <div class="mb-1">
                     <div class="input-group mb-3">
@@ -147,6 +148,7 @@
                                class="form-control">
                     </div>
                 </div>
+                #}
             </div>
         </div>
     </div>
@@ -192,6 +194,47 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
+                <h5 class="card-title">LLM</h5>
+                <span>You may use any provider that compatible with openai protocol.</span>
+            </div>
+            <div class="card-body" id="llm-form">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">LLM URL</span>
+                    <input type="text"
+                           name="llm_url"
+                           value="{{ data.llm_url }}"
+                           class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">LLM API-Key</span>
+                    <input type="text"
+                           name="llm_api_key"
+                           value="{{ data.llm_api_key }}"
+                           class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">LLM Model</span>
+                    <select class="form-select" id="model-select" name="llm_model" disabled>
+                      <option>{{data.llm_model}}</option>
+                    </select>
+                    <button class="btn btn-primary" type="button"
+                      hx-get="/setting/model-list" hx-include="#llm-form"
+                      hx-target="#model-select" hx-swap="outerHTML"
+                      hx-indicator="#model-loading" hx-disabled-elt="this"
+                      >
+                      <div id="model-loading" class="htmx-indicator">
+                        <span class="spinner-border spinner-border-sm"></span>
+                      </div>
+                      Search
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
                 <h5 class="card-title">Sensitive Hosts</h5>
             </div>
             <div class="card-body">
@@ -209,3 +252,8 @@
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </div>
 </form>
+<script>
+  {% if updated %}
+  ToastCustom("Setting updated", "success");
+  {% endif %}
+</script>

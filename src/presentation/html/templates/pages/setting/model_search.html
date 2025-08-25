@@ -1,0 +1,5 @@
+<select class="form-select" id="model-select" name="llm_model">
+  {% for model in models%}
+  <option {%if model.id == curr_model %} selected {% endif %}>{{model.id}}</option>
+  {% endfor %}
+</select>

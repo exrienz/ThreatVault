@@ -4,6 +4,7 @@ from fastapi import APIRouter, Form, Request
 
 from src.application.dependencies.service_dependency import (
     GlobalServiceDep,
+    OpenAIServiceDep,
 )
 from src.application.schemas.settings import GlobalConfigSchema
 
@@ -33,5 +34,21 @@ async def update_global_Setting(
     return templates.TemplateResponse(
         request,
         "pages/setting/form.html",
-        {"data": config},
+        {"data": config, "updated": True},
+    )
+
+
+@router.get("/model-list")
+async def get_llm_models_list(
+    request: Request,
+    service: OpenAIServiceDep,
+    llm_url: str,
+    llm_api_key: str,
+):
+    curr_model = await service.get_current_model()
+    models = await service.get_models(llm_url, llm_api_key)
+    return templates.TemplateResponse(
+        request,
+        "pages/setting/model_search.html",
+        {"models": models, "curr_model": curr_model},
     )

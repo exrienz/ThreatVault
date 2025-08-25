@@ -2,6 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from src.application.services.openai_services import OpenAIService
+
 from ..services import (
     AuthService,
     CommentService,
@@ -35,6 +37,7 @@ TokenServiceDep = Annotated[TokenService, Depends()]
 MVServiceDep = Annotated[ManagementViewService, Depends()]
 CVEServiceDep = Annotated[CVEService, Depends()]
 RemarkServiceDep = Annotated[RemarkService, Depends()]
+OpenAIServiceDep = Annotated[OpenAIService, Depends()]
 
 __all__ = [
     "AuthServiceDep",
@@ -52,4 +55,5 @@ __all__ = [
     "MVServiceDep",
     "CVEServiceDep",
     "RemarkServiceDep",
+    "OpenAIServiceDep",
 ]

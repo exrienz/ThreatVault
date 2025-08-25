@@ -32,6 +32,10 @@
     .htmx-request.htmx-indicator {
       display: inline;
     }
+
+    .htmx-request .hide-during-request {
+      display: none;
+    }
   </style>
   {% block stylesfirst %}{% endblock %}
   <link rel="stylesheet" href="/assets/compiled/css/app.css" />
@@ -43,6 +47,7 @@
   <script src="https://unpkg.com/htmx.org@2.0.4"
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.2" crossorigin="anonymous"></script>
   {% block styles %}{% endblock %}
 
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" />

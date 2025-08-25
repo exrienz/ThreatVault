@@ -1,3 +1,4 @@
+import openai
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 from jwt import ExpiredSignatureError
@@ -95,6 +96,10 @@ async def jwt_expired_handler(request: Request, exc: ExpiredSignatureError):
     )
 
 
+async def llm_error(request: Request, exc: openai.BadRequestError):
+    return JSONResponse(exc.body.get("message"), exc.status_code)
+
+
 exception_handlers = {
     UnauthorizedError: unauthorize,
     InvalidAuthentication: invalidAuthentication,
@@ -105,4 +110,5 @@ exception_handlers = {
     InvalidFile: invalid_file_upload,
     InvalidInput: invalid_input,
     ExpiredSignatureError: jwt_expired_handler,
+    openai.BadRequestError: llm_error,
 }

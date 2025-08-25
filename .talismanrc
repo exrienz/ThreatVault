@@ -19,8 +19,6 @@ fileignoreconfig:
   checksum: 961a4a15f31b951db3853b0e390033ccb34b2214f6a08c88e9875772c7bd1552
 - filename: src/application/services/product_services.py
   checksum: c81e5a88ba34d0f8134b5b8440579baa913d252d29b1058a696ee3c70f9e2b9f
-- filename: src/domain/entity/setting.py
-  checksum: accf4153c9066d7531161c92db9ee7e3561d2e1135b8bba1b3fb8db66ad41a88
 - filename: src/presentation/html/templates/pages/auth/register.html
   checksum: ef6b4441ab8ad723d4cde5d8167dd7bd84c90d611bfb00ed29ad893e07e2e13e
 - filename: src/presentation/html/v1/product.py
@@ -64,8 +62,6 @@ fileignoreconfig:
   checksum: ff01a21ea2e816a50f7f4d667c9f3c2e034a580bba31e601673fdd0a6fb8996a
 - filename: src/domain/entity/user_access.py
   checksum: a9e55c78a4d874764beb7e58a01ecd692d841a999ebe733df575b145f5061a53
-- filename: src/application/schemas/settings.py
-  checksum: 216fb9f751735fdf62eff9bca1aae4d6b82cacec708f44d2ae4010a200c60585
 - filename: src/presentation/html/templates/shared/charts/sla_breach_env.html
   checksum: 8027dc1fa3373c34361ee5985236d74d98069ae16998fd00f79c202c927b8773
 - filename: src/presentation/html/templates/layouts/sidebar.html
@@ -100,4 +96,12 @@ fileignoreconfig:
   checksum: b0046003f18eddb7f85eddf5119889de02fa2314cb019ef2d429149cd743a60a
 - filename: alembic/versions/bbcfd4ec42a8_create_initial_table_01.py
   checksum: 951a1d721f502f42601bef3f37627acdd355978fe1fbdc3628de0771babbc9c5
+- filename: src/application/schemas/settings.py
+  checksum: 517aac9a0dc091fcb6d6f5d34fa7f8b31118cbaa7e06d3c369617488eb24bdbd
+- filename: alembic/versions/b6d61ecf3d59_add_llm_config_02.py
+  checksum: a777195487034f72d0e5bc56852c9d6c0a4416ea80c3b905633aeac012f61ade
+- filename: src/application/services/openai_services.py
+  checksum: 3bd54a451f8a904c364a085de4445d2b4d46b262ad6577fc16675b5ed1b717fd
+- filename: src/domain/entity/setting.py
+  checksum: 87f46d4f311fa60123332a2abd2805a894aa0bbd3194b8f1c265b7f43887f774
 version: ""

@@ -7,6 +7,7 @@ from .fileupload_service import FileUploadService
 from .finding_services import FindingService
 from .log_services import LogService
 from .mv_services import ManagementViewService
+from .openai_services import OpenAIService
 from .plugin_services import PluginService
 from .product_services import ProductService
 from .project_management_services import ProjectManagementService
@@ -32,4 +33,5 @@ __all__ = [
     "ManagementViewService",
     "CVEService",
     "RemarkService",
+    "OpenAIService",
 ]

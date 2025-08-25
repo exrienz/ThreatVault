@@ -39,3 +39,7 @@ class GlobalConfig(Base):
     smtp_password: Mapped[Optional[str]]
 
     sensitive_hosts: Mapped[Optional[str]]
+
+    llm_url: Mapped[Optional[str]]
+    llm_api_key: Mapped[Optional[str]]
+    llm_model: Mapped[Optional[str]]
