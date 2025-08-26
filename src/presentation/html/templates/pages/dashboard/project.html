@@ -5,7 +5,9 @@
 {% block content %}
 <div class="page-heading d-flex justify-content-between">
   <h3>{{project.name }} Dashboard</h3>
-  <a class="btn btn-success" hx-post="" hx-confirm="Download Active Findings">Export</a>
+  <a class="btn btn-success" href="/project/{{ project.id }}/export" download="{{ project.name }}-active-findings.csv">
+    Export Active Findings
+  </a>
 </div>
 <div class="page-content">
   <!--Start::Yearly Trend-->

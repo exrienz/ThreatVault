@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
+import polars as pl
 from fastapi import Depends
 from sqlalchemy import (
     ARRAY,
@@ -25,7 +26,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.domain.constant import FnStatusEnum, HAStatusEnum, SeverityEnum
+from src.domain.constant import FnStatusEnum, HAStatusEnum, SeverityEnum, VAStatusEnum
 from src.domain.entity import Finding, FindingName
 from src.domain.entity.finding import CVE
 from src.domain.entity.project_management import Environment, Product, Project
@@ -63,16 +64,26 @@ class FindingRepository(BaseRepository[Finding]):
         query = await self.session.execute(stmt)
         return query.scalar()
 
-    async def get_all_by_project_id(self, project_id: UUID) -> Sequence[Finding]:
-        stmt = (select(Finding).join(Product).join(Environment).join(Project)).where(
-            Project.id == project_id
+    async def get_all_by_project_id(
+        self, project_id: UUID, active_only: bool = False
+    ) -> Sequence[Finding]:
+        stmt = (select(Finding).join(Product).join(Environment)).where(
+            Environment.project_id == project_id
         )
 
         stmt = stmt.options(
-            selectinload(Finding.finding_name)
-            .selectinload(Finding.product)
-            .selectinload(Product.environment)
+            selectinload(Finding.finding_name),
+            selectinload(Finding.product).selectinload(Product.environment),
         )
+
+        if active_only:
+            exception_list = [
+                VAStatusEnum.CLOSED.value,
+                VAStatusEnum.EXEMPTION.value,
+                VAStatusEnum.OTHERS.value,
+                HAStatusEnum.PASSED.value,
+            ]
+            stmt = stmt.where(Finding.status.notin_(exception_list))
 
         query = await self.session.execute(stmt)
         return query.scalars().all()
@@ -517,3 +528,70 @@ class FindingRepository(BaseRepository[Finding]):
     async def adhoc_statitics(self, filters: dict, year: int | None = None):
         if year is None:
             ...
+
+    async def export_active_findings(self, project_id: UUID) -> pl.DataFrame:
+        exception_list = [
+            VAStatusEnum.CLOSED.value,
+            VAStatusEnum.EXEMPTION.value,
+            VAStatusEnum.OTHERS.value,
+            HAStatusEnum.PASSED.value,
+        ]
+
+        stmt = (
+            select(
+                cast(Finding.id, String).label("id"),
+                Product.name.label("product"),
+                Environment.name.label("environment"),
+                Finding.finding_date,
+                Finding.last_update,
+                Finding.severity,
+                Finding.host,
+                Finding.port,
+                Finding.evidence,
+                Finding.remediation,
+                FindingName.description.label("description"),
+            )
+            .select_from(Finding)
+            .join(Product)
+            .join(Environment, Product.environment_id == Environment.id)
+            .join(FindingName, Finding.finding_name_id == FindingName.id)
+        ).where(
+            Finding.status.notin_(exception_list),
+            Environment.project_id == project_id,
+        )
+
+        query = await self.session.execute(stmt)
+        rows = query.all()
+        df = pl.DataFrame(rows, schema=[str(col.key) for col in stmt.selected_columns])
+
+        df = df.with_columns(
+            pl.col("severity").map_elements(
+                lambda x: x.value if x else "", return_dtype=pl.String
+            )
+        )
+        cve_stmt = (
+            select(cast(Finding.id, String), CVE.name.label("cve"))
+            .select_from(Finding)
+            .join(FindingName)
+            .join(CVE)
+            .join(Product, Finding.product_id == Product.id)
+            .join(Environment)
+            .where(Environment.project_id == project_id)
+        )
+        cve_query = await self.session.execute(cve_stmt)
+        cve_rows = cve_query.all()
+        cve_df = pl.DataFrame(cve_rows, schema=["id", "cve"])
+        cve_grouped = cve_df.group_by("id").agg(
+            pl.col("cve").map_elements(
+                lambda lst: ",".join(map(str, lst)), return_dtype=pl.String
+            )
+        )
+
+        df = df.join(cve_grouped, on="id", how="left").drop("id")
+        df = df.with_columns(
+            pl.col(pl.String)
+            .str.replace_all(r"\s*<br\s*/?>\s*", " ")
+            .str.replace_all(r"\s+", " ")
+            .str.strip_chars()
+        )
+        return df

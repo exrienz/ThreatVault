@@ -41,8 +41,10 @@ class FindingService:
     async def get_by_product_id(self, product_id: UUID):
         return await self.repository.get_by_product_id_extended(product_id)
 
-    async def get_by_project_id(self, project_id: UUID) -> Sequence[Finding]:
-        return await self.repository.get_all_by_project_id(project_id)
+    async def get_by_project_id(
+        self, project_id: UUID, active_only: bool = False
+    ) -> Sequence[Finding]:
+        return await self.repository.get_all_by_project_id(project_id, active_only)
 
     async def get_by_filter(self, filters: dict) -> Finding | None:
         return await self.repository.get_by_filter(filters)
@@ -188,3 +190,7 @@ class FindingService:
 
     async def delete_by_filter(self, product_id: UUID, filters: dict):
         return await self.repository.delete_by_filter(product_id, filters)
+
+    # TODO: Group all file related service
+    async def export_active_finding(self, project_id: UUID):
+        return await self.repository.export_active_findings(project_id)

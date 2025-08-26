@@ -1,9 +1,11 @@
+import io
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Request, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 
 from src.application.dependencies.service_dependency import (
+    FindingServiceDep,
     ProjectManagementServiceDep,
 )
 
@@ -59,5 +61,30 @@ async def get_project_dashboard(
             "project": project,
             "prod_env": prod_env,
             "nonprod_env": nonprod_env,
+        },
+    )
+
+
+@router.get("/project/{project_id}/export")
+async def export_dashbord(
+    request: Request,
+    service: FindingServiceDep,
+    project_service: ProjectManagementServiceDep,
+    project_id: UUID,
+):
+    project = await project_service.get_one_by_id(project_id)
+    df = await service.export_active_finding(project_id)
+
+    def iter_csv():
+        buf = io.StringIO()
+        df.write_csv(buf)
+        buf.seek(0)
+        yield from buf
+
+    return StreamingResponse(
+        iter_csv(),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={project.name}-active-findings.csv"
         },
     )
