@@ -4,6 +4,7 @@ from uuid import UUID
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import DateTime
 
 from .base import Base
 
@@ -63,3 +64,13 @@ class ProductUserAccess(Base):
 
     user = relationship("User")
     products = relationship("Product", back_populates="accesses")
+
+
+class UserPasswordReset(Base):
+    __tablename__ = "user_reset_password"
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_user.id", ondelete="CASCADE")
+    )
+    user = relationship("User")
+    token_hash: Mapped[str]
+    expires_at: Mapped[datetime] = mapped_column(DateTime(True))

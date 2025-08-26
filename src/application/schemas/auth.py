@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr, model_validator
 from typing_extensions import Self
 
@@ -44,15 +43,18 @@ class AuthTokenSchema(BaseModel):
     Authorization: str | None = None
 
 
-class UserResetPasswordSchema(BaseModel):
-    current_pass: str
+class PasswordResetSchema(BaseModel):
     new_pass: str
     confirm_pass: str
 
     @model_validator(mode="after")
     def password_validation(self) -> Self:
         if len(self.new_pass) < 8:
-            raise HTTPException(422, "Password must have at least 8 characters")
+            raise SchemaException("Password must have at least 8 characters")
         if self.new_pass != self.confirm_pass:
-            raise HTTPException(422, "Passwords do not match")
+            raise SchemaException("Passwords do not match")
         return self
+
+
+class UserResetPasswordSchema(PasswordResetSchema):
+    current_pass: str

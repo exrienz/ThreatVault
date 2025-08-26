@@ -1,0 +1,40 @@
+<html lang="en">
+  <body style="margin:0; padding:0; font-family: Arial, sans-serif; line-height:1.5; color:#333;">
+
+    <div style="text-align: center; padding: 20px;">
+      <img src="{{request.base_url}}assets/static/images/logo/logo.svg" alt="Logo" width="120" style="display:block; margin:0 auto;" />
+      <h3 style="margin: 15px 0 5px 0; font-size:20px; color:#222;">Heads up</h3>
+    </div>
+
+    <div style="background-color:#f9f9f9; padding:20px; margin:0 10px; border-radius:6px; text-align:center;">
+      <p>Hello {{username}},</p>
+      <p>
+        Someone (hopefully you!) has requested to change your Sentinel password
+        associated with <b>{{email}}</b>.
+      </p>
+      <p>Please click the link below to change your password now:</p>
+
+      <p>
+      <a href="{{request.base_url}}auth/reset-password/{{token}}"
+           style="background-color:#007BFF; color:#ffffff; text-decoration:none; padding:12px 20px; border-radius:4px; display:inline-block; font-weight:bold;">
+          Reset Your Password
+        </a>
+      </p>
+
+      <p>
+        If you didn’t make this request, please disregard this email.
+        Your password will not change unless you click the link above and create a new one.
+      </p>
+      <p>
+        This link will expire in one day. If your link has expired, you can always
+        <a href="{{request.base_url}}auth/reset-password" style="color:#007BFF; text-decoration:none;">request another</a>.
+        If you've requested multiple reset emails, please make sure you click the link inside the most recent one.
+      </p>
+    </div>
+
+    <div style="text-align: center; padding: 20px; font-size:14px; color:#555;">
+      <p><b>Sentinel</b><br/><span>Please do not reply to this email.</span></p>
+    </div>
+
+  </body>
+</html>

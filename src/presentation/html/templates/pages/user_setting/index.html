@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 <div class="page-heading">
-  <h3>Self-Service</h3>
+  <h3>Account Setting</h3>
 </div>
 <div class="page-content">
   <div class="row">
@@ -41,7 +41,7 @@
           <h5 class="card-title">Change Password</h5>
         </div>
         <div class="card-body">
-          <form id="reset-password-form-id" hx-post="/self-service/reset-password" hx-swap="none"
+          <form id="reset-password-form-id" hx-post="reset-password" hx-swap="none"
             hx-on::after-request="document.querySelector('#reset-password-form-id').reset();">
             <div class="form-group my-2">
               <label for="current_password" class="form-label">Current Password</label>
@@ -73,7 +73,7 @@
           <h5 class="card-title">Delete Account</h5>
         </div>
         <div class="card-body">
-          <form hx-confirm="This action is permanent." hx-delete="self-service/user">
+          <form hx-confirm="This action is permanent." hx-delete="user">
             <p>Your account will be permanently deleted and cannot be restored.</p>
             <div class="form-group my-2 d-flex justify-content-end">
               <button type="submit" class="btn btn-danger" id="btn-delete-account">Delete</button>

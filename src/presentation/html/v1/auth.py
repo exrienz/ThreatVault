@@ -1,11 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.application.dependencies import AuthServiceDep, GlobalServiceDep
 from src.application.middlewares.user_context import get_current_user_id
-from src.application.schemas.auth import UserLoginSchema, UserRegisterSchema
+from src.application.schemas.auth import (
+    PasswordResetSchema,
+    UserLoginSchema,
+    UserRegisterSchema,
+)
 
 from ..utils import templates
 
@@ -86,6 +90,49 @@ async def logout(request: Request):
 async def password_forgot_page(request: Request):
     response = templates.TemplateResponse(
         request,
-        "pages/auth/forgotPassword.html",
+        "pages/auth/reset_password/email_page.html",
     )
     return response
+
+
+@router.post("/reset-password")
+async def send_reset_password_email(
+    request: Request,
+    service: AuthServiceDep,
+    background_tasks: BackgroundTasks,
+    email: Annotated[str, Form()],
+):
+    async def send_email():
+        user_info = await service.generate_password_reset_token(email)
+        if user_info is None:
+            return
+        email_template = templates.TemplateResponse(
+            request,
+            "pages/auth/reset_password/email_template.html",
+            user_info,
+        )
+        html = bytes(email_template.body)
+        await service.send_reset_password_email(email, html.decode())
+
+    background_tasks.add_task(send_email)
+    return templates.TemplateResponse(
+        request, "pages/auth/reset_password/email_response.html"
+    )
+
+
+@router.get("/reset-password/{token}")
+async def reset_password_page(request: Request, token: str):
+    return templates.TemplateResponse(
+        request, "pages/auth/reset_password/new_password.html"
+    )
+
+
+@router.post("/reset-password/{token}")
+async def reset_password(
+    request: Request,
+    service: AuthServiceDep,
+    token: str,
+    data: Annotated[PasswordResetSchema, Form()],
+):
+    await service.reset_password(token, data.new_pass)
+    return templates.TemplateResponse(request, "pages/auth/reset_password/success.html")
