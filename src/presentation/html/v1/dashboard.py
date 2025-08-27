@@ -85,6 +85,6 @@ async def export_dashbord(
         iter_csv(),
         media_type="text/csv",
         headers={
-            "Content-Disposition": f"attachment; filename={project.name}-active-findings.csv"
+            "Content-Disposition": f"attachment; filename={project.name}-active-findings.csv"  # noqa: E501
         },
     )

@@ -33,11 +33,16 @@ from src.domain.entity.project_management import Environment, Product, Project
 from src.domain.entity.setting import GlobalConfig
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository, Pagination
+from src.presentation.dependencies import get_allowed_product_ids
 
 
 class FindingRepository(BaseRepository[Finding]):
-    def __init__(self, session: Annotated[AsyncSession, Depends(get_session)]):
-        super().__init__(Finding, session)
+    def __init__(
+        self,
+        session: Annotated[AsyncSession, Depends(get_session)],
+        product_ids: Annotated[list[UUID] | None, Depends(get_allowed_product_ids)],
+    ):
+        super().__init__(Finding, session, product_ids=product_ids)
 
     def _options(self, stmt: Select):
         return stmt.options(selectinload(Finding.finding_name))
@@ -60,7 +65,7 @@ class FindingRepository(BaseRepository[Finding]):
             .order_by(Finding.last_update.desc())
             .limit(1)
         )
-
+        stmt = self._product_allowed_ids(stmt)
         query = await self.session.execute(stmt)
         return query.scalar()
 
@@ -84,7 +89,7 @@ class FindingRepository(BaseRepository[Finding]):
                 HAStatusEnum.PASSED.value,
             ]
             stmt = stmt.where(Finding.status.notin_(exception_list))
-
+        stmt = self._product_allowed_ids(stmt)
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
@@ -124,6 +129,7 @@ class FindingRepository(BaseRepository[Finding]):
                 if not v:
                     continue
                 stmt = stmt.where(getattr(Finding, k).in_(v))
+        stmt = self._product_allowed_ids(stmt)
         return await self.pagination(stmt, page)
 
     async def get_group_by_asset(
@@ -160,6 +166,7 @@ class FindingRepository(BaseRepository[Finding]):
                     continue
                 stmt = stmt.where(getattr(Finding, k).in_(v))
 
+        stmt = self._product_allowed_ids(stmt)
         return await self.pagination(stmt, page)
 
     async def get_group_by_asset_details(
@@ -173,6 +180,7 @@ class FindingRepository(BaseRepository[Finding]):
             .join(FindingName)
             .options(selectinload(Finding.finding_name).selectinload(FindingName.cves))
         ).where(Finding.host == host)
+        stmt = self._product_allowed_ids(stmt)
         if filters:
             for k, v in filters.items():
                 if not v:
@@ -213,6 +221,7 @@ class FindingRepository(BaseRepository[Finding]):
         if product_ids := filters.get("product_ids"):
             stmt = stmt.where(Product.id.in_(product_ids))
 
+        stmt = self._product_allowed_ids(stmt)
         return await self.pagination(stmt, page)
 
     async def get_breached_findings_by_severity(
@@ -245,6 +254,7 @@ class FindingRepository(BaseRepository[Finding]):
             )
         ).group_by(FindingName.id, FindingName.name, Finding.severity)
 
+        stmt = self._product_allowed_ids(stmt)
         query = await self.session.execute(stmt)
         return query.all()
 
@@ -290,6 +300,7 @@ class FindingRepository(BaseRepository[Finding]):
             stmt = stmt.where(Environment.project_id == project_id)
 
         query = await self.session.execute(stmt)
+        stmt = self._product_allowed_ids(stmt)
         return query.all()
 
     # Deprecated
@@ -523,11 +534,18 @@ class FindingRepository(BaseRepository[Finding]):
         if hosts is not None:
             stmt = stmt.where(Finding.host.in_(hosts))
 
+        stmt = self._product_allowed_ids(stmt)
+
         return await self.pagination(stmt, page, False)
 
     async def adhoc_statitics(self, filters: dict, year: int | None = None):
         if year is None:
             ...
+
+    def _product_allowed_ids(self, stmt: Select) -> Select:
+        if self.allowed_product_ids is None:
+            return stmt
+        return stmt.where(Finding.product_id.in_(self.allowed_product_ids))
 
     async def export_active_findings(self, project_id: UUID) -> pl.DataFrame:
         exception_list = [
@@ -560,6 +578,8 @@ class FindingRepository(BaseRepository[Finding]):
             Environment.project_id == project_id,
         )
 
+        stmt = self._product_allowed_ids(stmt)
+
         query = await self.session.execute(stmt)
         rows = query.all()
         df = pl.DataFrame(rows, schema=[str(col.key) for col in stmt.selected_columns])
@@ -578,6 +598,7 @@ class FindingRepository(BaseRepository[Finding]):
             .join(Environment)
             .where(Environment.project_id == project_id)
         )
+        cve_stmt = self._product_allowed_ids(cve_stmt)
         cve_query = await self.session.execute(cve_stmt)
         cve_rows = cve_query.all()
         cve_df = pl.DataFrame(cve_rows, schema=["id", "cve"])
