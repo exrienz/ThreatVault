@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import Depends
 from pydantic import PositiveInt
-from sqlalchemy import Select, select
+from sqlalchemy import Select, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -53,6 +53,7 @@ class UserRepository(BaseRepository[User]):
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
+    # TODO: Deprecate this
     async def get_users_with_product_accesibility(
         self,
         product_id: UUID,
@@ -77,6 +78,41 @@ class UserRepository(BaseRepository[User]):
 
         if exclude_roles:
             stmt = stmt.where(Role.name.not_in(exclude_roles))
+        query = await self.session.execute(stmt)
+        return query.scalars().all()
+
+    async def get_users_allowed_to_access_product(
+        self,
+        product_id: UUID,
+    ):
+        hpu_stmt = (
+            select(User.id)
+            .join(Role)
+            .where(User.active, Role.required_project_access.is_(False))
+        ).scalar_subquery()
+
+        lpu_stmt = (
+            select(ProductUserAccess.id)
+            .where(ProductUserAccess.product_id == product_id)
+            .scalar_subquery()
+        )
+
+        stmt = select(User).where(
+            User.active, or_(User.id.in_(hpu_stmt), User.id.in_(lpu_stmt))
+        )
+
+        stmt = (
+            select(User)
+            .join(Role)
+            .join(ProductUserAccess, isouter=True)
+            .where(
+                User.active,
+                or_(
+                    Role.required_project_access.is_(False),
+                    ProductUserAccess.product_id == product_id,
+                ),
+            )
+        )
         query = await self.session.execute(stmt)
         return query.scalars().all()
 

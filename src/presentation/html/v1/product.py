@@ -353,10 +353,16 @@ async def generate_api_key(
 
 
 @router.get("/{product_id}/escalation")
-async def get_escalation_list(request: Request, service: UserServiceDep):
-    data = await service.get_all()
+async def get_escalation_list(
+    request: Request,
+    service: ProductServiceDep,
+    product_id: UUID,
+):
+    escalated, allowed = await service.get_escalation_options(product_id)
     return templates.TemplateResponse(
-        request, "pages/product/response/escalation.html", {"users": data}
+        request,
+        "pages/product/response/escalation.html",
+        {"escalated": escalated, "allowed": allowed},
     )
 
 
@@ -367,13 +373,18 @@ async def get_escalation_list(request: Request, service: UserServiceDep):
 async def escalation_list(
     request: Request,
     service: UserServiceDep,
-    user_ids: Annotated[list[UUID], Form()],
-    weekly: Annotated[bool, Form()],
-    monthly: Annotated[bool, Form()],
+    product_service: ProductServiceDep,
+    product_id: UUID,
+    user_ids: Annotated[list[UUID] | None, Form()] = None,
+    weekly: Annotated[bool, Form()] = False,
+    monthly: Annotated[bool, Form()] = False,
 ):
-    data = await service.get_all()
+    await product_service.update_escalation(
+        product_id, user_ids, monthly=monthly, weekly=weekly
+    )
     return templates.TemplateResponse(
-        request, "pages/product/response/escalation.html", {"users": data}
+        request,
+        "pages/product/response/escalationSuccess.html",
     )
 
 

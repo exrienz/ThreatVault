@@ -4,6 +4,7 @@ from .comment import CommentRepository
 from .config import GlobalRepository
 from .cve import CVERepository
 from .environment import EnvRepository
+from .escalation import ProductEscalationRepository
 from .finding import FindingRepository
 from .finding_name import FindingNameRepository
 from .finding_revert import FindingRevertRepository
@@ -34,4 +35,5 @@ __all__ = [
     "CVERepository",
     "AdditionalRemarkRepository",
     "PasswordResetRepository",
+    "ProductEscalationRepository",
 ]

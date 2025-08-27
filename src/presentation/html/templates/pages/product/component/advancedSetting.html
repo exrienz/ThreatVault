@@ -17,13 +17,16 @@
             <div class="modal-content"></div>
         </div>
     </div>
-    <form hx-post="{{ product.id }}/escalation" hx-target="#selectEscalationID">
+    <form hx-post="{{ product.id }}/escalation" hx-swap="none">
         <div class="col-md-12 mb-1">
             <br />
             <div class="form-group"
                  align="left"
                  hx-trigger="load"
-                 hx-get="{{ product.id }}/escalation">
+                 hx-get="{{ product.id }}/escalation"
+                 hx-target="#selectEscalationID"
+                 hx-swap="innerHTML"
+                 >
                 <label for="name" class="form-label">Escalation Points</label>
                 <div id="selectEscalationID"></div>
             </div>
@@ -40,7 +43,7 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox"
                                    class="form-check-input form-check-primary"
-                                   checked
+                                   {% if product.weEscalation %} checked {% endif %}
                                    name="weekly">
                             <label class="form-check-label" for="customColorCheck1">Weekly</label>
                         </div>
@@ -51,7 +54,7 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox"
                                    class="form-check-input form-check-primary"
-                                   checked
+                                   {% if product.moEscalation %} checked {% endif %}
                                    name="monthly">
                             <label class="form-check-label" for="customColorCheck1">Monthly</label>
                         </div>

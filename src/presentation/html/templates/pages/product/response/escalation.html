@@ -3,7 +3,11 @@
         name="user_ids"
         multiple="multiple">
     <optgroup label="Select affected host">
-        {% for user in users.data %}
+        {% for user in escalated %}
+            <option value={{ user.id }} selected>{{ user.username }}
+            </option>
+        {% endfor %}
+        {% for user in allowed %}
             <option value={{ user.id }}>{{ user.username }}
             </option>
         {% endfor %}

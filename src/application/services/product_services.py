@@ -8,6 +8,7 @@ from src.domain.entity import Product, ProductUserAccess
 from src.domain.entity.user_access import User
 from src.persistence import (
     EnvRepository,
+    ProductEscalationRepository,
     ProductRepository,
     ProjectRepository,
     RoleRepository,
@@ -23,12 +24,14 @@ class ProductService:
         userRepository: UserRepository = Depends(),
         envRepository: EnvRepository = Depends(),
         roleRepository: RoleRepository = Depends(),
+        escalationRepository: ProductEscalationRepository = Depends(),
     ):
         self.projectRepository = projectRepository
         self.productRepository = productRepository
         self.userRepository = userRepository
         self.envRepository = envRepository
         self.roleRepository = roleRepository
+        self.escalationRepository = escalationRepository
 
     async def get_by_id(self, product_id: UUID) -> Product | None:
         return await self.productRepository.get_by_id(product_id)
@@ -73,6 +76,9 @@ class ProductService:
             product_id, allowed, exclude_roles
         )
 
+    async def get_users_accessable_to_product(self, product_id: UUID):
+        return await self.userRepository.get_users_allowed_to_access_product(product_id)
+
     async def generate_api_key(self, product_id: UUID) -> Product:
         data = {
             "apiKey": secrets.token_hex(16),
@@ -88,3 +94,28 @@ class ProductService:
 
     async def get_owners_by_product_id(self, product_id) -> Sequence[User]:
         return await self.productRepository.get_owners_by_product_id(product_id)
+
+    async def update_escalation(
+        self,
+        product_id: UUID,
+        user_ids: list[UUID] | None = None,
+        monthly: bool = False,
+        weekly: bool = False,
+    ):
+        await self.productRepository.update(
+            product_id, {"weEscalation": weekly, "moEscalation": monthly}
+        )
+        await self.escalationRepository.delete_update(product_id, user_ids or [])
+
+    async def get_escalation_list(self, product_id: UUID) -> Sequence[User]:
+        return await self.escalationRepository.get_escalated_user(product_id)
+
+    async def get_escalation_options(
+        self, product_id: UUID
+    ) -> tuple[set[User], set[User]]:
+        escalated = await self.get_escalation_list(product_id)
+        allowed_user = await self.get_users_accessable_to_product(product_id)
+        set_escalated = set(escalated)
+        set_allowed = set(allowed_user)
+        diff = set_allowed - set_escalated
+        return set_escalated, diff
