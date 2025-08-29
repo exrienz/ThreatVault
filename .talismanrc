@@ -97,7 +97,7 @@ fileignoreconfig:
 - filename: src/domain/entity/setting.py
   checksum: 87f46d4f311fa60123332a2abd2805a894aa0bbd3194b8f1c265b7f43887f774
 - filename: alembic/versions/f9b8c03a6e4e_add_password_reset_03.py
-  checksum: 95436bbcbd63e814abd078549193192dbf339b55ac9e0e2a524fdb26feb6f8ed
+  checksum: 3f60b4306847e448c9680a642f1ea7848dad9cec4b83639474bacefc99a0e73b
 - filename: src/persistence/password_reset.py
   checksum: 144fc009b905455ce6b7f00ebcd9bf62ca2041a62821f67f08898df8343609c4
 - filename: src/presentation/html/templates/pages/auth/reset_password/new_password.html
