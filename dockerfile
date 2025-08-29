@@ -10,9 +10,6 @@ COPY ./src ./src
 COPY ./public/ ./public
 COPY ./entrypoint.sh ./entrypoint.sh
 
-# CMD ["fastapi", "dev", "src/main.py", "--port", "8080"]
-# CMD ["uvicorn", "src.main:app", "--port", "8000", "--reload"]
-# CMD ["alembic", "upgrade", "head"]
-# CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN chmod +x ./entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
