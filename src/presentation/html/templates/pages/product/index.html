@@ -75,13 +75,16 @@
           <div class="col-12">
             <h6>Download Report</h6>
             <div class="input-group mb-3">
-              <select class="form-select" id="inputGroupSelect01">
-                <option selected="">Compare Date...</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <select class="form-select" name="date" id="report-date">
+                {% for date_option in report_dates %}
+                <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01">
+                  {{ '{:02d}'.format(date_option.month | int) }}-{{ date_option.year }}
+                </option>
+                {% endfor %}
               </select>
-              <label class="input-group-text" for="inputGroupSelect01">Download</label>
+              <button class="btn btn-primary" onclick="downloadReport('{{ product.id }}')">
+                Download
+              </button>
             </div>
           </div>
         </div>
@@ -191,5 +194,13 @@
     value.removeActiveItems();
   }
 
+</script>
+
+<script>
+  function downloadReport(productId) {
+    const date = document.getElementById("report-date").value;
+    const url = `/product/${productId}/report?date=${encodeURIComponent(date)}&type_={{product.environment.project.type_}}`;
+    window.open(url, "_blank"); // new tab
+  }
 </script>
 {% endblock %}

@@ -1,3 +1,4 @@
+import io
 import json
 from datetime import datetime
 from typing import Annotated
@@ -14,10 +15,12 @@ from fastapi import (
     Request,
     UploadFile,
 )
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
+from xhtml2pdf import pisa
 
+# import weasyprint
 from src.application.dependencies import (
     FindingServiceDep,
     LogServiceDep,
@@ -36,6 +39,7 @@ from src.application.schemas.finding import (
 from src.application.services.fileupload_service import (
     UploadFileServiceGeneral,
 )
+from src.application.utils.generate_pdf import generate_doughnut_url
 from src.domain.constant import FnStatusEnum, SeverityEnum
 from src.infrastructure.database.session import get_session
 from src.presentation.dependencies import PermissionChecker
@@ -58,6 +62,7 @@ async def get_product(
     if product is None:
         raise HTTPException(404, "Project is not exists!")
     logs = await log_service.get_by_product_id(product_id)
+    report_dates = await log_service.get_available_date_by_product(product_id)
     plugins = await plugin_service.get_all_activated(
         {"env": product.environment.project.type_}
     )
@@ -74,6 +79,7 @@ async def get_product(
             "totalSeverity": tSeverity,
             "plugins": plugins,
             "host_list": hosts,
+            "report_dates": report_dates,
         },
     )
 
@@ -533,4 +539,63 @@ async def get_pic_list(
         {
             "data": users,
         },
+    )
+
+
+# TODO: Handle for large data
+@router.get("/{product_id}/report")
+async def download_report(
+    request: Request,
+    service: ProductServiceDep,
+    log_service: LogServiceDep,
+    finding_service: FindingServiceDep,
+    product_id: UUID,
+    date: datetime | None = None,
+    type_: str | None = "VA",
+):
+    if date is None:
+        date = datetime.now()
+    if type_ != "VA":
+        raise HTTPException(404)
+
+    month, year = date.month, date.year
+
+    product = await service.get_by_id(product_id)
+    if product is None:
+        raise
+
+    curr_log = await log_service.get_by_product_id(product_id)
+    prev_log = await log_service.get_by_date_filter(product_id, year, month)
+
+    curr_url = generate_doughnut_url(curr_log, "VA")
+    prev_url = generate_doughnut_url(prev_log, "VA")
+
+    hosts = await service.get_hosts(product_id)
+
+    findings, evidences_dict = await finding_service.report_findings(product_id)
+    res = templates.TemplateResponse(
+        request,
+        "pages/product/report_template.html",
+        {
+            "product": product,
+            "curr_log": curr_log,
+            "prev_log": prev_log,
+            "prev_url": prev_url,
+            "curr_url": curr_url,
+            "hosts": hosts,
+            "findings": findings,
+            "evidences_dict": evidences_dict,
+        },
+    )
+
+    def iter_csv():
+        buf = io.BytesIO()
+        pisa.CreatePDF(src=bytes(res.body), dest=buf)
+        buf.seek(0)
+        yield from buf
+
+    return StreamingResponse(
+        iter_csv(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename={product.name}-report.pdf"},
     )

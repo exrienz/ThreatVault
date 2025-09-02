@@ -114,4 +114,8 @@ fileignoreconfig:
   checksum: 7b1f3498e2b3696642ea2b4958511af206ee88fe1eee474672e5905f0302d030
 - filename: src/presentation/html/templates/pages/user_setting/index.html
   checksum: ba91e21435c3579fb8f0b900d5042c4f52cb5e704a33f5f84d3d3622380cc7ba
+- filename: src/application/utils/generate_pdf.py
+  checksum: 6c57d290493c6e095b83a61b0493fac4d43763b6c21186dceba0ace48596d83c
+- filename: src/presentation/html/templates/pages/product/report_template.html
+  checksum: 7f6c6a4c3ebb53a908ccdbc73b3a6770f021d06a167d936b21f304c33f44e044
 version: ""

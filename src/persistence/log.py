@@ -515,20 +515,26 @@ class LogRepository(BaseRepository[Log]):
         query = await self.session.execute(stmt)
         return query.all()
 
-    async def get_date_options_by_env(self, env_id: UUID):
+    async def get_date_options(
+        self, env_id: UUID | None = None, product_id: UUID | None = None
+    ):
         stmt = (
             select(
                 func.extract("year", Log.log_date).label("year"),
                 func.extract("month", Log.log_date).label("month"),
             )
             .distinct()
-            .join(Product)
-            .where(Product.environment_id == env_id)
             .order_by(
                 func.extract("year", Log.log_date).label("year").desc(),
                 func.extract("month", Log.log_date).label("month").desc(),
             )
         )
+        if env_id:
+            stmt = stmt.join(Product)
+            stmt = stmt.where(Product.environment_id == env_id)
+
+        if product_id:
+            stmt = stmt.where(Log.product_id == product_id)
         query = await self.session.execute(stmt)
         return query.all()
 
@@ -677,3 +683,16 @@ class LogRepository(BaseRepository[Log]):
 
         query = await self.session.execute(stmt)
         return query.all()
+
+    async def get_by_date_filter(self, product_id: UUID, year: int, month: int):
+        stmt = (
+            select(Log)
+            .where(
+                Log.product_id == product_id,
+                func.extract("year", Log.log_date) == year,
+                func.extract("month", Log.log_date) == month,
+            )
+            .order_by(Log.log_date.desc())
+        )
+        query = await self.session.execute(stmt)
+        return query.scalars().first()

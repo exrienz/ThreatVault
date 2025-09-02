@@ -19,3 +19,4 @@ asynciolimiter==1.2.*
 apscheduler==3.11.*
 openai[aiohttp]==1.101.0
 sse-starlette==3.0.2
+xhtml2pdf==0.2.*

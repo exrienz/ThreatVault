@@ -616,3 +616,56 @@ class FindingRepository(BaseRepository[Finding]):
             .str.strip_chars()
         )
         return df
+
+    async def report_finding_generation(
+        self,
+        product_id: UUID | None = None,
+    ) -> Sequence:
+        exception_list = [
+            VAStatusEnum.CLOSED.value,
+            VAStatusEnum.EXEMPTION.value,
+            VAStatusEnum.OTHERS.value,
+            HAStatusEnum.PASSED.value,
+        ]
+        stmt = (
+            (
+                select(
+                    FindingName.id,
+                    FindingName.name,
+                    FindingName.description,
+                    Finding.severity,
+                    Finding.remediation,
+                ).join(Finding)
+            )
+            .where(
+                Finding.status.not_in(exception_list), Finding.product_id == product_id
+            )
+            .order_by(Finding.severity)
+        )
+        stmt = self._product_allowed_ids(stmt)
+        query = await self.session.execute(stmt)
+        findings = query.all()
+
+        evidence_stmt = (
+            select(
+                Finding.finding_name_id,
+                Finding.evidence,
+                func.array_agg(func.distinct(Finding.host), type_=ARRAY(String)).label(
+                    "hosts"
+                ),
+            )
+            .where(Finding.product_id == product_id)
+            .group_by(Finding.finding_name_id, Finding.evidence)
+        )
+        evidence_stmt = self._product_allowed_ids(evidence_stmt)
+        query = await self.session.execute(evidence_stmt)
+        evidences = query.all()
+        evidences_dict: dict[UUID, list] = {}
+        for ev in evidences:
+            data = evidences_dict.get(ev.finding_name_id)
+            if data:
+                data.append(ev)
+            else:
+                evidences_dict[ev.finding_name_id] = [ev]
+
+        return findings, evidences_dict

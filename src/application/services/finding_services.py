@@ -194,3 +194,6 @@ class FindingService:
     # TODO: Group all file related service
     async def export_active_finding(self, project_id: UUID):
         return await self.repository.export_active_findings(project_id)
+
+    async def report_findings(self, product_id: UUID):
+        return await self.repository.report_finding_generation(product_id)
