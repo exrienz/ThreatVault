@@ -89,7 +89,10 @@ class LogService:
         )
 
     async def get_available_date_by_env(self, env_id: UUID):
-        return await self.repository.get_date_options_by_env(env_id)
+        return await self.repository.get_date_options(env_id)
+
+    async def get_available_date_by_product(self, product_id: UUID):
+        return await self.repository.get_date_options(product_id=product_id)
 
     async def calculate(self, product_id: UUID, scan_date: datetime):
         if self.user_id is None:
@@ -214,3 +217,6 @@ class LogService:
                 add_data = getattr(d, f"b{severity}")
             chart_dct[d.product_name][int(d.month) - 1] = add_data
         return [{"name": k, "data": v} for k, v in chart_dct.items()]
+
+    async def get_by_date_filter(self, product_id: UUID, year: int, month: int):
+        return await self.repository.get_by_date_filter(product_id, year, month)
