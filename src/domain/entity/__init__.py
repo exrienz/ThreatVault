@@ -3,7 +3,14 @@ from .finding import CVE, Comment, Finding, FindingName, FindingRevertPoint, Log
 from .project_management import Environment, Product, Project
 from .setting import EmailConfig, GlobalConfig
 from .token import Token
-from .user_access import Permission, ProductUserAccess, Role, RolePermission, User
+from .user_access import (
+    Permission,
+    ProductUserAccess,
+    Role,
+    RolePermission,
+    User,
+    UserPasswordReset,
+)
 
 __all__ = [
     "Base",
@@ -25,4 +32,5 @@ __all__ = [
     "ProductUserAccess",
     "Token",
     "FindingRevertPoint",
+    "UserPasswordReset",
 ]
