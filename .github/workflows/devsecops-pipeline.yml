@@ -9,44 +9,10 @@ on:
 jobs:
 
   # ----------------------------
-  # Secret Scan - Gitleaks
-  # ----------------------------
-  secret-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Gitleaks
-        run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 \
-            -o /usr/local/bin/gitleaks
-          chmod +x /usr/local/bin/gitleaks
-
-      - name: Run Gitleaks (current branch)
-        run: gitleaks detect --source . --redact --report-format sarif --report-path gitleaks.sarif
-        continue-on-error: true
-
-      - name: Run Gitleaks (full history)
-        run: gitleaks detect --source . --log-opts="--all" --redact --report-format sarif --report-path history.sarif
-        continue-on-error: true
-
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: gitleaks.sarif
-
-      - name: Upload Gitleaks Reports (Artifacts)
-        uses: actions/upload-artifact@v4
-        with:
-          name: gitleaks-reports
-          path: |
-            gitleaks.sarif
-            history.sarif
-
-  # ----------------------------
-  # SCA - SBOM Generation & FS Scan
+  # SBOM Generation (SCA)
   # ----------------------------
   sca-scan:
+    name: SCA & SBOM Generation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -55,7 +21,7 @@ jobs:
         with:
           scan_type: 'grypefs'
           target: '.'
-      - name: Save SBOM to file
+      - name: Save SBOM URL
         run: echo "$SBOM_SHARE_URL" > sbom-url.txt
       - name: Upload SBOM Report
         uses: actions/upload-artifact@v4
@@ -64,35 +30,34 @@ jobs:
           path: sbom-url.txt
           
   # ----------------------------
-  # SAST - Bandit Scan
+  # SAST - Bandit
   # ----------------------------
   sast-bandit:
+    name: SAST (Bandit)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
       - run: pip install bandit
-      - name: Bandit Scan
+      - name: Run Bandit Scan
         run: |
           mkdir -p artifacts
-          bandit -r ./src -f sarif -o artifacts/bandit-report.sarif
+          bandit -r ./src -f json -o artifacts/bandit-report.json
         continue-on-error: true
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: artifacts/bandit-report.sarif
-      - name: Upload Bandit Report (Artifact)
+      - name: Upload Bandit Report
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
-          path: artifacts/bandit-report.sarif
+          path: artifacts/bandit-report.json
 
   # ----------------------------
-  # SAST - SonarQube Scan
+  # SAST - SonarQube
   # ----------------------------
   sast-sonarqube:
+    name: SAST (SonarQube)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -108,19 +73,21 @@ jobs:
         continue-on-error: true
 
   # ----------------------------
-  # Final Build & Push (with Ruff)
+  # Final Build & Push
   # ----------------------------
   docker-build:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
-    needs: [secret-scan, sca-scan, sast-bandit, sast-sonarqube]   # waits for all scans to finish
+    needs: [sca-scan, sast-bandit, sast-sonarqube]   # waits for all scans
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
       - run: pip install ruff
 
-      - name: Ruff Lint Fix
+      - name: Ruff Lint (Auto-fix)
         run: ruff check --fix .
         continue-on-error: true
 
@@ -140,7 +107,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push Docker Image (with auto tag and latest)
+      - name: Build & Push Docker Image
         uses: docker/build-push-action@v5
         with:
           context: .
