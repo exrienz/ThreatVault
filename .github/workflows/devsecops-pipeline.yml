@@ -1,18 +1,7 @@
-# .github/workflows/devsecops-pipeline.yml
-name: DevSecOps Pipeline (Consumer)
-
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-  workflow_dispatch:
-
-jobs:
-  devsecops:
-    uses: exrienz/secops-template/.github/workflows/devsecops.yml@main
-    with:
-      enable_sca: true
-      enable_sonarqube: true
-      enable_docker_build: true
-      languages: '["python","javascript"]'   # must be JSON string, not YAML sequence
-    secrets: inherit
+  workflow_call:
+    inputs:
+      languages:
+        required: false
+        type: string
+        default: "python,javascript,java,php,html,css"
