@@ -97,7 +97,6 @@ Visit `APP_URL` in `.env` via browser
 | 👩‍💻 **Developer**          | Add features, optimize code, improve integrations |
 | 🕵️ **Security Researcher**  | Test CVE handling, report improvements            |
 | 🌐 **Community**             | Provide feedback, share use cases                 |
-| 📋 **Project Manager (Muz)** | Oversee roadmap & releases                        |
 
 **Steps to contribute:**
 
@@ -118,6 +117,16 @@ Visit `APP_URL` in `.env` via browser
 | [Exrienz](https://www.linkedin.com/in/muzaffarmohamed/?originalSubdomain=my) | Project Manager     |
 | [amirul-zafrin](https://www.linkedin.com/in/amirul-zafrin)                                        | Developer           |
 
+---
+
+
+---
+
+## 👥 Sponsors
+
+<p align="center">
+  <img src="asset/paynet.png" alt="Sentinel Banner" width="400"/>
+</p>
 ---
 
 ## 📝 License
