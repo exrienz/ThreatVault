@@ -33,7 +33,7 @@
 > 💡 **Impact:** Organizations report 60% faster vulnerability remediation and 40% improved SLA compliance with centralized management.
 
 
-<br><br><br>
+<br><br>
 ## 🚀 **Some of Sentinel's Core Capabilities**
 
 <div align="center">
@@ -125,7 +125,7 @@
 - ✅ **Remediation focus** - Prioritized actionable intelligence
 
 
-<br><br><br>
+<br><br>
 ## 👥 **User Ecosystem**
 
 <div align="center">
@@ -168,7 +168,7 @@
 </div>
 
 
-<br><br><br>
+<br><br>
 ## 🚀 **Quick Start Guide**
 
 ### **Prerequisites**
@@ -202,7 +202,7 @@ docker-compose ps
 ```
 
 
-<br><br><br>
+<br><br>
 ## 🤝 **Contributing to Sentinel**
 
 <div align="center">
@@ -243,7 +243,7 @@ git push origin feature/amazing-new-capability
 
 </div>
 
-<br><br><br>
+<br><br>
 ## 🌟 **Our Amazing Contributors**
 
 <div align="center">
@@ -273,7 +273,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 </div>
 
-<br><br><br>
+<br><br>
 ## 🏢 **Proudly Sponsored By**
 
 <div align="center">
