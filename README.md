@@ -116,8 +116,7 @@ Visit `APP_URL` in `.env` via browser
 | Name                                                                         | Role                |
 | ---------------------------------------------------------------------------- | ------------------- |
 | [Exrienz](https://www.linkedin.com/in/muzaffarmohamed/?originalSubdomain=my) | Project Manager     |
-| [Alice Dev](https://github.com/alice)                                        | Developer           |
-| [Bob Sec](https://github.com/bob)                                            | Security Researcher |
+| [amirul-zafrin](https://www.linkedin.com/in/amirul-zafrin)                                        | Developer           |
 
 ---
 
