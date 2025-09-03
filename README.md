@@ -34,7 +34,7 @@
 
 ---
 
-## 🚀 **Core Capabilities**
+## 🚀 **Some of Sentinel's Core Capabilities**
 
 <div align="center">
 
@@ -89,9 +89,8 @@
   </tbody>
 </table>
 
-<div align="center">
 
----
+<div align="center">
 
 ### 🏆 **Why Security Teams Choose Sentinel**
 
@@ -290,16 +289,11 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 ---
 
-## 📜 **Legal & Licensing**
 
-<div align="center">
+<sub>[Get started now](#-quick-start-guide) | [Join our community](#-contributing-to-sentinel) | [Report Issues](issues)</sub>
+
 
 **📄 License:** See [LICENSE](LICENSE) file for complete terms and conditions
 
-*© 2024 Sentinel Project. Built with ❤️ for the global security community.*
-
----
-
-<sub>**🚀 Ready to transform your vulnerability management?** [Get started now](#-quick-start-guide) | **💬 Questions?** [Join our community](#-contributing-to-sentinel) | **🐛 Found an issue?** [Report it here](issues)</sub>
-
+*© 2025 Sentinel Project. Built with ❤️ for the global security community.*
 </div>
