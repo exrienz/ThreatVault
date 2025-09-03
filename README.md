@@ -1,7 +1,7 @@
-
 <p align="center">
-  <img src="https://via.placeholder.com/900x150/4B6CB7/182848?text=Sentinel+%7C+Sponsored+by+PayNet&fontsize=36" alt="Sentinel Banner" />
+  <img src="asset/logo.png" alt="Sentinel Banner" width="600"/>
 </p>
+
 
 # 🔒 Sentinel - Vulnerability Management Platform
 
