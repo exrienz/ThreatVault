@@ -4,95 +4,107 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  devsecops:
-    name: DevSecOps Scan & Build
+  # ----------------------------
+  # Bandit Scan
+  # ----------------------------
+  bandit:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install bandit
+      - name: Bandit Scan
+        run: |
+          mkdir -p artifacts
+          bandit -r ./src -f json -o artifacts/bandit-report.json
+        continue-on-error: true
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: artifacts/bandit-report.json
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+  # ----------------------------
+  # SBOM Generation
+  # ----------------------------
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: SBOM Generation (codenotary)
+        uses: codenotary/sbom.sh-create@main
+        with:
+          scan_type: 'grypefs'
+          target: '.'
+      - name: Save SBOM to file
+        run: echo "$SBOM_SHARE_URL" > sbom-url.txt
+      - name: Upload SBOM Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-report
+          path: sbom-url.txt
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install ruff bandit
+  # ----------------------------
+  # SonarQube Scan
+  # ----------------------------
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v2
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        continue-on-error: true
 
-    - name: Ruff Lint Fix
-      run: ruff check --fix .
-      continue-on-error: true
+  # ----------------------------
+  # Final Build & Push (with Ruff)
+  # ----------------------------
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [bandit, sonarqube, sbom]   # waits for all scans to finish
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install ruff
 
-    - name: Ruff Format
-      run: ruff format .
-      continue-on-error: true
+      - name: Ruff Lint Fix
+        run: ruff check --fix .
+        continue-on-error: true
 
-    - name: Bandit Scan
-      run: |
-        mkdir -p artifacts
-        bandit -r ./src -f json -o artifacts/bandit-report.json
-      continue-on-error: true
+      - name: Ruff Format
+        run: ruff format .
+        continue-on-error: true
 
-    - name: Trivy SCA Scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: fs
-        scan-ref: .
-        format: json
-        output: artifacts/trivy-report.json
-      continue-on-error: true
+      - name: Set Image Tags
+        id: tagger
+        run: |
+          echo "tag=$(date +'%Y%m%d')-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "latest=latest" >> $GITHUB_OUTPUT
 
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v2
-      with:
-        projectBaseDir: .
-        args: >
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      continue-on-error: true
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Set Image Tags
-      id: tagger
-      run: |
-        echo "tag=$(date +'%Y%m%d')-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-        echo "latest=latest" >> $GITHUB_OUTPUT
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build & Push Docker Image (with auto tag and latest)
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:${{ steps.tagger.outputs.tag }}
-          ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:latest
-
-    - name: Generate SBOM with Trivy
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:${{ steps.tagger.outputs.tag }}
-        format: spdx-json
-        output: artifacts/sbom.spdx.json
-      continue-on-error: true
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: devsecops-reports
-        path: artifacts/
-        retention-days: 7
+      - name: Build & Push Docker Image (with auto tag and latest)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:${{ steps.tagger.outputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:latest
