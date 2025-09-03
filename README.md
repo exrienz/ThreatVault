@@ -33,7 +33,7 @@
 > 💡 **Impact:** Organizations report 60% faster vulnerability remediation and 40% improved SLA compliance with centralized management.
 
 
-
+<br><br><br>
 ## 🚀 **Some of Sentinel's Core Capabilities**
 
 <div align="center">
@@ -125,7 +125,7 @@
 - ✅ **Remediation focus** - Prioritized actionable intelligence
 
 
-
+<br><br><br>
 ## 👥 **User Ecosystem**
 
 <div align="center">
@@ -168,7 +168,7 @@
 </div>
 
 
-
+<br><br><br>
 ## 🚀 **Quick Start Guide**
 
 ### **Prerequisites**
@@ -202,7 +202,7 @@ docker-compose ps
 ```
 
 
-
+<br><br><br>
 ## 🤝 **Contributing to Sentinel**
 
 <div align="center">
@@ -211,11 +211,12 @@ We welcome contributors who share our vision of revolutionizing vulnerability ma
 
 </div>
 
-| 🎯 **Role** | 🚀 **Contribution Areas** | 🏆 **Impact** |
-|:|:|:|
-| **👩‍💻 Developers** | Feature development, API enhancements, UI/UX improvements | Shape the future of security tooling |
-| **🔒 Security Researchers** | CVE testing, vulnerability assessment, security hardening | Strengthen enterprise security |
-| **🌐 Community Members** | Documentation, feedback, use case sharing | Grow the security ecosystem |
+| 🎯 **Role**                 | 🚀 **Contribution Areas**                       | 🏆 **Impact**                           |
+|:----------------------------|:-----------------------------------------------|:---------------------------------------|
+| **👩‍💻 Developers**         | Feature development, API enhancements, UI/UX improvements | Shape the future of security tooling  |
+| **🔒 Security Researchers** | CVE testing, vulnerability assessment, security hardening | Strengthen enterprise security        |
+| **🌐 Community Members**    | Documentation, feedback, use case sharing     | Grow the security ecosystem           |
+
 
 ### **🛠️ Contribution Workflow**
 
@@ -242,7 +243,7 @@ git push origin feature/amazing-new-capability
 
 </div>
 
-
+<br><br><br>
 ## 🌟 **Our Amazing Contributors**
 
 <div align="center">
@@ -272,7 +273,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 </div>
 
-
+<br><br><br>
 ## 🏢 **Proudly Sponsored By**
 
 <div align="center">
