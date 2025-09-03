@@ -78,21 +78,23 @@ jobs:
   docker-build:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
-    needs: [sca-scan, sast-bandit, sast-sonarqube]   # waits for all scans
+    needs: [sca-scan, sast-bandit, sast-sonarqube]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Set up Python (for pre-commit)
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           cache: 'pip'
-      - run: pip install ruff
 
-      - name: Ruff Lint (Auto-fix)
-        run: ruff check --fix .
-        continue-on-error: true
+      - name: Install Pre-commit
+        run: pip install pre-commit
 
-      - name: Ruff Format
-        run: ruff format .
+      - name: Run Pre-commit Hooks (Auto-fix All Languages)
+        run: |
+          pre-commit install
+          pre-commit run --all-files --show-diff-on-failure
         continue-on-error: true
 
       - name: Set Image Tags
