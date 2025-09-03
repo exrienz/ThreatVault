@@ -1,0 +1,206 @@
+{% set title = "Product" %}
+{% set filename = "product" %}
+
+{% extends 'layouts/master.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+{% endblock %}
+
+{% block content %}
+{% set environment = product.environment %}
+<div class="page-heading">
+  <h3>
+    {{ product.name }} {{environment.project.type_ | assessmentTypeMap }} Dashboard
+    <span class="badge bg-success">{{ environment.name | title }}</span>
+  </h3>
+  <div id="finding_header_id" data-upload-date={{logs.log_date.strftime('%Y-%m-%d') if logs else "DD-MM-YYYY" }}>
+    Last Update : {{logs.log_date.strftime('%d-%m-%Y') if logs else "DD-MM-YYYY"}}
+    <code>|</code>
+    {{logs.uploader.username | title if logs.uploader is defined}}
+  </div>
+</div>
+<div class="page-content">
+  {%include "pages/product/component/stats.html"%}
+  <!--Row2-->
+  {% if "finding:action" in permissions or "all" in permissions %}
+  <section class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Upload New Scan</h4>
+        </div>
+        <div class="card-body">{% include "pages/product/form/fileupload.html" %}</div>
+        <hr>
+        {%include "pages/product/component/advancedUpload.html"%}
+        <hr>
+        {%include "pages/product/component/advancedSetting.html"%}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+  <!--EO Row2-->
+  <!--Row3-->
+  <section class="row">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-header">
+          <h4>Vulnerability Chart</h4>
+        </div>
+        <div class="card-body">
+          <div id="risk"></div><br>
+        </div>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <div class="card-header">
+          <h4>Aging Finding</h4>
+        </div>
+        <div class="card-body">
+          <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--EO Row3-->
+  <!--Row4-->
+  <section class="row">
+    <!-- Card 1 -->
+    {% include "pages/product/component/viewOptions.html" %}
+    <!-- Card 2 -->
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="col-12">
+            <h6>Download Report</h6>
+            <div class="input-group mb-3">
+              <select class="form-select" name="date" id="report-date">
+                {% for date_option in report_dates %}
+                <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01">
+                  {{ '{:02d}'.format(date_option.month | int) }}-{{ date_option.year }}
+                </option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-primary" onclick="downloadReport('{{ product.id }}')">
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--EO Row4-->
+  <!--Row3-->
+  <section class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <h4>Findings</h4>
+          <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+            {#
+            hx-get="{{ product.id }}/finding-filters" hx-target="#finding-filter-script-id" hx-trigger="click">
+            #}
+
+            <i class="bi bi-filter"></i>
+            Filter
+
+          </a>
+          <div id="filterModal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+            {% include "pages/product/component/findingFilterModal.html"%}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive" id="tableDivID">
+            {% include "pages/product/component/tables/index.html" %}
+          </div>
+          {% include "pages/product/form/action.html" %}
+        </div>
+      </div>
+  </section>
+  <!--EO Row3-->
+</div>
+{% endblock %}
+
+{% block js %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+
+<script src="/assets/static/js/pages/form-element-select.js"></script>
+
+<script id="update_script_id">
+  {% if logs %}
+  risk.updateSeries([
+    {{(logs.tCritical | default(0) / totalSeverity * 100) | round }},
+    {{(logs.tHigh | default(0) / totalSeverity * 100) | round }},
+    {{(logs.tMedium | default(0) / totalSeverity * 100) | round}},
+    {{(logs.tLow | default(0) / totalSeverity * 100) | round}}
+  ])
+  {% endif %}
+</script>
+<script>
+  var el = document.querySelector("#hosts");
+  var hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
+  function mapHostChoice(value, idx, el) {
+    return {value: value, label: value}
+  }
+  function setChoices(hosts, finding_name_id, current_status) {
+    mapped = hosts.map(mapHostChoice);
+    hostChoices.setChoices(mapped, "value", "label", true);
+
+    fm = document.querySelector("#fn_name_action_id")
+    fm.setAttribute("value", `${finding_name_id}`)
+
+    fn_status = document.querySelector("#current_status")
+    fm_status.setAttribute("value", `${current_status}`)
+  }
+</script>
+
+<script id="finding-filter-script-id">
+  var statusChoiceEl = document.querySelector("#status-choices");
+  var statusChoices = new Choices(statusChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var severityChoiceEl = document.querySelector("#severity-choices");
+  var severityChoices = new Choices(severityChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var assetsChoiceEl = document.querySelector("#assets-choices");
+  var assetsChoices = new Choices(assetsChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var sourceChoiceEl = document.querySelector("#source-choices");
+  var sourceChoices = new Choices(sourceChoiceEl, {
+    removeItems: true,
+    removeItemButton: true
+  });
+
+  var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices];
+
+  function clearChoices() {
+    chLists.forEach(clearChoiceMap);
+  }
+
+  function clearChoiceMap(value, idx, array) {
+    value.removeActiveItems();
+  }
+
+</script>
+
+<script>
+  function downloadReport(productId) {
+    const date = document.getElementById("report-date").value;
+    const url = `/product/${productId}/report?date=${encodeURIComponent(date)}&type_={{product.environment.project.type_}}`;
+    window.open(url, "_blank"); // new tab
+  }
+</script>
+{% endblock %}

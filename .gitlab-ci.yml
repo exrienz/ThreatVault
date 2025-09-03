@@ -1,0 +1,7 @@
+stages:
+- sbom
+
+include:
+  - project: ts/ci-templates
+    ref: master
+    file: sbom.yml

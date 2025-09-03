@@ -1,0 +1,38 @@
+<!-- ITS Remarks -->
+{% if "finding:remark" in permissions or "all" in permissions %}
+<div class="card">
+  <div class="card-header">
+    <h4>ITS Remarks</h4>
+  </div>
+  <div class="card-body">
+    <form hx-post="/finding/{{finding_name_id}}/remark?product_id={{product_id}}" id="remark-form"
+      hx-swap="none"
+      hx-on::after-request="document.querySelector('#remark-form').reset()">
+      <label for="name" class="form-label">PIC</label>
+      <div class="form-group" hx-trigger="load" hx-get="/product/{{product_id}}/pic-list" hx-swap="innerHTML">
+        <select class="choices form-select multiple-remove" multiple="multiple">
+          <optgroup label="Owner List">
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Remediation Date</label>
+        <input type="date" name="target_date" id="target_date" class="form-control"
+                                                               placeholder="Target Remediation Date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Delay reason</label>
+        <input type="text" class="form-control" name="reason" placeholder="Delay Reason">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ITS Remark</label>
+        <input type="text" class="form-control" name="remark" placeholder="ITS Remark">
+      </div>
+      <input type="hidden" class="form-control" name="product_id" value="{{product.id}}">
+      <div class="form-group" align="right">
+        <button type="submit" class="btn btn-primary">Save Remarks</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}

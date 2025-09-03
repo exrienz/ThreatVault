@@ -1,0 +1,24 @@
+<div class="card-body">
+  <div id="chart_{{ request.headers['hx-target'] }}"></div>
+</div>
+<script>
+  window["{{request.headers['hx-target']}}-var"] = new ApexCharts(
+    document.getElementById("chart_{{request.headers['hx-target']}}"),
+    {
+      ...stackedColumnOpts,
+      legend: {
+        position: 'top',
+      },
+      noData: {text: 'No Data'},
+      xaxis: {
+        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      },
+      series: {{data | tojson | safe }}
+    }
+  );
+  window["{{request.headers['hx-target']}}-var"].render()
+</script>
+
+<div>
+
+</div>

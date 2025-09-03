@@ -1,0 +1,9 @@
+  <!--Row1-->
+  <section class="row" hx-trigger="load, reload-stats from:body" hx-get="{{product.id}}/stats" hx-swap="none">
+    {% if environment.project.type_ == "HA" %}
+    {% include "pages/product/component/ha_stats.html"%}
+    {% else %}
+    {% include "pages/product/component/va_stats.html"%}
+    {% endif %}
+  </section>
+  <!--E1 Row-->

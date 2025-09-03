@@ -1,0 +1,57 @@
+<table id="priority_table" class="display" data-page-length='25'>
+  <thead>
+    <tr>
+      <th>Findings</th>
+      <th>Affected Host</th>
+      <th>CVE</th>
+      <th>Priority</th>
+      <th>RISK</th>
+      <th>EPSS</th>
+      <th>CVSS</th>
+      <th>KEV Listed</th>
+    </tr>
+  </thead>
+</table>
+<script>
+  $(document).ready( function () {
+    $('#priority_table').DataTable( {
+      serverSide: true,
+      columns: [
+        {data: 'finding_name', orderable: false, searchable: false},
+        {data: 'hosts', orderable: false, searchable: false, render: function(data, type){
+          if (!Array.isArray(data)) return '';
+          return data.join(", ")
+        }},
+        {data: 'name', orderable: false, searchable: false},
+        {data: 'priority', orderable: false, searchable: false},
+        {data: 'severity', orderable: false, searchable: false},
+        {data: 'epss', orderable: false, searchable: false},
+        {data: 'cvss', orderable: false, searchable: false},
+        {data: 'kevList', orderable: false, searchable: false, render: function(data, type){
+          if (data == false) {
+            return "";
+          }
+          return '<i class="bi bi-shield-slash-fill"></i>';
+        }},
+      ],
+      columnDefs: [{"className": "dt-center", "targets": "_all"},
+        {"className": "text-wrap", "targets": 1}],
+      lengthMenu: [],
+      ajax: {
+        url: "priority/api?project_id={{project_id}}&year={{year}}",
+        type: "GET",
+        data: function(d) {
+          let order = d.order[0];
+          d.order_by = order.name;
+          d.order_direction = order.dir;
+        },
+        dataSrc: function(json) {
+          json.recordsFiltered = json.total;
+          json.recordsTotal = json.total;
+          return json.data;
+        }
+      },
+    } );
+    $(".dt-length").remove();
+  } );
+</script>

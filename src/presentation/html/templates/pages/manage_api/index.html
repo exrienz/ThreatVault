@@ -1,0 +1,50 @@
+{% set title = "Manage API" %}
+{% set filename = "/manage-api" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>Manage API Key</h3>
+</div>
+<div class="page-content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="col-12 d-flex justify-content-between">
+            <h5 class="card-title">API Key List</h5>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mdlCreateNew">
+              Create New
+            </button>
+            {%include "pages/manage_api/component/generate.html"%}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped mb-0">
+              <thead>
+                <tr>
+                  <th>NAME</th>
+                  <th>KEY</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="apiTableBody">
+                {% for api in data %}
+                {%include "pages/manage_api/component/row.html"%}
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+</div>
+{% endblock %}
+{% block js %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}

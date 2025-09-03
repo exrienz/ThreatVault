@@ -1,0 +1,22 @@
+<div class="card">
+  <div class="card-body">
+    <div id="chart_{{ request.headers['hx-target'] }}"></div>
+  </div>
+  <script>
+    window["{{request.headers['hx-target']}}-var"] = new ApexCharts(
+      document.getElementById("chart_{{request.headers['hx-target']}}"),
+      {
+        chart: {type: 'line', height: 350},
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
+        series: {{data | tojson | safe }}
+      }
+    );
+    window["{{request.headers['hx-target']}}-var"].render()
+
+    {% for name in data %}
+    {% if not loop.first %}
+      window["{{request.headers['hx-target']}}-var"].hideSeries("{{name.get('name')}}")
+    {% endif %}
+    {% endfor %}
+  </script>
+</div>

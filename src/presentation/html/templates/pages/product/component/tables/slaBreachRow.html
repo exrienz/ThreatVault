@@ -1,0 +1,33 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title" style="color: maroon;">{{severity.value }} Findings Breach {{sla}} Days SLA</h5>
+    <div class="list-group">
+      {% for finding in findings %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <td>
+              <b>{{finding.name}}
+                <br>Solution:</b>{{finding.remediation}}
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <small class="text-muted">Affected Host: <br>
+                {%for host in finding.hosts%}
+                <a href="/host?host={{host}}">{{host}}</a>
+                {% if not loop.last %}
+                  |
+                {%endif%}
+                {%endfor%}
+              </small>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      {% endfor %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<form id="create_project_id"
+      class="row g-3"
+      hx-post="/project-management/"
+      hx-swap="none"
+      hx-on::after-request="document.querySelector('#create_project_id').reset()">
+  <input type="hidden" name="project_type" value="{{type_}}" />
+    <div class="col-md-12">
+        <input type="text"
+               name="name"
+               class="form-control"
+               placeholder="Project Name" />
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+</form>

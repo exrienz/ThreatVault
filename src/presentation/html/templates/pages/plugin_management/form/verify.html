@@ -1,0 +1,53 @@
+<div class="modal-dialog modal-dialog-left modal-dialog-scrollable"
+     role="document">
+    <div class="modal-content">
+        <form hx-post="verify/{{ plugin_id }}"
+              hx-encoding="multipart/form-data"
+              hx-swap="outerHTML"
+              hx-target="#test_plugin_result"
+              hx-indicator="#tp_indicator">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title white">Plugin Verification</h5>
+                <button type="button"
+                        class="close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="formFile" class="form-label">File to test</label>
+                    <input class="form-control" type="file" id="file" name="file">
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="flexSwitchCheckChecked"
+                           name="use_to_verify"
+                           checked="">
+                    <label class="form-check-label" for="flexSwitchCheckChecked">Use the result to verify?</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
+                    <button type="submit" class="btn btn-success ms-1">
+                        <i class="bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Test</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div>
+            Result:
+            <span id="test_plugin_result"></span>
+            <div class="spinner-border text-primary htmx-indicator"
+                 id="tp_indicator"
+                 role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+</div>

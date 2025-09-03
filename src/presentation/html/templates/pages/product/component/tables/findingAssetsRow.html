@@ -1,0 +1,20 @@
+<tr>
+    <td class="text-bold-500">
+        <a href="/host?host={{finding.host}}">
+            {{ finding.host }} &nbsp;
+        </a>
+    </td>
+    <td align="center" class="text-bold-500">{{ finding.critical }}</td>
+    <td align="center" class="text-bold-500">{{ finding.high }}</td>
+    <td align="center" class="text-bold-500">{{ finding.medium }}</td>
+    <td align="center" class="text-bold-500">{{ finding.low }}</td>
+    <td align="center">
+        <div class="me-1 mb-1 d-inline-block">
+          <a hx-delete="/host/{{product_id}}/{{finding.host}}"
+             hx-swap="delete"
+             hx-target="closest tr"
+             hx-confirm="Delete {{finding.host}}"
+            class="btn icon btn-danger"><i class="bi bi-trash"></i></a>
+        </div>
+    </td>
+</tr>

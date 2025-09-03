@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta
+          name="htmx-config"
+          content='{
+                "responseHandling":[
+                    {"code":"204", "swap": false},
+                    {"code":"[23]..", "swap": true},
+                    {"code":"[45]..", "swap": true, "error":false},
+                    {"code":"...", "swap": true}
+                ]
+            }'
+        />
+        <title>{{ title }} - {{ web_title }}</title>
+        <link rel="stylesheet" href="/assets/compiled/css/app.css">
+        <link rel="stylesheet" href="/assets/compiled/css/app-dark.css">
+        <link rel="stylesheet" href="/assets/compiled/css/auth.css">
+        <link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
+        <link rel="shortcut icon"
+              href="/assets/static/images/logo/favicon.svg"
+              type="image/x-icon">
+        <link rel="shortcut icon"
+              href="/assets/static/images/logo/favicon.png"
+              type="image/png">
+        <script src="https://unpkg.com/htmx.org@2.0.4"
+                integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+                crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="auth">
+            {% block content %}{% endblock %}
+        </div>
+
+
+      <script src="/assets/extensions/sweetalert2/sweetalert2.js"></script>
+      <script src="/assets/static/js/pages/sweetalert2.js"></script>
+      <script>
+          document.addEventListener("htmx:responseError", function (e) {
+            const xhr = e.detail.xhr
+            Swal.fire({
+              icon: "error",
+              title: xhr.status,
+              text: JSON.parse(xhr.responseText),
+              timer: 3500,
+            });
+          })
+      </script>
+    </body>
+</html>

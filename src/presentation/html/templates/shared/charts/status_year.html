@@ -1,0 +1,13 @@
+<script>
+  chartOptions = {
+    ...areaOptions,
+    labels: {{labels | safe }},
+    series: {{chart | safe }}
+  }
+
+  var chart = new ApexCharts(
+    document.getElementById(`{{env}}-year-chart`),
+    chartOptions
+  )
+  chart.render()
+</script>

@@ -1,0 +1,15 @@
+<div class="card-header">
+  <h4>Latest Comments</h4>
+</div>
+<div class="card-body">
+  <div class="table-responsive">
+    <div id="spinner" class="htmx-indicator">Loading...</div>
+    <table class="table table-striped mb-0">
+      <tbody id="comments_table_id">
+        {% for comment in comments %}
+        {% include "pages/finding/component/comment.html" %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

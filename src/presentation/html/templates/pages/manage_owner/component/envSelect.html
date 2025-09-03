@@ -1,0 +1,6 @@
+<option selected="">Select Environment</option>
+{% for env in envs %}
+    <option value={{ env.id }}>
+        {{ env.name }}
+    </option>
+{% endfor %}

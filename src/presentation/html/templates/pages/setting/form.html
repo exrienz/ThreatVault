@@ -1,0 +1,259 @@
+<form hx-post>
+    {#
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Site Setting</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Site Name</span>
+                    <input type="text"
+                           name="site_name"
+                           value="{{ data.site_name }}"
+                           class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Site Domain</span>
+                    <input type="text"
+                           name="site_domain"
+                           value="{{ data.site_domain }}"
+                           class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Site Logo URL</span>
+                    <input type="text"
+                           name="site_logo_url"
+                           value="{{ data.site_logo_url }}"
+                           class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    #}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">SLA Setting</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Critical</span>
+                            <input type="text"
+                                   name="sla_critical"
+                                   value="{{ data.sla_critical }}"
+                                   class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">High</span>
+                            <input type="text"
+                                   name="sla_high"
+                                   value="{{ data.sla_high }}"
+                                   class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Medium</span>
+                            <input type="text"
+                                   name="sla_medium"
+                                   value="{{ data.sla_medium }}"
+                                   class="form-control"
+                                   aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Low</span>
+                            <input type="text"
+                                   name="sla_low"
+                                   value="{{ data.sla_low }}"
+                                   class="form-control"
+                                   aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Security Setting</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Login Via Email</h6>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Enable</span>
+                        <div class="input-group-text">
+                            <input class="form-check-input"
+                                   name="login_via_email"
+                                   type="checkbox"
+                                   {% if data.login_via_email %}checked{% endif %}>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                {#
+                <h6 class="card-title">OKTA Config</h6>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Enable OKTA</span>
+                        <div class="input-group-text">
+                            <input class="form-check-input"
+                                   name="okta_enabled"
+                                   type="checkbox"
+                                   {% if data.okta_enabled %}checked{% endif %}>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Domain</span>
+                        <input type="text"
+                               name="okta_domain"
+                               value="{{ data.okta_domain }}"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Client ID</span>
+                        <input type="password"
+                               name="okta_client_id"
+                               value="{{ data.okta_client_id }}"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Client Secret</span>
+                        <input type="password"
+                               name="okta_client_secret"
+                               value="{{ data.okta_client_secret }}"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">OKTA Redirect URL</span>
+                        <input type="text"
+                               name="okta_redirect_url"
+                               value="{{ data.okta_redirect_url }}"
+                               class="form-control">
+                    </div>
+                </div>
+                #}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">SMTP Setting</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Server</span>
+                        <input type="text"
+                               name="smtp_server"
+                               value="{{ data.smtp_server }}"
+                               class="form-control">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Port</span>
+                        <input type="text"
+                               name="smtp_port"
+                               value="{{ data.smtp_port }}"
+                               class="form-control">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Username</span>
+                        <input type="text"
+                               name="smtp_username"
+                               value="{{ data.smtp_username }}"
+                               class="form-control">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Password</span>
+                        <input type="password"
+                               name="smtp_password"
+                               value="{{ data.smtp_password }}"
+                               class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">LLM</h5>
+                <span>You may use any provider that compatible with openai protocol.</span>
+            </div>
+            <div class="card-body" id="llm-form">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">LLM URL</span>
+                    <input type="text"
+                           name="llm_url"
+                           value="{{ data.llm_url }}"
+                           class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">LLM API-Key</span>
+                    <input type="text"
+                           name="llm_api_key"
+                           value="{{ data.llm_api_key }}"
+                           class="form-control">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">LLM Model</span>
+                    <select class="form-select" id="model-select" name="llm_model">
+                      <option selected>{{data.llm_model}}</option>
+                    </select>
+                    <button class="btn btn-primary" type="button"
+                      hx-get="/setting/model-list" hx-include="#llm-form"
+                      hx-target="#model-select" hx-swap="outerHTML"
+                      hx-indicator="#model-loading" hx-disabled-elt="this"
+                      >
+                      <div id="model-loading" class="htmx-indicator">
+                        <span class="spinner-border spinner-border-sm"></span>
+                      </div>
+                      Search
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Sensitive Hosts</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Server</span>
+                    <input type="text"
+                           name="sensitive_hosts"
+                           value="{{ data.sensitive_hosts }}"
+                           class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group my-2 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>
+<script>
+  {% if updated %}
+  ToastCustom("Setting updated", "success");
+  {% endif %}
+</script>

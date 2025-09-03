@@ -1,0 +1,16 @@
+<!-- Affected Hosts -->
+<div class="card">
+    <div class="card-header">
+        <b>Affected Host:
+            <br />
+            <br />
+            {% for finding in findings %}
+            </b><span class="badge bg-secondary mr-1">{{ host }}:{{ finding.port }}</span>
+        {% endfor %}
+    </div>
+    <div class="card-body">
+        <pre style="background-color: #f0f0f0;;">
+          {{findings.0.evidence | safe}}
+        </pre>
+    </div>
+</div>

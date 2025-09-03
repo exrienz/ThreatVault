@@ -1,0 +1,76 @@
+<div class="card-header">
+    <h4>Advance Setting</h4>
+</div>
+<div class="card-body">
+    <button hx-get="{{ product.id }}/user-permissions"
+            hx-target="#user_permission_modal"
+            hx-trigger="click"
+            data-bs-toggle="modal"
+            data-bs-target="#user_permission_modal"
+            class="btn btn-primary">User Permissions</button>
+    <div id="user_permission_modal"
+         class="modal modal-blur fade"
+         style="display: none"
+         aria-hidden="false"
+         tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+    <form hx-post="{{ product.id }}/escalation" hx-swap="none">
+        <div class="col-md-12 mb-1">
+            <br />
+            <div class="form-group"
+                 align="left"
+                 hx-trigger="load"
+                 hx-get="{{ product.id }}/escalation"
+                 hx-target="#selectEscalationID"
+                 hx-swap="innerHTML"
+                 >
+                <label for="name" class="form-label">Escalation Points</label>
+                <div id="selectEscalationID"></div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-1">
+            <br />
+            <p>
+                Please select the frequency at which you would like to send the SLA breach report to the escalation
+                point:
+            </p>
+            <ul class="list-unstyled mb-0">
+                <li class="d-inline-block me-2 mb-1">
+                    <div class="form-check">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox"
+                                   class="form-check-input form-check-primary"
+                                   {% if product.weEscalation %} checked {% endif %}
+                                   name="weekly">
+                            <label class="form-check-label" for="customColorCheck1">Weekly</label>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-inline-block me-2 mb-1">
+                    <div class="form-check">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox"
+                                   class="form-check-input form-check-primary"
+                                   {% if product.moEscalation %} checked {% endif %}
+                                   name="monthly">
+                            <label class="form-check-label" for="customColorCheck1">Monthly</label>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-12 mb-1">
+            <br />
+            <button type="submit" class="btn btn-primary btn btn-primary w-100">Save</button>
+        </div>
+    </form>
+    <div class="col-md-12 mb-1">
+        <br />
+        <form >
+            {% include "pages/product/response/tokenGeneration.html" %}
+        </form>
+    </div>
+</div>

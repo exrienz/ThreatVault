@@ -1,0 +1,35 @@
+{% macro project_accordion(project, idx) -%}
+    <div class="accordion-item" id="id_accordion_proj_{{ project.id }}">
+        <h2 class="accordion-header"
+            id="{{ 'headingOne' if idx == 1 else 'heading_' ~ idx}}">
+            <button class="accordion-button {{ 'collapsed' if idx != 1 }} text-wrap"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="{{ '#collapseOne' if idx == 1 else '#collapse_' ~ idx}}"
+                    aria-expanded="true"
+                    aria-controls="{{ 'collapseOne' if idx == 1 else 'collapse_' ~ idx}}">
+            <span class="text-wrap">{{ project.name }}</span>
+            </button>
+        </h2>
+        <div id="{{ 'collapseOne' if idx == 1 else 'collapse_' ~ idx}}"
+             class="accordion-collapse collapse {{'show' if idx == 1}}"
+             aria-labelledby="{{ 'headingOne' if idx == 1 else 'heading_' ~ idx}}"
+             data-bs-parent="#accordionExample">
+          <div class="accordion-body" id="id_product_list_{{project.id}}">
+                {% for env in project.environment | sort(reverse=true, attribute="name")
+                    %}
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li id="id_env_accordion_{{ env.id }}" class="list-group-item active">{{ env.name | title }}</li>
+                            {% for product in env.products %}
+                                <li id="id_prod_accordion_{{ product.id }}" class="list-group-item">
+                                    <a href="/product/{{ product.id }}">{{ product.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{%- endmacro %}

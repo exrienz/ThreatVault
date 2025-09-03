@@ -1,0 +1,36 @@
+<table class="table table-lg">
+  <thead>
+    <tr>
+      <th>Product</th>
+      {% for label in labels %}
+      <th>{{label | title}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr>
+      <td class="text-bold-500">
+        <a href="/product/{{product.id}}">{{ product.name }}</a>
+      </td>
+      {% with stat=data[product.id] %}
+      <td>{{ stat.tCritical if stat else 0 }}</td>
+      <td>{{ stat.tHigh if stat else 0 }}</td>
+      <td>{{ stat.tMedium if stat else 0 }}</td>
+      <td>{{ stat.tLow if stat else 0 }}</td>
+      {% endwith %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+  window["{{request.headers['hx-target']}}"] = new ApexCharts(
+    document.getElementById("chart_{{request.headers['hx-target']}}"),
+    {
+      ...riskPie,
+      labels: ["Critical", "High", "Medium", "Low"],
+      series: {{total}}
+    }
+  );
+  window["{{request.headers['hx-target']}}"].render()
+</script>

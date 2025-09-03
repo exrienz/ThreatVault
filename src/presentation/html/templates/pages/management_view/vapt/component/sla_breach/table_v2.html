@@ -1,0 +1,40 @@
+{% set permissions = get_user_permissions() %}
+<table class="table table-hover mb-0">
+  <thead>
+    <tr style="text-align: center;">
+      <th>Product</th>
+      <th>SLA Breach</th>
+      <th>Active</th>
+      <th>Remediated</th>
+      <th>Remarks</th>
+      {%if "mv-remark:create" in permissions or "all" in permissions%}
+      <th>Actions</th>
+      {% endif %}
+    </tr>
+  </thead>
+
+  <tbody id="sla_breach_table" hx-get="sla-breach/table" hx-trigger="load"
+                             hx-indicator="#spinner"
+                             hx-target="this">
+
+    <tr>
+      <td colspan="6">
+        <div id="spinner" class="htmx-indicator">
+          Loading...
+        </div>
+      </td>
+    </tr>
+  </tbody>
+
+</table>
+<nav id="page-controller" class="mt-2" hx-target="#sla_breach_table" hx-include="#hidden-input,#table-month-selector">
+  <ul class="pagination pagination-primary  justify-content-end">
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+    </li>
+    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#">Next</a>
+    </li>
+  </ul>
+</nav>

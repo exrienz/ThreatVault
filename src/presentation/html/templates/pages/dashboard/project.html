@@ -1,0 +1,65 @@
+{% set title = "Project: " + project.name %}
+{% set filename = "project.html" %}
+{% extends 'layouts/master.html' %}
+
+{% block content %}
+<div class="page-heading d-flex justify-content-between">
+  <h3>{{project.name }} Dashboard</h3>
+  <a class="btn btn-success" href="/project/{{ project.id }}/export" download="{{ project.name }}-active-findings.csv">
+    Export Active Findings
+  </a>
+</div>
+<div class="page-content">
+  <!--Start::Yearly Trend-->
+  <section class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h4>Production Progress</h4>
+        </div>
+
+        <div class="card-body">
+          <div id="production-year-chart" hx-target="this"></div>
+          <div display:None hx-get="/chart/project/{{project.id}}" hx-trigger="load"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h4>Non-Production Progress</h4>
+        </div>
+        <div id="non-production-year-chart" hx-target="this"></div>
+        <div display:None hx-get="/chart/project/{{project.id}}?env=non-production" hx-trigger="load"></div>
+      </div>
+    </div>
+  </section>
+  <!--End::Yearly Trend-->
+  <!--Start::Card Compare-->
+  <section class="row">
+    <div class="col-6">
+      <div id="prod_prev" hx-target="#prod_prev">
+        <div display:None hx-get="/chart/env?env_id={{prod_env.id}}&year={{now.year}}&month={{now.month - 1}}"
+          hx-trigger="load"></div>
+      </div>
+      <div id="nonprod_prev" hx-target="#nonprod_prev">
+        <div display:None hx-get="/chart/env?env_id={{nonprod_env.id}}&year={{now.year}}&month={{now.month - 1}}"
+          hx-trigger="load"></div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div id="prod_curr" hx-target="#prod_curr">
+        <div display:None hx-get="/chart/env?env_id={{prod_env.id}}&year={{now.year}}&month={{now.month}}"
+          hx-trigger="load"></div>
+      </div>
+      <div id="nonprod_curr" hx-target="#nonprod_curr">
+        <div display:None hx-get="/chart/env?env_id={{nonprod_env.id}}&year={{now.year}}&month={{now.month}}"
+          hx-trigger="load"></div>
+      </div>
+    </div>
+  </section>
+  <!--End::Card Compare-->
+</div>
+{% endblock %}
+{% block js %}
+{% endblock %}

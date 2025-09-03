@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Dashboard",
+    "scope": "dashboard:view",
+    "url": "/"
+  },
+  {
+    "name": "Project Management",
+    "scope": "project-management:view",
+    "url": "/project-management"
+  },
+  {
+    "name": "Project Management",
+    "scope": "project-management:create",
+    "url": "/project-management"
+  },
+  {
+    "name": "Project Management",
+    "scope": "project-management:delete",
+    "url": "/project-management"
+  },
+  {
+    "name": "User Management",
+    "scope": "user-management:all",
+    "url": ""
+  },
+  {
+    "name": "Product Owner Management",
+    "scope": "owner-management:all",
+    "url": ""
+  },
+  {
+    "name": "Product API Management",
+    "scope": "api-management:all",
+    "url": ""
+  },
+  {
+    "name": "Product",
+    "scope": "product:view",
+    "url": "/product"
+  },
+  {
+    "name": "Product",
+    "scope": "product:create",
+    "url": "/product"
+  },
+  {
+    "name": "Finding",
+    "scope": "finding:view",
+    "url": "/finding"
+  },
+  {
+    "name": "Update/Upload Finding",
+    "scope": "finding:create",
+    "url": "/product"
+  },
+  {
+    "name": "Finding - Action",
+    "scope": "finding:action",
+    "url": "/product"
+  },
+  {
+    "name": "Comment",
+    "scope": "comment:view",
+    "url": "/comment"
+  },
+  {
+    "name": "Comment",
+    "scope": "comment:create",
+    "url": "/comment"
+  },
+  {
+    "name": "Comment",
+    "scope": "comment:delete",
+    "url": "/comment"
+  },
+  {
+    "name": "Site Setting",
+    "scope": "setting:all",
+    "url": "/setting"
+  }
+]

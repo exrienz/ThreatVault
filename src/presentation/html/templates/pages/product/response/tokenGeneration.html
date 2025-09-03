@@ -1,0 +1,19 @@
+<div class="input-group mb-3">
+    <span class="input-group-text"><i class="fa fa-laptop-code"></i></span>
+    <input type="password"
+           id="api_token"
+           class="form-control"
+           placeholder="No API key exists. Generate now!"
+           aria-label="API Key"
+           {% if product.apiKey %}value={{ product.apiKey }}{% endif %}
+           aria-describedby="button-addon2"
+           readonly>
+
+    <button class="btn btn-success"
+      onclick="event.preventDefault(); api_token.type = api_token.type === 'password' ? 'text' : 'password'">Show</button>
+    <button
+         hx-post="/product/{{ product.id }}/generate-api-key"
+         hx-confirm="Generate New API Key. Previous API Key will be invalid."
+         hx-target="closest form"
+      class="btn btn-outline-secondary" type="submit">Generate API Key</button>
+</div>

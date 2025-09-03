@@ -1,0 +1,70 @@
+{% set status_list = ["NEW", "OPEN", "CLOSED", "EXEMPTION", "OTHERS"] if environment.project.type_ == "VA" else  ["FAILED", "WARNING", "EXEMPTION", "PASSED", "OTHERS"]%}
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Filter Findings</h5>
+        </div>
+        <form id="filter-form">
+            <div class="modal-body">
+                <div class="form-group" align="left">
+                    <label class="form-label">Source</label>
+                    <select name="plugin_id"
+                            id="source-choices"
+                            class="form-select multiple-remove"
+                            multiple="multiple">
+                        <optgroup>
+                          {% for plugin in plugins%}
+                          <option value={{plugin.id}}>{{plugin.name | title}}</option>
+                          {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group" align="left">
+                    <label for="name" class="form-label">Status</label>
+                    <select name="status"
+                            id="status-choices"
+                            class="form-select multiple-remove"
+                            multiple="multiple">
+                        <optgroup>
+                          {% for status in status_list%}
+                          <option>{{status}}</option>
+                          {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group" align="left">
+                    <label class="form-label">Severity</label>
+                    <select name="severity_filter"
+                            id="severity-choices"
+                            class="form-select multiple-remove"
+                            multiple="multiple">
+                        <optgroup>
+                          {% for severity in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]%}
+                          <option>{{severity}}</option>
+                          {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group" align="left">
+                    <label class="form-label">Assets</label>
+                    <select name="host"
+                            id="assets-choices"
+                            class="form-select multiple-remove"
+                            multiple="multiple">
+                        <optgroup>
+                          {% for host in host_list%}
+                          <option>{{host}}</option>
+                          {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="clearChoices();">Clear</button>
+              <button hx-trigger="click"
+                hx-on:click="htmx.trigger(document.body, 'reload-findings')"
+                type="submit" class="btn btn-danger" data-bs-dismiss="modal">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>

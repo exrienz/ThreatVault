@@ -1,0 +1,155 @@
+{% extends 'pages/management_view/vapt/component/detail.html' %}
+
+{% block content %}
+<div>
+  <section class="row" hx-include="#product-name-selector">
+    <div class="input-group">
+      <select class="form-select" name="severity" id="product-name-selector">
+        <option value=none>Mixed</option>
+        <option>Critical</option>
+        <option>High</option>
+        <option>Medium</option>
+        <option>Low</option>
+      </select>
+      <label class="input-group-text">Options</label>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h4>
+            Production
+          </h4>
+        </div>
+        <div id="prod_sla_product" hx-target="this"
+          hx-get="/chart/sla-breach/products?env_id={{env_ids.get('production')}}"
+          hx-trigger="load, change from:#product-name-selector">
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h4>
+            Non-Production
+          </h4>
+        </div>
+        <div id="non-prod_sla_product" hx-target="this"
+          hx-get="/chart/sla-breach/products?env_id={{env_ids.get('non-production')}}"
+          hx-trigger="load, change from:#product-name-selector">
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="row">
+    <div id="hidden-input">
+      <input type="hidden" name="project_id" value="{{project_id}}" />
+      <input type="hidden" name="year" value="{{year}}" />
+    </div>
+    <div class="col-6">
+      <div class="input-group col-4">
+        <select class="form-select" name="month" id="prev-date-select">
+          <option selected value={{now.month}}>Select Date...</option>
+          {% for date_option in range(1, now.month + 1) %}
+          <option value="{{'{:02d}'.format(date_option | int) }}" {% if date_option==month-1 %} selected {%endif%}>
+            {{ '{:02d}'.format(date_option | int) }}
+          </option>
+          {% endfor %}
+        </select>
+        <label class="input-group-text">Options</label>
+      </div>
+      <div hx-include="#hidden-input, #prev-date-select">
+        <div id=" prod_sla_prev" hx-target="this" hx-get="/chart/sla-breach/env?env=production"
+          hx-trigger="load, change from:#prev-date-select">
+          <div display:None></div>
+        </div>
+        <div id="non_prod_sla_prev" hx-target="this" hx-get="/chart/sla-breach/env?env=non-production"
+          hx-trigger="load, change from:#prev-date-select">
+          <div display:None></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="input-group col-4">
+        <select class="form-select" name="month" id="curr-date-select">
+          <option selected value={{now.month}}>Select Date...</option>
+          {% for date_option in range(1, now.month + 1) %}
+          <option value="{{'{:02d}'.format(date_option | int) }}" {% if date_option==month %} selected {%endif%}>
+            {{ '{:02d}'.format(date_option | int) }}
+          </option>
+          {% endfor %}
+        </select>
+        <label class="input-group-text" for="inputGroupSelect01">Options</label>
+      </div>
+      <div hx-include="#hidden-input, #curr-date-select">
+        <div id="prod_sla_curr" hx-target="this" hx-get="/chart/sla-breach/env?env=production"
+          hx-trigger="load, change from:#curr-date-select">
+          <div display:None></div>
+        </div>
+        <div id="non_prod_sla_curr" hx-target="this" hx-get="/chart/sla-breach/env?env=non-production"
+          hx-trigger="load, change from:#curr-date-select">
+          <div display:None></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="row" id="table-striped">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Statistics</h4>
+          </div>
+          <div class="card-content">
+            <div class="card-body">
+              <ul>
+                <li>
+                  Only risks with <strong>Critical, High, or Medium</strong> severity are displayed.
+                </li>
+                <li>
+                  Product with <strong>Low</strong> severity active findings are not shown.
+                </li>
+                <li>
+                  <strong>Exceptions</strong> are considered as closed for the purpose of this count.
+                </li>
+              </ul>
+            </div>
+            <div class="container">
+              <div class="row">
+                <div class="col-4">
+                </div>
+                <div class="col-4">
+                  <h4 id="month-year-breach">
+                    {{'{:02d}'.format(month | int) }}/{{year}}
+                  </h4>
+                </div>
+                <div class="col-4">
+                  <div class="input-group mb-3 col-4">
+                    <select id="table-month-selector" class="form-select" name="month" hx-target="#sla_breach_table"
+                      hx-get="sla-breach/table">
+                      {% for date_option in range(1, now.month + 1) %}
+                      <option value="{{'{:02d}'.format(date_option | int) }}" {% if date_option==month %} selected
+                        {%endif%}>
+                        {{ '{:02d}'.format(date_option | int) }}
+                      </option>
+                      {% endfor %}
+                    </select>
+                    <label class="input-group-text" for="inputGroupSelect01">Options</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-content">
+              {% include "pages/management_view/vapt/component/sla_breach/table_v2.html" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div id="add-remark-modal" class="modal modal-olur fade" style="display: none" aria-hidden="false" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

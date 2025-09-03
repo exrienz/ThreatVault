@@ -1,0 +1,118 @@
+{% set title = "Findings" %}
+{% set filename = "findings.html" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+<style>
+  .comment .btn-danger {
+    display: none;
+  }
+
+  .comment:hover .btn-danger {
+    display: inline-block;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{%- set finding_name_info = data[0].finding_name %}
+<div class="page-heading">
+  <h3>{{finding_name_info.name}}</h3>
+  Last Scan Date : {{data.0.last_update | datetime_format("%d-%m-%Y")}}
+</div>
+<div class="page-content">
+  <!--Row1-->
+  <section class="row">
+    <!-- Start: Status Card -->
+    {% include "pages/finding/component/va_status_card.html" %}
+    <!-- End: Status Card -->
+  </section>
+  <!--Eo Row1-->
+  <!-- Row2 -->
+  <section class="row">
+    <div class="col-8">
+      <!-- Description Card -->
+      <div class="card">
+        <div class="card-header">
+          <h4>Description</h4>
+        </div>
+        <div class="card-body">
+          <pre class="m-3 p-3 border rounded text-break font-monospace"
+            style="white-space: pre-wrap; background-color: #f0f0f0">
+            {% if finding_name_info.description -%}
+            {{finding_name_info.description.strip() | safe}}
+            {% else -%}
+            {{finding_name_info.description | safe}}
+            {%- endif %}
+          </pre>
+        </div>
+      </div>
+      <!-- Solution Card -->
+      <div class="card">
+        <div class="card-header">
+          <h4>Solution</h4>
+        </div>
+        <div class="card-body">
+          <pre class="m-3 p-3 border rounded text-break font-monospace"
+            style="white-space: pre-wrap; background-color: #f0f0f0">
+            {% if data.0.remediation -%}
+            {{data.0.remediation.strip()}}
+            {% else -%}
+            {{data.0.remediation}}
+            {%- endif %}
+          </pre>
+        </div>
+      </div>
+      <!-- Help Button Card -->
+      {% include "pages/finding/component/ask_ai.html" %}
+      {% for host,findings in findings_dict.items() %}
+      {% include "pages/finding/component/affected_host.html" %}
+      {% endfor %}
+    </div>
+    <div class="col-4">
+      <!-- ITS Remarks -->
+      {% include "pages/finding/component/remark.html"%}
+      <!-- Start: Comments -->
+      <div class="card">
+        <div hx-get="{{finding_name_info.id}}/comments?product_id={{product_id}}" hx-indicator="#spinner"
+          hx-trigger="load" hx-on::after-settle="commentDateUpdate()">
+          {% include "pages/finding/component/comments.html" %}
+        </div>
+
+        {% if "comment:create" in permissions or "all" in permissions %}
+        <div class="card">
+          <form hx-post="{{ finding_name_info.id }}/comment?product_id={{product_id}}" hx-swap="beforeend"
+            hx-target="#comments_table_id" hx-on::after-request="this.reset();">
+            <div class="card-body">
+              <div class="form-group mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Comment:</label>
+                <textarea class="form-control" id="comment_post" name="comment" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Post Comment
+              </button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      <!-- End: Comments -->
+  </section>
+  <!-- End of Row2 -->
+</div>
+{% endblock %}
+{% block js %}
+<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+
+<script src="/assets/static/js/pages/form-element-select.js"></script>
+<script>
+  function commentDateUpdate() {
+    const comments = document.querySelectorAll(".comment");
+    comments.forEach(el => {
+      document.getElementById(`comment_timer_${el.dataset.commentId}`).textContent = timeago(el.dataset.commentDate);
+    })
+  }
+  setInterval(commentDateUpdate, 60000);
+</script>
+{% endblock %}

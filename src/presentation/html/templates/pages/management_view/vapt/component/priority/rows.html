@@ -1,0 +1,50 @@
+{% for d in data.data %}
+<tr style="text-align: center;">
+  <td class="text-bold-500">{{d.finding_name}}</td>
+  <td class="text-wrap">
+    {% for host in d.hosts %}
+    {%- set product_host = product_map.get(host)%}
+    <a href="/host?host={{host.split(':')[0]}}">{{host}}{% if product_host %}<span class="badge mx-2 {% if product_host.environment.name == 'production'%} bg-success {% else %} bg-warning {% endif %}">
+        {{product_host.name}}
+      </span>{%endif%}
+      {% if not loop.last%}|{% endif %}
+    {%endfor%}
+  </td>
+  <td><a href="https://www.tenable.com/cve/{{d.name}}">{{d.name}}</a></td>
+  <td>{{d.priority}}</td>
+  <td>
+      <span class="badge"
+            style="background-color: {{ d.severity | findingSeverityMap }}">
+          <i class="bi bi-exclamation-octagon me-1 text-white"></i>
+          {{ d.severity }}
+      </span>
+  </td>
+  <td>{{d.epss}}</td>
+  <td>{{d.cvss}}</td>
+  <td>
+    {% if d.kevList%}
+      <i class="bi bi-shield-fill-exclamation text-danger"></i>
+    {%else%}
+      <i class="bi bi-shield-fill-check text-success"></i>
+    {%endif%}
+  </td>
+  <td>
+    {{d.kevList}}
+  </td>
+</tr>
+{% else %}
+<tr style="text-align: center;"><td colspan="10">No Data</td></tr>
+{% endfor %}
+<nav id="page-controller" hx-swap-oob="innerHTML">
+  <ul class="pagination pagination-primary  justify-content-end">
+    <li class="page-item {%if data.page == 1 %} disabled {%endif%}">
+      <a class="page-link" hx-get="priority/table?page={{data.page - 1}}"tabindex="-1" aria-disabled="true">Previous</a>
+    </li>
+    {% for p in range(1,data.total_page+1)%}
+    <li class="page-item {%if data.page == p %} active disabled {%endif%}"><a class="page-link" hx-get="priority/table?page={{p}}">{{p}}</a></li>
+    {%endfor%}
+    <li class="page-item {%if data.page == data.total_page or data.page <= 1%} disabled {%endif%}">
+      <a class="page-link" hx-get="priority/table?page={{data.page+1}}">Next</a>
+    </li>
+  </ul>
+</nav>

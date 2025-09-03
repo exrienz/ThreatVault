@@ -1,0 +1,21 @@
+<div class="col-xxl-3 col-md-4">
+    <div class="card info-card sales-card">
+        <div class="card-body">
+            <h5 class="card-title">
+                {{ product.name }}
+                <span class="badge bg-success" style="font-size: 0.75rem;">{{ product.environment.name | title }}</span>
+            </h5>
+            <!-- Default List group -->
+            <ul class="list-group" id="ownerList-{{ product.id }}">
+                {% with prodOwners=owners[product.id] %}
+                    {% if prodOwners is defined %}
+                        {% for access in prodOwners.accesses %}
+                            {% include "pages/manage_owner/component/user.html" %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </ul>
+            <!-- End Default List group -->
+        </div>
+    </div>
+</div>

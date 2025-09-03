@@ -1,0 +1,32 @@
+{% set title = type + " Dashboard"%}
+{% set filename = "/" %}
+{% set menuKey = type.lower() %}
+{% extends 'layouts/master.html' %}
+{% block content %}
+{{sidebarkey}}
+<div class="page-heading">
+  <h3>{{type}} Dashboard</h3>
+</div>
+<div class="page-content">
+  <section class="row">
+    {% for project in projects %}
+    {% include "pages/dashboard/component/card.html" %}
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}
+{% block js %}
+<script src="/assets/extensions/dayjs/dayjs.min.js"></script>
+<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script src="/assets/static/js/pages/ui-apexchart.js"></script>
+<script>
+  var gradients = {}
+  {% for project in projects %}
+  gradients['{{project.id}}'] = new ApexCharts(
+    document.querySelector("#gradient-{{project.id}}"),
+    {...radialGradientOptions, series: [{{project.complete_percentage}}]}
+  )
+  gradients['{{project.id}}'].render()
+  {% endfor %}
+</script>
+{% endblock %}

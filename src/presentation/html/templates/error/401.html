@@ -1,0 +1,11 @@
+{% extends 'layouts/error.html' %}
+{%block content %}
+<div class="error-container">
+  <div class="lottie-animation"></div>
+  <div class="error-content">
+    <h1>401</h1>
+    <p>Oops! You are not logged in.</p>
+    <a href="/auth/login" class="btn btn-success">Login</a>
+  </div>
+</div>
+{%endblock%}

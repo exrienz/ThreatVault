@@ -1,0 +1,14 @@
+<div id="log_passed_id" hx-swap-oob="innerHTML">{{ logs.tPassed | default(0) }}</div>
+<div id="log_warning_id" hx-swap-oob="innerHTML">{{ logs.tWarning | default(0) }}</div>
+<div id="log_failed_id" hx-swap-oob="innerHTML">{{ logs.tFailed | default(0) }}</div>
+<div id="log_total_id" hx-swap-oob="innerHTML">
+  {{ logs.tPassed | default(0) + logs.tWarning | default(0) + logs.tFailed | default(0)}}
+</div>
+<div id="product_score_id" hx-swap-oob="outerHTML">
+  {% include "pages/product/component/score.html" %}
+</div>
+{% if logs.log_date is defined %}
+<div id="finding_header_id" hx-swap-oob="outerHTML" data-upload-date={{logs.log_date.strftime("%Y-%m-%d")}}>
+    Last Update : {{ logs.log_date.strftime("%d-%m-%Y") }} <code>|</code> {{ logs.uploader.username | default() | title }}
+</div>
+{% endif %}

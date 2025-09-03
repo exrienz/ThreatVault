@@ -1,0 +1,12 @@
+<pre id="llm-output" hx-swap-oob="outerHTML"
+     class="m-3 p-3 border rounded text-break font-monospace"
+     style="white-space: pre-wrap; background-color: #f0f0f0">
+<span class="spinner-border spinner-border-sm" id="sse-spinner"></span>
+</pre>
+
+<div hx-ext="sse" sse-connect="/openai/{{finding_name_id}}/sse"
+                  sse-swap="message"
+                  sse-close="close"
+                  hx-target="#llm-output"
+                  hx-swap="beforeend">
+</div>

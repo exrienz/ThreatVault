@@ -1,0 +1,19 @@
+{%if view in ['slaBreach', ] %}
+  {% include ['pages/product/component/tables/' + view + 'Row.html','empty.html'] %}
+{% else %}
+
+  {% for finding in findings.data %}
+  {% include ['pages/product/component/tables/finding' + (view | title) + 'Row.html','empty.html'] %}
+  {% endfor %}
+
+  {% if findings.page is defined and findings.page + 1 <= findings.total_page %}
+  <tr hx-get="{{ product_id }}/findings/?page={{ findings.page + 1 }}&view={{view if view else 'default'}}"
+      hx-indicator="#spinner"
+      hx-trigger="revealed"
+      hx-swap="outerHTML">
+    <td colspan="6">
+      <div id="spinner" class="htmx-indicator">Loading...</div>
+    </td>
+  </tr>
+  {% endif %}
+{% endif %}

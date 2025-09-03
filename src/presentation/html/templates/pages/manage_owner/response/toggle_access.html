@@ -1,0 +1,8 @@
+{% if access.granted %}
+    <div id="ownerList-{{ access.product_id }}" hx-swap-oob="beforeend">
+        {% include "pages/manage_owner/component/user.html" %}
+    </div>
+{% else %}
+    <div id="list_{{ access.product_id }}_{{ access.user_id }}"
+         hx-swap-oob="delete"></div>
+{% endif %}

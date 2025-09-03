@@ -1,0 +1,63 @@
+<div class="card">
+  <div class="card-header">
+    <h4>
+      {{ env.name | title if env is defined else '' }} | {{
+      "{:02d}".format(month|int) }}-{{ year }}
+    </h4>
+    <br />
+    <div class="input-group mb-3">
+      <select class="form-select" name="date_str" hx-get="/project/chart/env/{{ env.id }}">
+        <option selected>Select Date...</option>
+        {% for date_option in date_options %}
+        <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01" {% if
+          date_option.month==month and date_option.year==year %} selected {%endif%}>
+          {{ '{:02d}'.format(date_option.month | int) }}-{{ date_option.year }}
+        </option>
+        {% endfor %}
+      </select>
+      <label class="input-group-text" for="inputGroupSelect01">Options</label>
+    </div>
+  </div>
+  <div class="card-body">
+    <div id="chart_{{ request.headers['hx-target'] }}"></div>
+    <br />
+    <div class="table-responsive">
+      <table class="table table-lg">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Critical</th>
+            <th>High</th>
+            <th>Medium</th>
+            <th>Low</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+          <tr>
+            <td class="text-bold-500">
+              <a href="/product/{{product.id}}">{{ product.name }}</a>
+            </td>
+            {% with stat=data[product.id] %}
+            <td>{{ stat.tCritical if stat else 0 }}</td>
+            <td>{{ stat.tHigh if stat else 0 }}</td>
+            <td>{{ stat.tMedium if stat else 0 }}</td>
+            <td>{{ stat.tLow if stat else 0 }}</td>
+            {% endwith %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  window["{{request.headers['hx-target']}}"] = new ApexCharts(
+    document.getElementById("chart_{{request.headers['hx-target']}}"),
+    {
+      ...riskPie,
+      series: {{total}}
+    }
+  );
+  window["{{request.headers['hx-target']}}"].render()
+</script>

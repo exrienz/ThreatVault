@@ -1,0 +1,49 @@
+<table class="table table-lg">
+  <thead>
+    <tr>
+      <th>Product</th>
+      {% if project_type == "HA"%}
+      {% for label in labels %}
+      <th>{{label | title }}</th>
+      {% endfor %}
+      {% else %}
+      <th>Open</th>
+      <th>New</th>
+      <th>Closed</th>
+      <th>Exempted</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr>
+      <td class="text-bold-500">
+        <a href="/product/{{product.id}}">{{ product.name }}</a>
+      </td>
+      {% with stat=data[product.id] %}
+        {% if project_type == "HA"%}
+          <td>{{ stat.tPassed if stat else 0 }}</td>
+          <td>{{ stat.tWarning if stat else 0 }}</td>
+          <td>{{ stat.tFailed if stat else 0 }}</td>
+        {% else %}
+          <td>{{ stat.tOpen if stat else 0 }}</td>
+          <td>{{ stat.tNew if stat else 0 }}</td>
+          <td>{{ stat.tClosed + stat.tOthers if stat else 0 }}</td>
+          <td>{{ stat.tExemption if stat else 0 }}</td>
+        {% endif %}
+      {% endwith %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+  window["{{request.headers['hx-target']}}"] = new ApexCharts(
+    document.getElementById("chart_{{request.headers['hx-target']}}"),
+    {
+      ...riskPie,
+      labels: "{{project_type | default('VA')}}" == "HA"?["Passed", "Warning", "Failed"]:["Open", "New", "Closed", "Exempted"],
+      series: {{total}}
+    }
+  );
+  window["{{request.headers['hx-target']}}"].render()
+</script>

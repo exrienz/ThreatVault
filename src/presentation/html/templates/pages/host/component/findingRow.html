@@ -1,0 +1,20 @@
+<tr>
+    <td class="text-bold-500">
+        <a href="#">
+            {{ finding.finding_name.name }} &nbsp;
+        </a>
+    </td>
+    <td align="center" class="text-bold-500">{{ finding.severity.value }}</td>
+    <td align="center" class="text-bold-500">{{ finding.vpr_score }}</td>
+    <td align="center" class="text-bold-500">{{ finding.status.value }}</td>
+    <td align="center" class="text-bold-500">
+      <ul>
+      {%for cve in finding.finding_name.cves%}
+      <li><a href="https://www.tenable.com/cve/{{cve.name}}">{{cve.name}}</a></li>
+      {%endfor%}
+      </ul>
+    </td>
+    <td align="center" class="text-bold-500">{{ finding.port }}</td>
+    <td align="center" class="text-bold-500">{{ finding.last_update.strftime('%d-%m-%Y') if finding.last_update is defined}}</td>
+    <td align="center" class="text-bold-500">{{ finding.remark if finding.remark else ""}}</td>
+</tr>

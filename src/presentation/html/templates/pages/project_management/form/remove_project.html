@@ -1,0 +1,17 @@
+<form class="row g-3"
+      hx-delete="/project-management/"
+      hx-swap="none"
+      hx-confirm="Are you sure you want to delete this project? This process is irreversible, proceed with caution!">
+    <div class="col-md-12">
+        <select name="project_id" id="id_remove_project" class="form-select">
+            <option id="id_rm_proj_default" selected="">Choose Project</option>
+            {% for project in projects %}
+                <option id="id_rm_proj_{{ project.id }}" value="{{ project.id }}">{{ project.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Remove</button>
+        <button id="toast-success" type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+</form>

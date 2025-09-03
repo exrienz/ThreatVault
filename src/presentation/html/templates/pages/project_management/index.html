@@ -1,0 +1,82 @@
+{% set title = "Manage Project" %}
+{% set sidebarname = assessment_type %}
+{% set filename = "/project-management" %}
+{% extends 'layouts/master.html' %}
+{% import 'pages/project_management/macros.html' as macros %}
+{% block styles %}
+<link rel="stylesheet" href="/assets/extensions/sweetalert2/sweetalert2.min.css">
+<style>
+  .accordion-button {
+    white-space: normal !important;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>{{assessment_type}} Configuration Dashboard</h3>
+</div>
+<div class="page-content">
+  <section class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Create Project</h5>
+          {% include "pages/project_management/form/create_project.html" %}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Remove Project</h5>
+          {% include "pages/project_management/form/remove_project.html" %}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Create Product</h5>
+          {% include "pages/project_management/form/create_product.html" %}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Remove Product</h5>
+          {% include "pages/project_management/form/remove_product.html" %}
+        </div>
+      </div>
+      {#
+      <!-- Add additional cards as needed -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Hosts Within Air-Gapped Networks</h5>
+          <!-- No Labels Form -->
+          <div class="form-group with-title mb-3">
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <label>Example Format: host/ip, host/ip, ...</label>
+          </div>
+          <div class="text-center">
+            <button type="submit" name="createAssessment" class="btn btn-primary">Update</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+          </div>
+          <!-- End No Labels Form -->
+        </div>
+      </div>
+      #}
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h4>Project List</h4>
+        </div>
+        <div class="card-body">
+          <p>Click the project below to expand/collapse the project content.</p>
+          <div class="accordion" id="accordionExample">
+            <div id="project_accordion">
+              {% for project in projects %}{{ macros.project_accordion(project, loop.index) }}{% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+</div>
+{% endblock %}

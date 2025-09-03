@@ -1,0 +1,27 @@
+{% extends 'pages/management_view/vapt/component/detail.html' %}
+
+{% block content %}
+<section class="section">
+  <div class="row" id="table-striped">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Finding Priority</h4>
+        </div>
+        <div class="card-body">
+          <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off"
+            checked="" hx-get="priority/table" hx-target="#priority_table">
+          <label class="btn btn-outline-success" for="success-outlined">All Hosts</label>
+
+          <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off"
+            hx-get="priority/table?sensitive_hosts_view=true" hx-target="#priority_table">
+          <label class="btn btn-outline-danger" for="danger-outlined">Highly Sensitive Hosts</label>
+        </div>
+        <div class="card-content">
+          {% include "pages/management_view/vapt/component/priority/table_v2.html" %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

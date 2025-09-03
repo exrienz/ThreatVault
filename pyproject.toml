@@ -1,0 +1,15 @@
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # isort
+    "I",
+]
+# ignore = ["F401"]
+
+[tool.bandit]
+exclude_dirs = ["./src/__pycache__/", ".ruff_cache", ".venv", ".venv_linux"]

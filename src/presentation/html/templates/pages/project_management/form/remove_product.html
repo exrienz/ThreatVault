@@ -1,0 +1,29 @@
+<form class="row g-3" hx-delete="/project-management/product" hx-swap="none"
+  hx-confirm="Are you sure you want to delete this product? This process is irreversible, proceed with caution!"
+  hx-disinherit="hx-confirm">
+  <div class="col-md-4">
+    {# TODO: Add loading animation or something #}
+    <select name="project_id" class="form-select" hx-get="/project-management/environments"
+      hx-target="#id_rm_prod_env_select" hx-swap="innerHTML">
+      <option id="id_rm_prod_proj_default" selected>Choose Project</option>
+      {% for project in projects %}
+      <option id="id_rm_prod_proj_{{ project.id }}" value="{{ project.id }}">{{ project.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-4">
+    <select name="environment_id" id="id_rm_prod_env_select" hx-get="/project-management/products"
+      hx-target="#id_rm_prod_prod_select" class="form-select" hx-swap="innerHTML">
+      <option selected="">Please Select Project First</option>
+    </select>
+  </div>
+  <div class="col-md-4">
+    <select name="product_id" id="id_rm_prod_prod_select" class="form-select">
+      <option selected="">Please Select Environment First</option>
+    </select>
+  </div>
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary">Remove</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+  </div>
+</form>

@@ -1,0 +1,94 @@
+[
+  {
+    "name": "Menu",
+    "isTitle": true
+  },
+  {
+    "name": "VAPT Dashboard",
+    "key": "vapt",
+    "url": "/",
+    "icon": "grid-fill"
+  },
+  {
+    "name": "Compliance Dashboard",
+    "key": "compliance",
+    "icon": "shield-shaded",
+    "url": "/?type_=compliance"
+  },
+  {
+    "name": "Management Dashboard",
+    "icon": "slack",
+    "key": "/management-view",
+    "submenu": [
+      {
+        "name": "VAPT",
+        "url": "/management-view/vapt"
+      },
+      {
+        "name": "Compliance",
+        "url": "/management-view/compliance"
+      }
+    ]
+  },
+  {
+    "name": "User Management",
+    "key": "/manage",
+    "icon": "people-fill",
+    "permissions": ["management:view"],
+    "submenu": [
+      {
+        "name": "Manage User",
+        "url": "/manage-user",
+        "permissions": ["user-management:all"]
+      },
+      {
+        "name": "Manage Owner",
+        "url": "/manage-owner",
+        "permissions": ["owner-management:all"]
+      },
+      {
+        "name": "Manage API",
+        "url": "/manage-api",
+        "permissions": ["api-management:all"]
+      }
+    ]
+  },
+  {
+    "name": "Project Management",
+    "key": "/project",
+    "icon": "briefcase-fill",
+    "permissions": ["project-management:view"],
+    "submenu": [
+      {
+        "name": "VAPT",
+        "url": "/project-management"
+      },
+      {
+        "name": "Compliance",
+        "url": "/project-management?type_=HA"
+      }
+    ]
+  },
+  {
+    "name": "Site Configuration",
+    "key": "/setting",
+    "icon": "tools",
+    "permissions": ["setting:all"],
+    "submenu": [
+      {
+        "name": "Site Setting",
+        "url": "/setting"
+      },
+      {
+        "name": "Plugin Management",
+        "url": "/setting/plugin"
+      }
+    ]
+  },
+  {
+    "name": "Account Setting",
+    "key": "Account Setting",
+    "url": "/setting/account",
+    "icon": "wrench"
+  }
+]

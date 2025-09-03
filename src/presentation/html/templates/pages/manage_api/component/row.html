@@ -1,0 +1,24 @@
+<tr>
+    <td class="text-bold-500">{{ api.name }}</td>
+    <td>
+      <p><span>{{ '*' * api.token|length }}</span>
+      <button class="btn"
+              onclick="event.preventDefault();
+              let i=this.closest('p').querySelector('span');
+              i.textContent=i.textContent==='*'.repeat('{{api.token}}'.length)?'{{api.token}}': '*'.repeat('{{api.token}}'.length)
+              this.querySelector('i').classList.toggle('fa-eye');
+              this.querySelector('i').classList.toggle('fa-eye-slash');"
+              >
+              <i class="fas fa-solid fa-eye"></i>
+      </button>
+      </p>
+    </td>
+    <td>
+        <button class="btn icon btn-sm btn-danger"
+                hx-delete="manage-api/{{ api.id }}"
+                hx-swap="delete"
+                hx-target="closest tr">
+            <i class="fas fa-solid fa-trash"></i>
+        </button>
+    </td>
+</tr>

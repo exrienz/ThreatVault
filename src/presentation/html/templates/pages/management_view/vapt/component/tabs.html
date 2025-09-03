@@ -1,0 +1,40 @@
+<div class="card" hx-include="#detail-form" hx-params="*">
+  <div class="card-header">
+    <h5 class="card-title" id="project-name">
+      Please Select A Project
+    </h5>
+  </div>
+  <div class="card-body" hx-target="#tab-content" >
+    <ul class="nav nav-tabs mb-3" role="tablist">
+      <li class="nav-item" role="presentation" hx-get="overall"
+        hx-trigger="click, change[document.querySelector('#overall').classList.contains('active')] from:#detail-form">
+        <a class="nav-link" id="overall" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true">
+          Overall Findings
+        </a>
+      </li>
+      <li class="nav-item" role="presentation" hx-get="sla-breach"
+        hx-trigger="click, change[document.querySelector('#sla-breach').classList.contains('active')] from:#detail-form">
+        <a class="nav-link" id="sla-breach" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">
+          SLA Breach
+        </a>
+      </li>
+      <li class="nav-item" role="presentation" hx-get="stats-and-reason"
+        hx-trigger="click, change[document.querySelector('#stats-and-reason').classList.contains('active')] from:#detail-form">
+        <a class="nav-link" id="stats-and-reason" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">
+          Stats & Reasons
+        </a>
+      </li>
+      </li>
+      {% if project_type == "VAPT"%}
+      <li class="nav-item" role="presentation" hx-get="priority"
+        hx-trigger="click, change[document.querySelector('#priority').classList.contains('active')] from:#detail-form">
+        <a class="nav-link" id="priority" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">
+          Finding Prioritization
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+    <div class="tab-content" id="tab-content">
+    </div>
+  </div>
+</div>
