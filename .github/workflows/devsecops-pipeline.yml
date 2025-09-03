@@ -13,5 +13,6 @@ jobs:
       enable_sca: true
       enable_sonarqube: true
       enable_docker_build: true
+      enable_container_scan: true
       languages: "python,javascript"
     secrets: inherit
