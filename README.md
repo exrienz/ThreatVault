@@ -2,7 +2,6 @@
 
 <img src="asset/logo.png" alt="Sentinel Logo" width="400" style="margin-bottom: 20px;">
 
-# 🛡️ Sentinel
 ### Next-Generation Vulnerability Management Platform
 
 [![Quality Gate Status](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=alert_status&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
@@ -51,35 +50,6 @@
 </div>
 
 ---
-
-## 🔧 **How It Works**
-
-Sentinel's sophisticated deduplication engine processes vulnerability findings with precision:
-
-```mermaid
-graph LR
-    A[Nessus Scan] --> B[Sentinel Engine]
-    B --> C[Deduplication]
-    C --> D[SLA Tracking]
-    D --> E[Actionable Dashboards]
-```
-
-### **Example Finding Structure:**
-```yaml
-# Each entry represents one unique finding
-findings:
-  - id: "CVE-2024-6651_192.168.0.1_80"
-    host: "192.168.0.1"
-    port: 80
-    cve: "CVE-2024-6651"
-    severity: "High"
-    
-  - id: "CVE-2024-6651_192.168.0.2_80"  
-    host: "192.168.0.2"
-    port: 80
-    cve: "CVE-2024-6651"
-    severity: "High"
-```
 
 **Key Benefits:**
 - ✅ **Granular tracking** - Host, port, and CVE-level precision
@@ -155,20 +125,19 @@ docker-compose up --build -d
 ### **🎯 Access Your Platform**
 Navigate to your configured `APP_URL` in `.env` file
 
-<div align="center">
+```
+## Monitor Status
+docker-compose logs -f sentinel  
 
-**🔍 Monitor Status:** `docker-compose logs -f sentinel`  
-**📊 Health Check:** `docker-compose ps`
-
-</div>
+## Health Check
+docker-compose ps
+```
 
 ---
 
 ## 🤝 **Contributing to Sentinel**
 
 <div align="center">
-
-### **Join Our Security Community**
 
 We welcome contributors who share our vision of revolutionizing vulnerability management!
 
@@ -247,10 +216,6 @@ We're grateful for the incredible individuals driving Sentinel's success:
 <a href="#sponsors">
   <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
 </a>
-
-**PayNet Malaysia** - *Powering Malaysia's Digital Payment Infrastructure*
-
-*Trusted by enterprises worldwide for mission-critical security solutions*
 
 </div>
 
