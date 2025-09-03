@@ -285,7 +285,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 </div>
 
----
+<br><br>
 
 <div align="center">
 
@@ -294,8 +294,8 @@ We're grateful for the incredible individuals driving Sentinel's success:
   <a href="#-contributing-to-sentinel">Join our community</a> | 
   <a href="issues">Report Issues</a>
 </sub>
-
-
+<br>
+<br>
 <p><strong>📄 License:</strong> See <a href="LICENSE">LICENSE</a> file for complete terms and conditions</p>
 
 <p>© 2025 Sentinel Project. Built with ❤️ for the global security community.</p>
