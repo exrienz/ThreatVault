@@ -4,7 +4,7 @@ import pytz
 from fastapi.templating import Jinja2Templates
 
 from src.application.middlewares.user_context import current_user_perm, get_current_user
-from src.config import sidebar_items
+from src.config import sidebar_items, version
 from src.domain.constant import SeverityEnum
 from src.domain.entity import Finding
 
@@ -82,6 +82,10 @@ def get_sidebar_items():
     return sidebar_items
 
 
+def get_version():
+    return version
+
+
 def timeago(dt):
     now = datetime.utcnow()
     diff = now - dt
@@ -129,4 +133,5 @@ templates.env.globals["get_user_permissions"] = get_user_permissions
 templates.env.globals["get_sidebar_items"] = get_sidebar_items
 templates.env.globals["now_utc"] = datetime.now(tz=pytz.utc)
 templates.env.globals["now"] = datetime.now()
+templates.env.globals["version"] = version
 templates.env.filters["timeago"] = timeago

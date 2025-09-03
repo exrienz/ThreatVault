@@ -118,4 +118,6 @@ fileignoreconfig:
   checksum: 6c57d290493c6e095b83a61b0493fac4d43763b6c21186dceba0ace48596d83c
 - filename: src/presentation/html/templates/pages/product/report_template.html
   checksum: 7f6c6a4c3ebb53a908ccdbc73b3a6770f021d06a167d936b21f304c33f44e044
+- filename: .env.docker
+  checksum: 9e751e15e63b38c6b1236e1432c7ac6db5af8c96465f6b78bcee30a135ed7252
 version: ""

@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import timedelta
 
 from pydantic import AnyUrl
@@ -31,6 +32,13 @@ with open("src/default/roles.json") as file:
 sidebar_items = []
 with open("src/default/sidebars.json") as file:
     sidebar_items = json.load(file)
+
+version = None
+with open("./CHANGELOG.md", encoding="utf-8") as f:
+    content = f.read()
+    match = re.search(r"^##\s*\[(.*?)\]", content, re.MULTILINE)
+    if match:
+        version = match.group(1)
 
 default_permissions = []
 with open("src/default/permissions.json") as file:
