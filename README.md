@@ -38,14 +38,83 @@
 
 <div align="center">
 
-| 🎯 **Feature** | 📋 **Description** | 🎉 **Benefit** |
-|:---|:---|:---|
-| **🔗 Nessus Pro Integration** | Full CVE & host mapping with real-time sync | Comprehensive vulnerability visibility |
-| **🤖 Intelligent Automation** | Smart closure & workflow orchestration | 75% reduction in manual tasks |
-| **⚡ Performance Analytics** | Advanced metrics & trend analysis | Data-driven security decisions |
-| **🛡️ Enterprise Support** | Dedicated PayNet professional services | Mission-critical reliability |
-| **📈 SLA Management** | Automated tracking & compliance reporting | Regulatory compliance made easy |
-| **👥 Role-Based Access** | Granular permissions & user management | Secure collaborative workflows |
+### *Enterprise-Grade Security Solutions Designed for Scale*
+
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th align="center" width="25%">🎯 <strong>Feature</strong></th>
+      <th align="center" width="45%">📋 <strong>Description</strong></th>
+      <th align="center" width="30%">🎉 <strong>Key Benefit</strong></th>
+    </tr>
+  </thead>
+   <tbody>
+    <tr>
+      <td>Custom Tool Support</td>
+      <td>Sentinel allows users to create custom plugins to support any tool as needed.</td>
+      <td>Acts as a centralized vulnerability management platform for all product types.</td>
+    </tr>
+    <tr>
+      <td>AI Support</td>
+      <td>Sentinel integrates with OpenAI-supported schemes, enabling a wide range of AI applications.</td>
+      <td>Simplifies and explains vulnerabilities in a way understandable even to non-IT users.</td>
+    </tr>
+    <tr>
+      <td>CI/CD Support</td>
+      <td>Built with a “shift-left” philosophy, Sentinel can automatically ingest scan results from CI/CD pipelines.</td>
+      <td>Streamlines vulnerability tracking and accelerates remediation actions.</td>
+    </tr>
+    <tr>
+      <td>Deduplicate Finding Removal</td>
+      <td>Sentinel intelligently identifies and removes duplicate findings.</td>
+      <td>Improves accuracy in vulnerability tracking and reduces noise.</td>
+    </tr>
+    <tr>
+      <td>SLA Tracker</td>
+      <td>Tracks pending findings against SLA deadlines.</td>
+      <td>Helps security engineers ensure timely remediation and maintain compliance.</td>
+    </tr>
+    <tr>
+      <td>Structured Project Support</td>
+      <td>Supports multiple projects and products with structured tracking.</td>
+      <td>Enables security teams to monitor assessments and findings across different products.</td>
+    </tr>
+    <tr>
+      <td>Support for VAPT and Compliance (Experimental)</td>
+      <td>Extends beyond traditional vulnerability assessment to include compliance checks.</td>
+      <td>Provides more comprehensive protection than standard VA-only tools.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div align="center">
+
+---
+
+### 🏆 **Why Security Teams Choose Sentinel**
+
+<table>
+  <tr>
+    <td align="center">
+      <strong>⚡ Speed</strong><br>
+      <sub>75% faster remediation cycles</sub>
+    </td>
+    <td align="center">
+      <strong>🎯 Precision</strong><br>
+      <sub>Smart deduplication & prioritization</sub>
+    </td>
+    <td align="center">
+      <strong>🤝 Integration</strong><br>
+      <sub>Seamless tool ecosystem support</sub>
+    </td>
+    <td align="center">
+      <strong>📊 Intelligence</strong><br>
+      <sub>AI-powered vulnerability insights</sub>
+    </td>
+  </tr>
+</table>
 
 </div>
 
