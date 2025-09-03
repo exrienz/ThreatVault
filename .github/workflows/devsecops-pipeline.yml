@@ -1,3 +1,4 @@
+# .github/workflows/devsecops-pipeline.yml
 name: DevSecOps Pipeline (Consumer)
 
 on:
@@ -13,7 +14,5 @@ jobs:
       enable_sca: true
       enable_sonarqube: true
       enable_docker_build: true
-      languages: 
-        - python
-        - javascript
+      languages: '["python","javascript"]'   # must be JSON string, not YAML sequence
     secrets: inherit
