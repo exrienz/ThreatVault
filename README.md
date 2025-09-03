@@ -3,12 +3,12 @@
   <img src="https://via.placeholder.com/900x150/4B6CB7/182848?text=Sentinel+%7C+Sponsored+by+PayNet&fontsize=36" alt="Sentinel Banner" />
 </p>
 
-# 🔒 Sentinel
+# 🔒 Sentinel - Next-Gen Vulnerability Management Platform
 
-[![Security Rating](https://img.shields.io/badge/Security-⭐️⭐️⭐️⭐️⭐️-brightgreen?style=for-the-badge\&logo=shield)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
-[![Quality Gate](https://img.shields.io/badge/Quality-Good-brightgreen?style=for-the-badge\&logo=check-square)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
-[![Reliability](https://img.shields.io/badge/Reliability-High-blue?style=for-the-badge\&logo=performance)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
-[![Maintainability](https://img.shields.io/badge/Maintainability-Excellent-blueviolet?style=for-the-badge\&logo=code)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
+[![Quality Gate Status](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=alert_status&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
+[![Security Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_security_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
+[![Maintainability Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_maintainability_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
+[![Lines of Code](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=ncloc&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 
 ---
 
@@ -39,6 +39,8 @@ It centralizes findings from **Nessus Pro** and other tools to deliver:
 ---
 
 ## 🛠 How Sentinel Works
+
+Refer to the table below, each of the entries will be considered as 1 finding
 
 ```text
 Finding A, 192.168.0.1, Port 80, CVE-2024-6651
@@ -111,11 +113,11 @@ Visit `APP_URL` in `.env` via browser
 
 ## 👥 Contributors
 
-| Name  | Role                |
-| ----- | ------------------- |
-| Muz   | Project Manager     |
-| Alice | Developer           |
-| Bob   | Security Researcher |
+| Name                                                                         | Role                |
+| ---------------------------------------------------------------------------- | ------------------- |
+| [Exrienz](https://www.linkedin.com/in/muzaffarmohamed/?originalSubdomain=my) | Project Manager     |
+| [Alice Dev](https://github.com/alice)                                        | Developer           |
+| [Bob Sec](https://github.com/bob)                                            | Security Researcher |
 
 ---
 
