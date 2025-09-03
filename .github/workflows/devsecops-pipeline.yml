@@ -1,4 +1,5 @@
-name: DevSecOps Pipeline
+# .github/workflows/devsecops.yml
+name: DevSecOps Pipeline (Consumer)
 
 on:
   push:
@@ -7,113 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  # ----------------------------
-  # SBOM Generation (SCA)
-  # ----------------------------
-  sca-scan:
-    name: SCA & SBOM Generation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: SBOM Generation (codenotary)
-        uses: codenotary/sbom.sh-create@main
-        with:
-          scan_type: 'grypefs'
-          target: '.'
-      - name: Save SBOM URL
-        run: echo "$SBOM_SHARE_URL" > sbom-url.txt
-      - name: Upload SBOM Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-report
-          path: sbom-url.txt
-          
-  # ----------------------------
-  # SAST - Bandit
-  # ----------------------------
-  sast-bandit:
-    name: SAST (Bandit)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-      - run: pip install bandit
-      - name: Run Bandit Scan
-        run: |
-          mkdir -p artifacts
-          bandit -r ./src -f json -o artifacts/bandit-report.json
-        continue-on-error: true
-      - name: Upload Bandit Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: bandit-report
-          path: artifacts/bandit-report.json
-
-  # ----------------------------
-  # SAST - SonarQube
-  # ----------------------------
-  sast-sonarqube:
-    name: SAST (SonarQube)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v2
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        continue-on-error: true
-
-  # ----------------------------
-  # Final Build & Push
-  # ----------------------------
-  docker-build:
-    name: Build & Push Docker Image
-    runs-on: ubuntu-latest
-    needs: [sca-scan, sast-bandit, sast-sonarqube]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python (for pre-commit)
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Install Pre-commit
-        run: pip install pre-commit
-
-      - name: Run Pre-commit Hooks (Auto-fix All Languages)
-        run: |
-          pre-commit install
-          pre-commit run --all-files --show-diff-on-failure
-        continue-on-error: true
-
-      - name: Set Image Tags
-        id: tagger
-        run: |
-          echo "tag=$(date +'%Y%m%d')-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          echo "latest=latest" >> $GITHUB_OUTPUT
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build & Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:${{ steps.tagger.outputs.tag }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/sentinelv2:latest
+  devsecops:
+    uses: exrienz/secops-template/.github/workflows/devsecops.yml@main
+    with:
+      enable_sca: true
+      enable_sonarqube: true
+      enable_docker_build: true
+      languages: "python,javascript"  # languages to lint/format
+    secrets: inherit
