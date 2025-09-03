@@ -287,13 +287,16 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 </div>
 
----
-
 <div align="center">
-<sub>[Get started now](#-quick-start-guide) | [Join our community](#-contributing-to-sentinel) | [Report Issues](issues)</sub>
 
+<sub>
+  <a href="#-quick-start-guide">Get started now</a> | 
+  <a href="#-contributing-to-sentinel">Join our community</a> | 
+  <a href="issues">Report Issues</a>
+</sub>
 
-**📄 License:** See [LICENSE](LICENSE) file for complete terms and conditions
+<p><strong>📄 License:</strong> See <a href="LICENSE">LICENSE</a> file for complete terms and conditions</p>
 
-*© 2025 Sentinel Project. Built with ❤️ for the global security community.*
+<p>© 2025 Sentinel Project. Built with ❤️ for the global security community.</p>
+
 </div>
