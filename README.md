@@ -275,17 +275,17 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 ---
 
-## 🏢 **Enterprise Partnership**
+## 🏢 **Proudly Sponsored By**
 
 <div align="center">
-
-### **Proudly Sponsored By**
 
 <a href="#sponsors">
   <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
 </a>
 
 </div>
+
+---
 
 <div align="center">
 
@@ -294,6 +294,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
   <a href="#-contributing-to-sentinel">Join our community</a> | 
   <a href="issues">Report Issues</a>
 </sub>
+
 
 <p><strong>📄 License:</strong> See <a href="LICENSE">LICENSE</a> file for complete terms and conditions</p>
 
