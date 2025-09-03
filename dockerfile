@@ -9,6 +9,7 @@ COPY ./alembic.ini ./alembic.ini
 COPY ./src ./src
 COPY ./public/ ./public
 COPY ./entrypoint.sh ./entrypoint.sh
+COPY ./CHANGELOG.md ./CHANGELOG.md
 
 RUN chmod +x ./entrypoint.sh
 
