@@ -1,21 +1,40 @@
-MIT License
+Sentinel License (Non-Commercial Open Source License) v1.0
+==========================================================
 
-Copyright (c) 2025 Exrienz
+Copyright (c) 2025 Muz & PayNet
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+of this software and associated documentation files (the "Software"), to use,
+copy, modify, merge, publish, distribute, and/or sublicense the Software for
+**personal, educational, or community (non-commercial) purposes only**, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. **Non-Commercial Use Only**
+   - The Software may **not** be used, sold, licensed, or distributed for any
+     commercial, for-profit, or business purpose without explicit written
+     permission from the Project Manager (Muz) and Sponsor (PayNet).
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. **Attribution**
+   - Proper credit must be given to the original authors, Muz and PayNet, in
+     any copy, distribution, or derivative work. A link to the original
+     repository or project website is recommended.
+
+3. **Redistribution**
+   - You may redistribute the Software and/or derivative works **only** under
+     the terms of this License and with proper attribution.
+
+4. **Disclaimer**
+   - The Software is provided "as-is", without warranty of any kind. The
+     authors and sponsors are not responsible for any damages, losses, or
+     liabilities arising from its use.
+
+5. **Contribution**
+   - By contributing to the Software, you agree to license your contributions
+     under this same Non-Commercial Open Source License.
+
+---
+
+For inquiries about commercial licensing or enterprise use, please contact:
+
+**Project Manager:** Muz  
+**Sponsor:** PayNet  
+Email: exrienz@gmail.com
