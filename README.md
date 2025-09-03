@@ -79,6 +79,7 @@ cd <repository_directory>
 ### 2️⃣ Build & Deploy
 
 ```bash
+cp .env.docker .env
 docker-compose up --build
 ```
 
