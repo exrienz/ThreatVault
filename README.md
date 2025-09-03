@@ -289,7 +289,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 ---
 
-
+<div align="center">
 <sub>[Get started now](#-quick-start-guide) | [Join our community](#-contributing-to-sentinel) | [Report Issues](issues)</sub>
 
 
