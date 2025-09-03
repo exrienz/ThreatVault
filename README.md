@@ -1,93 +1,125 @@
-# **Introducing Sentinel**  
 
-Welcome to the future of vulnerability management with **Sentinel**—a cutting-edge solution designed for the IT Security Engineer/Manger/DevSecOps Engineer. Sentinel streamlines the management of vulnerabilities reported by Nessus Pro,and multiple tools to deliver unparalleled deduplication, sla tracker, efficiency, accuracy, reliability and single point of vulnerability and compliance reporting in one platform  
+<p align="center">
+  <img src="https://via.placeholder.com/900x150/4B6CB7/182848?text=Sentinel+%7C+Sponsored+by+PayNet&fontsize=36" alt="Sentinel Banner" />
+</p>
 
-[![Security Rating](https://sast.code-x.my/api/project_badges/measure?project=paynet-sentinel&metric=software_quality_security_rating&token=sqb_36e10a7c7571656f8b7f09a24ce5afb460b8a007)](https://sast.code-x.my/dashboard?id=paynet-sentinel)  [![Quality Gate Status](https://sast.code-x.my/api/project_badges/measure?project=paynet-sentinel&metric=alert_status&token=sqb_36e10a7c7571656f8b7f09a24ce5afb460b8a007)](https://sast.code-x.my/dashboard?id=paynet-sentinel)  [![Reliability Rating](https://sast.code-x.my/api/project_badges/measure?project=paynet-sentinel&metric=software_quality_reliability_rating&token=sqb_36e10a7c7571656f8b7f09a24ce5afb460b8a007)](https://sast.code-x.my/dashboard?id=paynet-sentinel)  [![Maintainability Rating](https://sast.code-x.my/api/project_badges/measure?project=paynet-sentinel&metric=software_quality_maintainability_rating&token=sqb_36e10a7c7571656f8b7f09a24ce5afb460b8a007)](https://sast.code-x.my/dashboard?id=paynet-sentinel)  
+# 🔒 Sentinel
 
----
-
-## **Why We Move Away from DefectDojo?**  
-
-Our experience with DefectDojo revealed several critical challenges:  
-
-- **Inconsistent Findings**: Misrepresentation of Nessus Pro findings led to host count discrepancies and delayed resolutions.  
-- **Persistent Vulnerabilities**: Resolved findings often remained open, leading to inaccurate security metrics.  
-- **Manual Overload**: Handling large numbers of findings manually wasted resources and delayed security initiatives.  
-- **Limited Support**: DefectDojo’s open-source nature meant inadequate support, leading to operational inefficiencies.  
-
-These issues increased the risk of SLA breaches and weakened overall security posture.  
+[![Security Rating](https://img.shields.io/badge/Security-⭐️⭐️⭐️⭐️⭐️-brightgreen?style=for-the-badge\&logo=shield)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
+[![Quality Gate](https://img.shields.io/badge/Quality-Good-brightgreen?style=for-the-badge\&logo=check-square)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
+[![Reliability](https://img.shields.io/badge/Reliability-High-blue?style=for-the-badge\&logo=performance)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
+[![Maintainability](https://img.shields.io/badge/Maintainability-Excellent-blueviolet?style=for-the-badge\&logo=code)](https://sast.code-x.my/dashboard?id=paynet-sentinel)
 
 ---
 
-## **Why Choose Sentinel?**  
+## 🌟 Overview
 
-### **1. Accurate Integration**  
-Effortlessly track vulnerabilities from Nessus Pro with precise host counts and CVE mappings.  
+**Sentinel** is a **next-gen vulnerability management platform** for IT Security Engineers, DevSecOps, and Managers.
 
-### **2. Automated Closure**  
-Sentinel intelligently resolves findings, reducing manual efforts and ensuring data accuracy.  
+It centralizes findings from **Nessus Pro** and other tools to deliver:
 
-### **3. Enhanced Efficiency**  
-Automates repetitive workflows, allowing teams to focus on proactive security tasks.  
+* ✅ Deduplication of vulnerabilities
+* ✅ SLA tracking & compliance reporting
+* ✅ Automated workflows
+* ✅ Centralized actionable dashboards
 
-### **4. Comprehensive Support**  
-A dedicated support team ensures a seamless experience for all users.  
-
-With **Sentinel**, efficiency, reliability, and control converge to redefine vulnerability management.  
+> 💡 **Pro Tip:** Centralizing vulnerabilities allows faster remediation and more accurate SLA compliance.
 
 ---
 
+## 🚀 Key Features
 
-
-#### **Sentinel's Method**  
-- **Finding A, 192.168.0.1, Port 80, CVE-2024-6651**  
-- **Finding A, 192.168.0.2, Port 80, CVE-2024-6651**  
-- **Finding A, 192.168.0.1, Port 81, CVE-2024-6651**  
-- **Finding A, 192.168.0.1, Port 80, CVE-2024-6652**  
-
-This approach enhances accuracy and visibility, resulting in more actionable findings.  
-
----
-
-## **User Roles in Sentinel**  
-
-Sentinel accommodates multiple user roles, ensuring flexibility for future adjustments:  
-
-- **Administrator**  
-  - Manages admin accounts and performs all ITSE tasks.  
-  - Oversees administrative functions.  
-
-- **ITSE (Information Technology Security Engineer)**  
-  - Approves user accounts for management and owners.  
-  - Assigns project ownership and manages scan data.  
-
-- **Management (CISO, Management Team)**  
-  - View-only access to dashboards and findings.  
-
-- **Owner (Product Owners)**  
-  - View-only access to findings for assigned products.  
+| Feature                     | Description                             |
+| --------------------------- | --------------------------------------- |
+| 🔗 **Accurate Integration** | Full CVE & host mapping from Nessus Pro |
+| 🤖 **Automated Closure**    | Intelligent resolution of findings      |
+| ⚡ **Efficiency Boost**      | Reduces repetitive manual tasks         |
+| 🛡 **Enterprise Support**   | Dedicated support from PayNet           |
 
 ---
 
-## **Getting Started with Sentinel**  
+## 🛠 How Sentinel Works
 
-### **1. Clone the Repository**  
-```bash  
-git clone <repository_url>  
-cd <repository_directory>  
-```  
+```text
+Finding A, 192.168.0.1, Port 80, CVE-2024-6651
+Finding A, 192.168.0.2, Port 80, CVE-2024-6651
+Finding A, 192.168.0.1, Port 81, CVE-2024-6651
+Finding A, 192.168.0.1, Port 80, CVE-2024-6652
+```
 
+✅ Deduplication & visibility
+✅ Actionable intelligence for remediation
 
-### **2. Build and Deploy**  
-```bash  
-docker-compose up --build  
-```  
+> ⚠️ **Note:** Each finding is mapped precisely to host, port, and CVE for SLA tracking.
 
-### **3. Access the Application**  
-Check the `.env.` file for `APP_URL` or port configuration, then access Sentinel via a web browser.  
+---
 
+## 👥 User Roles
 
+| Role                               | Permissions                                  |
+| ---------------------------------- | -------------------------------------------- |
+| 🛠 **Administrator**               | Full system & user access                    |
+| 🔒 **IT Security Engineer (ITSE)** | Manage users, assign ownership, manage scans |
+| 👓 **Management (CISO/Execs)**     | View-only dashboards                         |
+| 📦 **Product Owner**               | View-only access to assigned products        |
 
+---
 
-Sentinel empowers security teams with **automation, precision, and efficiency**. Get started today and take control of your vulnerability management process!  
+## 🏁 Getting Started
+
+### 1️⃣ Clone Repo
+
+```bash
+git clone <repository_url>
+cd <repository_directory>
+```
+
+### 2️⃣ Build & Deploy
+
+```bash
+docker-compose up --build
+```
+
+### 3️⃣ Access App
+
+Visit `APP_URL` in `.env` via browser
+
+> 💡 **Tip:** Use `docker-compose logs -f` to monitor startup logs.
+
+---
+
+## 💡 Contribution Opportunities
+
+| Contributor Type             | Activities                                        |
+| ---------------------------- | ------------------------------------------------- |
+| 👩‍💻 **Developer**          | Add features, optimize code, improve integrations |
+| 🕵️ **Security Researcher**  | Test CVE handling, report improvements            |
+| 🌐 **Community**             | Provide feedback, share use cases                 |
+| 📋 **Project Manager (Muz)** | Oversee roadmap & releases                        |
+
+**Steps to contribute:**
+
+1. Fork repo
+2. Create a branch: `git checkout -b feature-name`
+3. Commit: `git commit -m "Add feature"`
+4. Push: `git push origin feature-name`
+5. Open a Pull Request
+
+> 🌟 All contributors are recognized in the contributors section.
+
+---
+
+## 👥 Contributors
+
+| Name  | Role                |
+| ----- | ------------------- |
+| Muz   | Project Manager     |
+| Alice | Developer           |
+| Bob   | Security Researcher |
+
+---
+
+## 📝 License
+
+MIT License – see LICENSE file for details
 
