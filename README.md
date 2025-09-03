@@ -2,7 +2,6 @@
   <img src="asset/logo.png" alt="Sentinel Banner" width="300"/>
 </p>
 
-
 # 🔒 Sentinel - Vulnerability Management Platform
 
 [![Quality Gate Status](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=alert_status&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
