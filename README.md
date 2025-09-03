@@ -13,7 +13,7 @@
 
 </div>
 
----
+
 
 ## 🎯 **Overview**
 
@@ -32,7 +32,7 @@
 
 > 💡 **Impact:** Organizations report 60% faster vulnerability remediation and 40% improved SLA compliance with centralized management.
 
----
+
 
 ## 🚀 **Some of Sentinel's Core Capabilities**
 
@@ -117,14 +117,14 @@
 
 </div>
 
----
+
 
 **Key Benefits:**
 - ✅ **Granular tracking** - Host, port, and CVE-level precision
 - ✅ **SLA accuracy** - Individual finding lifecycle management
 - ✅ **Remediation focus** - Prioritized actionable intelligence
 
----
+
 
 ## 👥 **User Ecosystem**
 
@@ -167,7 +167,7 @@
 
 </div>
 
----
+
 
 ## 🚀 **Quick Start Guide**
 
@@ -201,7 +201,7 @@ docker-compose logs -f sentinel
 docker-compose ps
 ```
 
----
+
 
 ## 🤝 **Contributing to Sentinel**
 
@@ -212,7 +212,7 @@ We welcome contributors who share our vision of revolutionizing vulnerability ma
 </div>
 
 | 🎯 **Role** | 🚀 **Contribution Areas** | 🏆 **Impact** |
-|:---|:---|:---|
+|:|:|:|
 | **👩‍💻 Developers** | Feature development, API enhancements, UI/UX improvements | Shape the future of security tooling |
 | **🔒 Security Researchers** | CVE testing, vulnerability assessment, security hardening | Strengthen enterprise security |
 | **🌐 Community Members** | Documentation, feedback, use case sharing | Grow the security ecosystem |
@@ -242,7 +242,6 @@ git push origin feature/amazing-new-capability
 
 </div>
 
----
 
 ## 🌟 **Our Amazing Contributors**
 
@@ -273,7 +272,6 @@ We're grateful for the incredible individuals driving Sentinel's success:
 
 </div>
 
----
 
 ## 🏢 **Proudly Sponsored By**
 
