@@ -122,5 +122,5 @@ Visit `APP_URL` in `.env` via browser
 
 ## 📝 License
 
-MIT License – see LICENSE file for details
+License – see LICENSE file for details
 
