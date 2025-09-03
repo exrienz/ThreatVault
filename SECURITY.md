@@ -2,13 +2,6 @@
 
 ## 🌟 Our Security Commitment
 
-**Sentinel** is built with **security-first principles**:
-
-* ✅ Centralized vulnerability management
-* ✅ SLA tracking & compliance reporting
-* ✅ Automated workflow to minimize human error
-* ✅ Secure integration with Nessus Pro and other scanners
-
 We continuously monitor, test, and improve **Sentinel’s security posture** to ensure reliability and trust.
 
 ## 🐞 Reporting a Vulnerability
