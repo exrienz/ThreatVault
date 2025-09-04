@@ -1,8 +1,10 @@
-name: DevSecOps Pipelines
+# .github/workflows/devsecops.yml
+name: DevSecOps Pipeline
 
 on:
   push:
     branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   devsecops:
@@ -12,5 +14,5 @@ jobs:
       enable_sast: true
       enable_docker_build: true
       enable_container_scan: true
-      languages: "python,javascript"
+      languages: "python,javascript,java,php"
     secrets: inherit
