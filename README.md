@@ -8,6 +8,8 @@
 [![Security Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_security_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Maintainability Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_maintainability_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Lines of Code](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=ncloc&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/exrienz/Sentinel)
+
 *Empowering security teams with intelligent vulnerability management, automated workflows, and enterprise-grade reporting*
 
 </div>
