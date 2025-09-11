@@ -13,6 +13,7 @@ from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository
 
 
+# TODO: Deprecated
 class FindingRevertRepository(BaseRepository):
     def __init__(self, session: Annotated[AsyncSession, Depends(get_session)]):
         super().__init__(FindingRevertPoint, session)
