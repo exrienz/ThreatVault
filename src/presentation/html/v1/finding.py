@@ -53,6 +53,7 @@ async def get_finding(
             "product_id": product_id,
             "findings_dict": findings_dict,
             "finding_name_id": finding_name_id,
+            "status": status,
         },
     )
 
@@ -124,6 +125,7 @@ async def create_remark(
     finding_service: FindingServiceDep,
     finding_name_id: UUID,
     product_id: UUID,
+    status: str,
 ):
     users = await service.get_owners_by_product_id(product_id)
     valid_pic = []
@@ -145,9 +147,13 @@ async def create_remark(
     update_dict = {
         "delay_untill": data.target_date,
         "remark": remarks,
-        "status": FnStatusEnum.EXEMPTION,
+        "status": FnStatusEnum.EXEMPTION.value,
     }
-    filters = {"finding_name_id": finding_name_id, "product_id": product_id}
+    filters = {
+        "finding_name_id": finding_name_id,
+        "product_id": product_id,
+        "status": status,
+    }
     await finding_service.bulk_update(filters, update_dict)
     return templates.TemplateResponse(
         request,

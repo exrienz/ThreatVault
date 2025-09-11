@@ -125,12 +125,14 @@ class BaseRepository(Generic[Entity]):
         stmt = select(self.model).where(self.model.id == item_id)
         stmt = self._orders(stmt)
         stmt = self._options(stmt)
+        stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)
         return query.scalars().first()
 
     async def get_one_by_id(self, item_id: UUID) -> Entity:
         stmt = select(self.model).where(self.model.id == item_id)
         stmt = self._options(stmt)
+        stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)
         return query.scalar_one()
 
@@ -205,8 +207,8 @@ class BaseRepository(Generic[Entity]):
         stmt = self._permission_filter(stmt)
         return stmt
 
-    def _filters(self, stmt: Select | Update | Delete, filters: dict) -> Select:
-        stmt = select(self.model)
+    def _filters(self, stmt: Select | Update | Delete, filters: dict):
+        # stmt = select(self.model)
         filters_ = {}
         for k, v in filters.items():
             if isinstance(v, list):

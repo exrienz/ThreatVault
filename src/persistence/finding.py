@@ -466,7 +466,7 @@ class FindingRepository(BaseRepository[Finding]):
         stmt = (
             update(Finding)
             .where(
-                Finding.status != FnStatusEnum.CLOSED,
+                Finding.status != FnStatusEnum.CLOSED.value,
             )
             .values(data)
         )
