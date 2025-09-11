@@ -51,6 +51,6 @@ async def manage_owner(
     return templates.TemplateResponse(
         request,
         "pages/manage_owner/response/toggle_access.html",
-        {"access": access},
+        {"access": access, "granted": granted},
         headers={"HX-Trigger": "resetOwnerForm"},
     )
