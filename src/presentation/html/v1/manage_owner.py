@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
 from src.application.dependencies import (
@@ -9,10 +9,15 @@ from src.application.dependencies import (
     ProjectManagementServiceDep,
     UserServiceDep,
 )
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/manage-owner", tags=["manage-owner"])
+router = APIRouter(
+    prefix="/manage-owner",
+    tags=["manage-owner"],
+    dependencies=[Depends(PermissionChecker(["manage-owner:full"]))],
+)
 
 
 @router.get("", response_class=HTMLResponse)

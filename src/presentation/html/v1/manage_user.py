@@ -12,7 +12,11 @@ from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/manage-user", tags=["user"])
+router = APIRouter(
+    prefix="/manage-user",
+    tags=["user"],
+    dependencies=[Depends(PermissionChecker(["manage-user:full"]))],
+)
 
 
 # TODO: move to schemas
