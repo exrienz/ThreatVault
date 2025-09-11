@@ -1,6 +1,6 @@
 <tr>
     <td class="text-bold-500">
-      <a href="/finding/{{ finding.finding_name_id }}?product_id={{product_id}}">
+      <a href="/finding/{{ finding.finding_name_id }}?product_id={{product_id}}&status={{finding.status}}">
             {{ finding.name }} &nbsp;
             {% if finding.severity.value == "CRITICAL" %}
                 <i class="fas fa-biohazard" title="High-Priority" style="color: red"></i>&nbsp;</a>

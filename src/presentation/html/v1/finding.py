@@ -24,13 +24,18 @@ async def get_finding(
     product_service: ProductServiceDep,
     finding_name_id: UUID,
     product_id: UUID | None = None,
+    status: str | None = None,
 ):
     if product_id is None:
         return
 
     product = await product_service.get_by_id(product_id)
 
-    filters = {"finding_name_id": finding_name_id, "product_id": product_id}
+    filters = {
+        "finding_name_id": finding_name_id,
+        "product_id": product_id,
+        "status": status,
+    }
     findings = await service.get_all_by_filter(filters)
     findings_dict: dict[str, list] = {}
     for finding in findings:
