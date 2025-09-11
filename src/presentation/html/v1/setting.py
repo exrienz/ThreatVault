@@ -1,16 +1,21 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Depends, Form, Request
 
 from src.application.dependencies.service_dependency import (
     GlobalServiceDep,
     OpenAIServiceDep,
 )
 from src.application.schemas.settings import GlobalConfigSchema
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/setting", tags=["Setting"])
+router = APIRouter(
+    prefix="/setting",
+    tags=["Setting"],
+    dependencies=[Depends(PermissionChecker(admin_only=True))],
+)
 
 
 @router.get("")

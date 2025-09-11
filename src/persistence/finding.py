@@ -466,7 +466,7 @@ class FindingRepository(BaseRepository[Finding]):
         stmt = (
             update(Finding)
             .where(
-                Finding.status != FnStatusEnum.CLOSED,
+                Finding.status != FnStatusEnum.CLOSED.value,
             )
             .values(data)
         )
@@ -631,15 +631,16 @@ class FindingRepository(BaseRepository[Finding]):
             (
                 select(
                     FindingName.id,
-                    FindingName.name,
-                    FindingName.description,
+                    func.max(FindingName.name).label("name"),
+                    func.max(FindingName.description).label("description"),
                     Finding.severity,
-                    Finding.remediation,
+                    func.max(Finding.remediation).label("remediation"),
                 ).join(Finding)
             )
             .where(
                 Finding.status.not_in(exception_list), Finding.product_id == product_id
             )
+            .group_by(FindingName.id, Finding.severity)
             .order_by(Finding.severity)
         )
         stmt = self._product_allowed_ids(stmt)

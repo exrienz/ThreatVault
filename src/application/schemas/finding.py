@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Generic, TypeVar
 from uuid import UUID
 
@@ -40,6 +40,13 @@ class ITSRemark(BaseModel):
     reason: str
     remark: str
     product_id: UUID
+
+    @field_validator("target_date")
+    def target_date_must_be_future(cls, v: datetime):
+        today = datetime.now() - timedelta(days=1)
+        if v < today:
+            raise ValueError("Cannot use yesterday date")
+        return v
 
 
 class FindingActionRequestSchema(BaseModel):

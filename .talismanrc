@@ -37,7 +37,7 @@ fileignoreconfig:
 - filename: src/presentation/html/templates/pages/auth/login.html
   checksum: 316c376d1cc319619e82ad577573fee5083227ddebbaeaa6bca46a83e166b1b1
 - filename: src/persistence/environment.py
-  checksum: abe134b73d1b7af0c1066ebbb5221a4e1c72564e9284c53f3b28aa42149ccfc1
+  checksum: 0ff5283fc20d3459133826b2daf8077b0f027dcd0ecc0aca05431b98e4fed8df
 - filename: src/presentation/html/templates/error/403.html
   checksum: 8e278efaf2e9b34a49475f538c3eeef80bf3b7f7f77a91e91dd204a235acced5
 - filename: src/application/services/comment_services.py

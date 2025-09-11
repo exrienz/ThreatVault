@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 
 from src.domain.entity import Finding, FindingName, Product
 from src.infrastructure.database import get_session
-from src.persistence.base import BaseRepository
+from src.persistence.base import AdvFilterType, BaseRepository
 
 
 class FindingNameRepository(BaseRepository[FindingName]):
@@ -35,14 +35,19 @@ class FindingNameRepository(BaseRepository[FindingName]):
             .options(selectinload(FindingName.findings), selectinload(Finding.product))
         )
 
-        # TODO: generalize/simplify
-        if finding_name_id := filters.get("finding_name_id"):
-            stmt = stmt.where(FindingName.id == finding_name_id)
-        if severity := filters.get("severity"):
-            stmt = stmt.join(Finding).where(Finding.severity == severity)
-        if finding_name := filters.get("name"):
-            stmt = stmt.where(FindingName.name.ilike(finding_name))
-        if product_id := filters.get("product_id"):
-            stmt = stmt.where(Finding.product_id == product_id)
+        flt = {
+            "finding_name_id": FindingName.id,
+            "severity": Finding.severity,
+            "name": FindingName.name.ilike,
+            "product_id": Finding.product_id,
+        }
+        _filters: AdvFilterType = {}
+        for k, v in filters.items():
+            filter_map = flt.get(k)
+            if filter_map is None:
+                continue
+            _filters[filter_map] = v
+
+        stmt = self._advanced_filtering(stmt, _filters)
         query = await self.session.execute(stmt)
         return query.scalars().first()

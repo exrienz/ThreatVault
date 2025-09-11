@@ -72,13 +72,18 @@ class BaseRepository(Generic[Entity]):
             data=findings,
         )
 
+    def _orders(self, stmt) -> Select:
+        return stmt.order_by(self.model.created_at.desc())
+
     async def get_all(self) -> Sequence[Entity]:
-        stmt = select(self.model).order_by(self.model.created_at.desc())
+        stmt = select(self.model)
         stmt = self._options(stmt)
+        stmt = self._orders(stmt)
         stmt = self._permission_filter(stmt)
         query = await self.session.execute(stmt)
         return query.scalars().all()
 
+    # TODO: Deprecated
     async def get_all_by_filter(
         self,
         filters: dict,
@@ -90,16 +95,20 @@ class BaseRepository(Generic[Entity]):
             return await self.get_all_by_filter_pagination(filters, order_by, page)
         return await self.get_all_by_filter_sequence(filters, order_by)
 
-    async def get_all_by_filter_sequence(
-        self,
-        filters: dict,
-        order_by: list | None = None,
-    ) -> Sequence[Entity]:
+    def _get_all(self, filters: dict, order_by: list | None = None) -> Select:
         order_cols = ["created_at"]
         if order_by:
             order_cols = [getattr(self.model, col) for col in order_by]
         stmt = self._get(filters).order_by(*order_cols)
         stmt = self._permission_filter(stmt)
+        return stmt
+
+    async def get_all_by_filter_sequence(
+        self,
+        filters: dict,
+        order_by: list | None = None,
+    ) -> Sequence[Entity]:
+        stmt = self._get_all(filters, order_by)
         query = await self.session.execute(stmt)
         return query.unique().scalars().all()
 
@@ -109,44 +118,34 @@ class BaseRepository(Generic[Entity]):
         order_by: list | None = None,
         page: int = 1,
     ) -> Pagination:
-        order_cols = ["created_at"]
-        if order_by:
-            order_cols = [getattr(self.model, col) for col in order_by]
-
-        stmt = self._get(filters).order_by(*order_cols)
-        stmt = self._permission_filter(stmt)
+        stmt = self._get_all(filters, order_by)
         return await self.pagination(stmt, page, scalars=True)
+
+    async def get_by_id(self, item_id: UUID) -> Entity | None:
+        stmt = select(self.model).where(self.model.id == item_id)
+        stmt = self._orders(stmt)
+        stmt = self._options(stmt)
+        stmt = self._permission_filter(stmt)
+        query = await self.session.execute(stmt)
+        return query.scalars().first()
+
+    async def get_one_by_id(self, item_id: UUID) -> Entity:
+        stmt = select(self.model).where(self.model.id == item_id)
+        stmt = self._options(stmt)
+        stmt = self._permission_filter(stmt)
+        query = await self.session.execute(stmt)
+        return query.scalar_one()
 
     async def get_by_filter(self, filters: dict) -> Entity | None:
         stmt = self._get(filters)
         query = await self.session.execute(stmt)
         return query.unique().scalar_one_or_none()
 
-    async def get_first_by_filter(self, filters: dict, order_by: list):
+    async def get_first_by_filter(self, filters: dict, order_by: list) -> Entity | None:
         order_cols = [getattr(self.model, col) for col in order_by]
         stmt = self._get(filters).order_by(*order_cols)
         query = await self.session.execute(stmt)
         return query.scalars().first()
-
-    async def get_by_id(self, item_id: UUID) -> Entity | None:
-        stmt = (
-            select(self.model)
-            .where(self.model.id == item_id)
-            .order_by(self.model.created_at.desc())
-        )
-        stmt = self._options(stmt)
-        query = await self.session.execute(stmt)
-        return query.scalars().first()
-
-    async def get_one_by_id(self, item_id: UUID) -> Entity:
-        stmt = (
-            select(self.model)
-            .where(self.model.id == item_id)
-            .order_by(self.model.created_at.desc())
-        )
-        stmt = self._options(stmt)
-        query = await self.session.execute(stmt)
-        return query.scalar_one()
 
     async def create(self, data: dict, *args, **kwargs) -> Entity:
         db = self.model(**data)
@@ -208,8 +207,8 @@ class BaseRepository(Generic[Entity]):
         stmt = self._permission_filter(stmt)
         return stmt
 
-    def _filters(self, stmt: Select | Update | Delete, filters: dict) -> Select:
-        stmt = select(self.model)
+    def _filters(self, stmt: Select | Update | Delete, filters: dict):
+        # stmt = select(self.model)
         filters_ = {}
         for k, v in filters.items():
             if isinstance(v, list):

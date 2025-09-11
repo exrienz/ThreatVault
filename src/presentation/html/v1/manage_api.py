@@ -1,13 +1,18 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Depends, Form, Request
 
 from src.application.dependencies import TokenServiceDep
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/manage-api", tags=["manage-api"])
+router = APIRouter(
+    prefix="/manage-api",
+    tags=["manage-api"],
+    dependencies=[Depends(PermissionChecker(["manage-api:full"]))],
+)
 
 
 @router.get("")

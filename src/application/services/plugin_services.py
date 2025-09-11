@@ -1,3 +1,4 @@
+import os
 from collections.abc import Sequence
 from uuid import UUID
 
@@ -44,9 +45,9 @@ class PluginService:
     async def upload_plugin(self, data: dict, file: UploadFile):
         if file.content_type != "text/x-python":
             raise InvalidFile("Python")
-        filepath = (
-            f"/public/plugins/{data.get('type', '').lower()}/{data.get('name')}.py"
-        )
+        filepath = f"/public/plugins/{data.get('type', '').lower()}"
+        filepath += f"/{data.get('env', 'VA').lower()}/{data.get('name')}.py"
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb") as f:
             file_data = await file.read()
             f.write(file_data)

@@ -5,7 +5,7 @@
     <h4>ITS Remarks</h4>
   </div>
   <div class="card-body">
-    <form hx-post="/finding/{{finding_name_id}}/remark?product_id={{product_id}}" id="remark-form"
+    <form hx-post="/finding/{{finding_name_id}}/remark?product_id={{product_id}}&status={{status}}" id="remark-form"
       hx-swap="none"
       hx-on::after-request="document.querySelector('#remark-form').reset()">
       <label for="name" class="form-label">PIC</label>
@@ -18,6 +18,7 @@
       <div class="form-group">
         <label class="form-label">Target Remediation Date</label>
         <input type="date" name="target_date" id="target_date" class="form-control"
+                                                               min={{now.strftime('%Y-%m-%d')}}
                                                                placeholder="Target Remediation Date">
       </div>
       <div class="form-group">

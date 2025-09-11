@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 
 from src.application.dependencies.service_dependency import PluginServiceDep
@@ -11,10 +11,15 @@ from src.application.services.fileupload_service import (
     HAUploadService,
     VAUploadService,
 )
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/setting/plugin", tags=["plugin-config"])
+router = APIRouter(
+    prefix="/setting/plugin",
+    tags=["plugin-config"],
+    dependencies=[Depends(PermissionChecker(["manage-plugin:full"]))],
+)
 
 
 @router.get("/", response_class=HTMLResponse)

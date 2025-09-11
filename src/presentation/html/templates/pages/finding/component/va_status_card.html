@@ -3,7 +3,7 @@
 {"title": product.name, "icon": "folder-open", "data": product.environment.name, "color": "blue"},
 {"title": "Severity", "icon": "shield", "data": data.0.severity.value},
 {"title": "Nessus VPR Score", "icon": "circle-exclamation", "data": data.0.vpr_score},
-{"title": "Status", "icon": "spinner", "data": data.0.status.value},
+{"title": "Status", "icon": "spinner", "data": data.0.status, "id": "status_card"},
 ]
 %}
 {% include "pages/finding/component/statusCard.html" %}
