@@ -78,7 +78,10 @@ async def get_all_comment(
     )
 
 
-@router.post("/{finding_name_id}/comment")
+@router.post(
+    "/{finding_name_id}/comment",
+    dependencies=[Depends(PermissionChecker(["comment:create"]))],
+)
 async def comment_finding(
     request: Request,
     service: CommentServiceDep,
