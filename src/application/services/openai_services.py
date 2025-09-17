@@ -2,10 +2,12 @@ import asyncio
 from typing import Annotated
 from uuid import UUID
 
+import httpx
 from fastapi import Depends
 from openai import AsyncOpenAI, BadRequestError, NotFoundError, OpenAI
 
 from src.application.exception.error import LLMException
+from src.config import async_proxy_mounts, proxy_mounts
 from src.persistence import FindingNameRepository, GlobalRepository
 
 
@@ -32,7 +34,11 @@ class OpenAIService:
             raise LLMException("Configuration Failed: Reach out to admin.")
         if not conf.llm_url or not conf.llm_model:
             raise LLMException("Please provide URL and Model!")
-        return AsyncOpenAI(api_key=conf.llm_api_key, base_url=conf.llm_url), conf
+        return AsyncOpenAI(
+            api_key=conf.llm_api_key,
+            base_url=conf.llm_url,
+            http_client=httpx.AsyncClient(mounts=async_proxy_mounts),
+        ), conf
 
     async def streaming_cve(self, finding_id: UUID):
         client, conf = await self.get_client()
@@ -97,7 +103,9 @@ class OpenAIService:
     async def get_models(self, url: str, api_key: str):
         if not url:
             raise
-        client = OpenAI(api_key=api_key, base_url=url)
+        client = OpenAI(
+            api_key=api_key, base_url=url, http_client=httpx.Client(mounts=proxy_mounts)
+        )
         return [model.id.split("/")[-1] for model in client.models.list()]
 
     async def get_current_model(self):

@@ -2,6 +2,7 @@ import json
 import re
 from datetime import timedelta
 
+import httpx
 from pydantic import AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -21,9 +22,21 @@ class Settings(BaseSettings):
 
     SESSION_SECRET_KEY: str = "SESSION_SECRET_KEY"
     NEWEST_CVE_URL: str = "https://www.tenable.com/cve/feeds?sort=newest"
+    HTTP_PROXY: str = ""
+    HTTPS_PROXY: str = ""
 
 
 settings = Settings()
+
+proxy_mounts = {
+    "http://": httpx.HTTPTransport(proxy=settings.HTTP_PROXY),
+    "https://": httpx.HTTPTransport(proxy=settings.HTTPS_PROXY),
+}
+
+async_proxy_mounts = {
+    "http://": httpx.AsyncHTTPTransport(proxy=settings.HTTP_PROXY),
+    "https://": httpx.AsyncHTTPTransport(proxy=settings.HTTPS_PROXY),
+}
 
 default_roles = []
 with open("src/default/roles.json") as file:
