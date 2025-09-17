@@ -224,6 +224,23 @@ class FindingRepository(BaseRepository[Finding]):
         stmt = self._product_allowed_ids(stmt)
         return await self.pagination(stmt, page)
 
+    async def get_group_by_evidence(self, filters: dict):
+        stmt = select(
+            Finding.evidence,
+            func.max(Finding.status),
+            func.max(Finding.severity),
+            func.array_agg(
+                func.distinct(
+                    func.concat(Finding.host, ":", Finding.port),
+                ),
+                type_=ARRAY(String),
+            ).label("hosts"),
+        ).group_by(Finding.evidence)
+        stmt = self._filters(stmt, filters)
+        stmt = self._permission_filter(stmt)
+        query = await self.session.execute(stmt)
+        return query.all()
+
     async def get_breached_findings_by_severity(
         self, product_id: UUID, severity: SeverityEnum
     ):

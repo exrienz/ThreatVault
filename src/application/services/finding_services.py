@@ -46,11 +46,17 @@ class FindingService:
     ) -> Sequence[Finding]:
         return await self.repository.get_all_by_project_id(project_id, active_only)
 
+    async def get_first_by_filters(self, filters: dict):
+        return await self.repository.get_first_by_filter(filters, ["created_at"])
+
     async def get_by_filter(self, filters: dict) -> Finding | None:
         return await self.repository.get_by_filter(filters)
 
     async def get_all_by_filter(self, filters: dict) -> Sequence[Finding]:
         return await self.repository.get_all_by_filter_sequence(filters)
+
+    async def get_all_group_by_evidence(self, filters: dict) -> Sequence[Finding]:
+        return await self.repository.get_group_by_evidence(filters)
 
     async def get_sla_breach_chart_data(
         self, project_id: UUID, filters: dict, page: int = 1
