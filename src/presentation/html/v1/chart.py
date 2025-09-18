@@ -67,6 +67,7 @@ async def get_product_yearly_stats(
             "chart": chart,
             "labels": labels,
             "env": "product",
+            "update": req_data.update,
         },
     )
 

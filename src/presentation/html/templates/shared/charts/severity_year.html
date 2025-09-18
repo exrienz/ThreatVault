@@ -1,6 +1,11 @@
 <script>
+
+  {%if update %}
+  chart.updateSeries({{chart | safe }})
+  {% else %}
   chartOptions = {
     ...areaOptions,
+    labels: {{labels | safe }},
     series: {{chart | safe }}
   }
 
@@ -9,4 +14,6 @@
     chartOptions
   )
   chart.render()
+  {% endif %}
+
 </script>

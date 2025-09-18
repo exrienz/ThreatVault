@@ -58,6 +58,8 @@
           <h4>Aging Finding</h4>
         </div>
         <div class="card-body">
+          <div hx-get="/chart/product?product_id={{product.id}}&update=True" hx-trigger="reload-findings from:body">
+          </div>
           <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
         </div>
       </div>
