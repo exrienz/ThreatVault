@@ -10,6 +10,7 @@ from .finding_name import FindingNameRepository
 from .finding_revert import FindingRevertRepository
 from .log import LogRepository
 from .password_reset import PasswordResetRepository
+from .permission import PermissionRepository
 from .plugin import PluginRepository
 from .product import ProductRepository
 from .project import ProjectRepository
@@ -36,4 +37,5 @@ __all__ = [
     "AdditionalRemarkRepository",
     "PasswordResetRepository",
     "ProductEscalationRepository",
+    "PermissionRepository",
 ]

@@ -66,6 +66,11 @@ def creating_default_permission():
 def create_role_permissions():
     logger.info("Assinging Default Permissions")
     with SyncSessionFactory() as session:
+        stmt = select(func.count(RolePermission.id))
+        perm = session.execute(stmt).scalar_one()
+        if perm != 0:
+            return
+
         for data in default_role_permission:
             role_name = data.get("role")
             scopes = data.get("scopes")

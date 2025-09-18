@@ -1,0 +1,50 @@
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Edit Role</h5>
+    </div>
+    <form hx-patch="/manage-role/{{role.id}}" hx-target="#row_{{role.id}}" hx-swap="outerHTML">
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="rolename" class="form-label">Name [Read Only]</label>
+        <input type="text"
+               id="role_name"
+               readonly
+               class="form-control"
+               placeholder="Role Name"
+               value="{{ role.name }}">
+      </div>
+      <div class="form-group">
+        <label for="access" class="form-label">Required Project Access</label>
+        <select name="required_project_access" class="form-control">
+          <option value=true {% if role.required_project_access %}selected{% endif %}>True</option>
+          <option value=false {% if not role.required_project_access %}selected{% endif %}>False</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Permissions</label>
+        <ul class="list-unstyled mb-0">
+          {% for permission in permissions %}
+          <li class="d-inline-block me-2 mb-1">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox"
+                     class="form-check-input form-check-primary"
+                     name="permissions"
+                     value="{{permission.id}}"
+                     {% if permission.scope in role.permissions %}checked{%endif%}
+              >
+              <label class="form-check-label">{{permission.scope}}</label>
+            </div>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+    </form>
+  </div>
+</div>

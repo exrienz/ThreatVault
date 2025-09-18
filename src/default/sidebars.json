@@ -7,13 +7,15 @@
     "name": "VAPT Dashboard",
     "key": "vapt",
     "url": "/",
-    "icon": "grid-fill"
+    "icon": "grid-fill",
+    "permissions": ["dashboard:view"]
   },
   {
     "name": "Compliance Dashboard",
     "key": "compliance",
     "icon": "shield-shaded",
-    "url": "/?type_=compliance"
+    "url": "/?type_=compliance",
+    "permissions": ["dashboard:view"]
   },
   {
     "name": "Management Dashboard",
