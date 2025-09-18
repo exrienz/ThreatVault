@@ -1,9 +1,14 @@
 {% if granted %}
+    {% set status="added into" %}
     <div id="ownerList-{{ access.product_id }}" hx-swap-oob="beforeend">
         {% include "pages/manage_owner/component/user.html" %}
     </div>
 {% else %}
+    {% set status="removed from" %}
     <div id="list_{{ access.product_id }}_{{ access.user_id }}"
          hx-swap-oob="delete">
     </div>
 {% endif %}
+  <script id="toast-global-id" hx-swap-oob="true">
+    ToastSuccessCustom("{{user.username}} {{status}} {{product.name}} | {{product.environment.name | title}}");
+  </script>

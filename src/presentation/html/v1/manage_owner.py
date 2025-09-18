@@ -52,10 +52,17 @@ async def manage_owner(
     user_id: Annotated[UUID, Form()],
     granted: Annotated[bool, Form()] = True,
 ):
-    access = await service.manage_product_access(product_id, user_id, granted)
+    access, product, user = await service.manage_product_access(
+        product_id, user_id, granted
+    )
     return templates.TemplateResponse(
         request,
         "pages/manage_owner/response/toggle_access.html",
-        {"access": access, "granted": granted},
+        {
+            "access": access,
+            "granted": granted,
+            "product": product,
+            "user": user,
+        },
         headers={"HX-Trigger": "resetOwnerForm"},
     )
