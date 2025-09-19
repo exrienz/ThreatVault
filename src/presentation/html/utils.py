@@ -118,6 +118,13 @@ def score_color(value):
     return "gray"
 
 
+def score_description(value):
+    score = ["Excellent", "Good", "Fair", "Poor", "Inadequate"]
+    if value is not None and value >= 0 and value < 5:
+        return score[value]
+    return "?"
+
+
 templates.env.filters["startsWith"] = startsWith
 templates.env.filters["findingSeverityMap"] = findingSeverityMap
 templates.env.filters["assessmentTypeMap"] = assessmentTypeMap
@@ -125,6 +132,7 @@ templates.env.filters["slaCalc"] = slaCalc
 templates.env.filters["datetime_format"] = datetime_format
 templates.env.filters["score"] = score_filter
 templates.env.filters["score_color"] = score_color
+templates.env.filters["score_description"] = score_description
 templates.env.filters["statusBadgeMap"] = statusBadgeMap
 
 templates.env.globals["is_admin"] = is_admin

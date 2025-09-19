@@ -6,13 +6,15 @@ D – Poor: Major deficiencies; urgent fix needed
 E – Inadequate: Widespread and serious failures">
     <div class="card-body">
       <div class="d-flex align-items-center">
-        <div class="stats-icon mb-2 me-3"
+        <div class="stats-icon mb-2 me-3 text-white fw-bold fs-4"
           style="background-color: {{ logs.score | score_color if logs.score else 'gray' }}">
-          <i class="fas fa-certificate"></i>
+          {{ logs.score | int | score if logs.score else '?' }}
         </div>
         <div>
           <h6 class="text-muted font-semibold">Score</h6>
-          <h6 id="score" class="font-extrabold mb-0">{{ logs.score | int | score if logs.score else '?' }}</h6>
+          <h6 id="score" class="font-extrabold mb-0">
+            {{logs.score | int | score_description if logs.score else '?'}}
+          </h6>
         </div>
       </div>
     </div>
