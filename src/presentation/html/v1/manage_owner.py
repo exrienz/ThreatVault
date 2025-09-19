@@ -28,6 +28,8 @@ async def get_index_page(
     product_service: ProductServiceDep,
 ):
     projects = await project_service.get_project_extended()
+    vapt_project = set(project for project in projects if project.type_ == "VA")
+    compliance_project = set(project for project in projects if project.type_ == "HA")
     users = await user_service.get_all(
         filters={"role": "Owner", "active": True}, pagination=False
     )
@@ -38,6 +40,8 @@ async def get_index_page(
         "pages/manage_owner/index.html",
         {
             "projects": projects,
+            "vapts": vapt_project,
+            "compliances": compliance_project,
             "users": users,
             "owners": products_by_id,
         },
