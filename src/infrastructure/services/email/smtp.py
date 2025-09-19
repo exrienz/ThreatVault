@@ -1,4 +1,5 @@
 import smtplib
+import ssl
 from email.mime.base import MIMEBase
 from urllib.parse import urlparse
 
@@ -15,12 +16,14 @@ class SMTPSender(EmailSender):
         username: str | None,
         password: str | None,
         proxy_mounts: dict | None,
+        tls: bool = True,
     ):
         self.smtp_server = smtp_server
         self.port = port
         self.username = username
         self.password = password
         self.proxy_mounts = proxy_mounts
+        self.tls = tls
 
     def send(self, from_email: str, to: str, email: MIMEBase):
         if self.smtp_server is None or self.port is None:
@@ -38,5 +41,8 @@ class SMTPSender(EmailSender):
             )
             socks.wrap_module(smtplib)
         with smtplib.SMTP(host=self.smtp_server, port=int(self.port)) as smtp:
+            if self.tls:
+                context = ssl.create_default_context()
+                smtp.starttls(context=context)
             smtp.login(self.username, self.password)
             smtp.send_message(email, from_addr=from_email, to_addrs=to)

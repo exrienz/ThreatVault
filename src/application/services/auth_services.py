@@ -10,7 +10,7 @@ from src.application.exception.error import (
     InvalidAuthentication,
     SchemaException,
 )
-from src.config import settings
+from src.config import proxy_mounts, settings
 from src.domain.entity import User
 from src.infrastructure.services.email.send import EmailClient
 from src.infrastructure.services.email.smtp import SMTPSender
@@ -95,6 +95,8 @@ class AuthService:
             config.smtp_port,
             config.smtp_username,
             config.smtp_password,
+            proxy_mounts,
+            config.smtp_tls or False,
         )
 
         # TODO: support other email solution

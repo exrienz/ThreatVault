@@ -89,9 +89,9 @@ fileignoreconfig:
 - filename: alembic/versions/bbcfd4ec42a8_create_initial_table_01.py
   checksum: 951a1d721f502f42601bef3f37627acdd355978fe1fbdc3628de0771babbc9c5
 - filename: src/application/schemas/settings.py
-  checksum: 517aac9a0dc091fcb6d6f5d34fa7f8b31118cbaa7e06d3c369617488eb24bdbd
+  checksum: 17fa419b5ba8dc7f9b847befbf5a96e69fe8cccb3d1a5edafa8440557ec4670a
 - filename: alembic/versions/b6d61ecf3d59_add_llm_config_02.py
-  checksum: a777195487034f72d0e5bc56852c9d6c0a4416ea80c3b905633aeac012f61ade
+  checksum: 80b2c13432aa09835844b8857c27261aba11682c77caf594175d4533163fd221
 - filename: src/application/services/openai_services.py
   checksum: 171e6ceb6322c40d5186632f04718b957e6a74fb37bee976d140c5c3fd6d5466
 - filename: src/domain/entity/setting.py
@@ -120,4 +120,6 @@ fileignoreconfig:
   checksum: 7f6c6a4c3ebb53a908ccdbc73b3a6770f021d06a167d936b21f304c33f44e044
 - filename: .env.docker
   checksum: 925794a371f66ed9eed7491557632a3ac956a4d036694f6271134ec3e05b0376
+- filename: alembic/versions/0c8ff4fe7797_fix_default_behavior_04.py
+  checksum: 3fa04fa7eae4753b08538fd1f0fc7caa1c49ed0be4ebc34511475ea66be6e5a2
 version: ""
