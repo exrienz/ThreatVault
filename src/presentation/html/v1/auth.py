@@ -66,7 +66,7 @@ async def login(
         request,
         "empty.html",
         headers={
-            "HX-Redirect": "/management-view/vapt",
+            "HX-Redirect": "/",
         },
     )
     response.set_cookie("Authorization", f"Bearer {token}")

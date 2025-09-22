@@ -52,6 +52,11 @@
         "name": "Manage API",
         "url": "/manage-api",
         "permissions": ["api-management:all"]
+      },
+      {
+        "name": "Manage Role",
+        "url": "/manage-role",
+        "permissions": ["role-management:all"]
       }
     ]
   },
