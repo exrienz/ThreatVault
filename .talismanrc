@@ -124,4 +124,8 @@ fileignoreconfig:
   checksum: 3fa04fa7eae4753b08538fd1f0fc7caa1c49ed0be4ebc34511475ea66be6e5a2
 - filename: public/assets/extensions/filepond/filepond.js
   checksum: 1db7ec1ea928b75cd8a3e425a9ccaefc6e2aa31fc0c3917b290abfae50bc3c93
+- filename: src/application/utils/jwt.py
+  checksum: 96c22c655442c5cd764a7e25154bdb6a3818640dc167cc32cb42b41d520afca3
+- filename: src/application/security/oauth2/openid.py
+  checksum: 1899ffc1b379de2436ce9a29e9d90132f534deb567604ec3facee54bf9a47c9c
 version: ""
