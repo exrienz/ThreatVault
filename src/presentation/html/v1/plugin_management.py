@@ -74,9 +74,13 @@ async def create(
 async def verification_page(
     request: Request,
     plugin_id: UUID,
+    service: PluginServiceDep,
 ):
+    plugin = await service.get_by_id(plugin_id)
     return templates.TemplateResponse(
-        request, "pages/plugin_management/form/verify.html", {"plugin_id": plugin_id}
+        request,
+        "pages/plugin_management/form/verify.html",
+        {"plugin_id": plugin_id, "plugin": plugin},
     )
 
 
@@ -85,9 +89,9 @@ async def plugin_verification(
     request: Request,
     service: PluginServiceDep,
     plugin_id: UUID,
-    file: Annotated[UploadFile, File()],
+    file: Annotated[list[UploadFile], File()],
     use_to_verify: Annotated[bool, Form()] = False,
-    type_: str | None = None,
+    type_: Annotated[str | None, Form()] = None,
 ):
     plugin_info = await service.get_by_id(plugin_id)
     data = FindingUploadSchema(scan_date=datetime.now(), plugin=plugin_info.id)
@@ -101,16 +105,16 @@ async def plugin_verification(
             service.repository.session, file, plugin_info.id, data
         )
 
-    verified = await fileupload.plugin_verification()
+    await fileupload.plugin_verification()
     headers = {}
     if use_to_verify:
-        await service.update(plugin_id, {"verified": verified})
+        await service.update(plugin_id, {"verified": True})
         headers = {"HX-Trigger": "reload-plugin-list"}
     # TODO: Provide detail error, so that user can fix their code
     return templates.TemplateResponse(
         request,
         "pages/plugin_management/response/verify.html",
-        {"verified": verified},
+        {"verified": True},
         headers=headers,
     )
 
