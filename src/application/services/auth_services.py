@@ -2,7 +2,6 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 
-import jwt
 from fastapi import Depends
 
 from src.application.exception.error import (
@@ -10,7 +9,8 @@ from src.application.exception.error import (
     InvalidAuthentication,
     SchemaException,
 )
-from src.config import settings
+from src.application.utils.jwt import generate_access_token
+from src.config import proxy_mounts
 from src.domain.entity import User
 from src.infrastructure.services.email.send import EmailClient
 from src.infrastructure.services.email.smtp import SMTPSender
@@ -18,7 +18,7 @@ from src.persistence import AuthRepository
 from src.persistence.config import GlobalRepository
 from src.persistence.password_reset import PasswordResetRepository
 
-from ..schemas.auth import TokenDataSchema, UserLoginSchema, UserRegisterSchema
+from ..schemas.auth import UserLoginSchema, UserRegisterSchema
 
 # TODO: change to strategy pattern
 from ..security.oauth2.password import pwd_context
@@ -53,34 +53,13 @@ class AuthService:
             raise InvalidAuthentication
         if not user.active:
             raise InactiveUser
-        high_priviledge = False
-        if user.role.name in ("ITSE"):
-            high_priviledge = True
-        token_data = TokenDataSchema(
-            userid=str(user.id),
-            role=user.role.name,
-            is_admin=user.role.super_admin,
-            high_privilege=high_priviledge,
-            role_id=str(user.role.id),
-            required_project_access=user.role.required_project_access,
-            username=user.username,
-        )
-        return self.create_access_token(token_data)
+        return generate_access_token(user)
 
     def verify_password(self, input_password: str, hashed_password: str):
         return pwd_context.verify(input_password, hashed_password)
 
     def hash_password(self, password):
         return pwd_context.hash(password)
-
-    def create_access_token(self, data: TokenDataSchema) -> str:
-        to_encode = data.model_dump()
-        expired_at = datetime.now() + timedelta(minutes=settings.JWT_EXPIRED_MINUTES)
-        to_encode.update({"exp": expired_at})
-        encoded_jwt = jwt.encode(
-            to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
-        )
-        return encoded_jwt
 
     async def send_reset_password_email(self, email: str, html: str):
         user = await self.repository.get_by_filter({"email": email})
@@ -95,6 +74,8 @@ class AuthService:
             config.smtp_port,
             config.smtp_username,
             config.smtp_password,
+            proxy_mounts,
+            config.smtp_tls or False,
         )
 
         # TODO: support other email solution

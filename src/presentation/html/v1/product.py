@@ -194,7 +194,7 @@ async def upload_file(
     service: LogServiceDep,
     backgound_tasks: BackgroundTasks,
     product_id: UUID,
-    formFile: Annotated[UploadFile, File()],
+    formFile: Annotated[list[UploadFile], File()],
     scan_date: Annotated[datetime, Form()],
     plugin: Annotated[UUID, Form()],
     process_new_finding: Annotated[bool, Form()] = False,
@@ -238,6 +238,7 @@ async def upload_file(
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
     else:
         tSeverity = 1
+    filenames = [file.filename for file in uploader.files]
     return templates.TemplateResponse(
         request,
         "pages/product/response/fileupload.html",
@@ -245,7 +246,7 @@ async def upload_file(
         context={
             "logs": logs,
             "totalSeverity": tSeverity,
-            "filename": uploader.file.filename,
+            "filename": filenames,
         },
     )
 

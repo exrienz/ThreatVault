@@ -37,7 +37,7 @@ fileignoreconfig:
 - filename: src/presentation/html/templates/pages/auth/login.html
   checksum: 316c376d1cc319619e82ad577573fee5083227ddebbaeaa6bca46a83e166b1b1
 - filename: src/persistence/environment.py
-  checksum: abe134b73d1b7af0c1066ebbb5221a4e1c72564e9284c53f3b28aa42149ccfc1
+  checksum: 0ff5283fc20d3459133826b2daf8077b0f027dcd0ecc0aca05431b98e4fed8df
 - filename: src/presentation/html/templates/error/403.html
   checksum: 8e278efaf2e9b34a49475f538c3eeef80bf3b7f7f77a91e91dd204a235acced5
 - filename: src/application/services/comment_services.py
@@ -89,11 +89,11 @@ fileignoreconfig:
 - filename: alembic/versions/bbcfd4ec42a8_create_initial_table_01.py
   checksum: 951a1d721f502f42601bef3f37627acdd355978fe1fbdc3628de0771babbc9c5
 - filename: src/application/schemas/settings.py
-  checksum: 517aac9a0dc091fcb6d6f5d34fa7f8b31118cbaa7e06d3c369617488eb24bdbd
+  checksum: 17fa419b5ba8dc7f9b847befbf5a96e69fe8cccb3d1a5edafa8440557ec4670a
 - filename: alembic/versions/b6d61ecf3d59_add_llm_config_02.py
-  checksum: a777195487034f72d0e5bc56852c9d6c0a4416ea80c3b905633aeac012f61ade
+  checksum: 80b2c13432aa09835844b8857c27261aba11682c77caf594175d4533163fd221
 - filename: src/application/services/openai_services.py
-  checksum: 972cd8bada40bc57f351ee2bd27f702c1d48f9e757c9786c38578af3778f04bd
+  checksum: 171e6ceb6322c40d5186632f04718b957e6a74fb37bee976d140c5c3fd6d5466
 - filename: src/domain/entity/setting.py
   checksum: 87f46d4f311fa60123332a2abd2805a894aa0bbd3194b8f1c265b7f43887f774
 - filename: alembic/versions/f9b8c03a6e4e_add_password_reset_03.py
@@ -119,5 +119,13 @@ fileignoreconfig:
 - filename: src/presentation/html/templates/pages/product/report_template.html
   checksum: 7f6c6a4c3ebb53a908ccdbc73b3a6770f021d06a167d936b21f304c33f44e044
 - filename: .env.docker
-  checksum: 9e751e15e63b38c6b1236e1432c7ac6db5af8c96465f6b78bcee30a135ed7252
+  checksum: 925794a371f66ed9eed7491557632a3ac956a4d036694f6271134ec3e05b0376
+- filename: alembic/versions/0c8ff4fe7797_fix_default_behavior_04.py
+  checksum: 3fa04fa7eae4753b08538fd1f0fc7caa1c49ed0be4ebc34511475ea66be6e5a2
+- filename: public/assets/extensions/filepond/filepond.js
+  checksum: 1db7ec1ea928b75cd8a3e425a9ccaefc6e2aa31fc0c3917b290abfae50bc3c93
+- filename: src/application/utils/jwt.py
+  checksum: 96c22c655442c5cd764a7e25154bdb6a3818640dc167cc32cb42b41d520afca3
+- filename: src/application/security/oauth2/openid.py
+  checksum: 1899ffc1b379de2436ce9a29e9d90132f534deb567604ec3facee54bf9a47c9c
 version: ""

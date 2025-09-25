@@ -9,7 +9,8 @@
     "required_project_access": false
   },
   {
-    "name": "Management"
+    "name": "Management",
+    "required_project_access": false
   },
   {
     "name": "Audit"

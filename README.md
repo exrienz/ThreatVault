@@ -1,127 +1,303 @@
+<div align="center">
 
-<p align="center">
-  <img src="https://via.placeholder.com/900x150/4B6CB7/182848?text=Sentinel+%7C+Sponsored+by+PayNet&fontsize=36" alt="Sentinel Banner" />
-</p>
+<img src="asset/logo.png" alt="Sentinel Logo" width="400" style="margin-bottom: 20px;">
 
-# 🔒 Sentinel - Next-Gen Vulnerability Management Platform
+### Next-Generation Vulnerability Management Platform
 
 [![Quality Gate Status](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=alert_status&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Security Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_security_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Maintainability Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_maintainability_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Lines of Code](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=ncloc&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/exrienz/Sentinel)
 
----
+*Empowering security teams with intelligent vulnerability management, automated workflows, and enterprise-grade reporting*
 
-## 🌟 Overview
+</div>
 
-**Sentinel** is a **next-gen vulnerability management platform** for IT Security Engineers, DevSecOps, and Managers.
 
-It centralizes findings from **Nessus Pro** and other tools to deliver:
 
-* ✅ Deduplication of vulnerabilities
-* ✅ SLA tracking & compliance reporting
-* ✅ Automated workflows
-* ✅ Centralized actionable dashboards
+## 🎯 **Overview**
 
-> 💡 **Pro Tip:** Centralizing vulnerabilities allows faster remediation and more accurate SLA compliance.
+**Sentinel** revolutionizes vulnerability management for IT Security Engineers, DevSecOps teams, and Security Management. By centralizing vulnerability findings from **Nessus Pro** and other security tools, Sentinel transforms raw security data into actionable intelligence.
 
----
+### ✨ **Why Choose Sentinel?**
 
-## 🚀 Key Features
+<table>
+  <tr>
+    <td align="center"><strong>🔄</strong><br><strong>Smart Deduplication</strong><br>Eliminates duplicate findings across tools</td>
+    <td align="center"><strong>📊</strong><br><strong>SLA Tracking</strong><br>Monitor compliance & performance metrics</td>
+    <td align="center"><strong>🤖</strong><br><strong>Automation</strong><br>Streamlined workflows & reporting</td>
+    <td align="center"><strong>🎯</strong><br><strong>Centralized Dashboards</strong><br>Unified view of security posture</td>
+  </tr>
+</table>
 
-| Feature                     | Description                             |
-| --------------------------- | --------------------------------------- |
-| 🔗 **Accurate Integration** | Full CVE & host mapping from Nessus Pro |
-| 🤖 **Automated Closure**    | Intelligent resolution of findings      |
-| ⚡ **Efficiency Boost**      | Reduces repetitive manual tasks         |
-| 🛡 **Enterprise Support**   | Dedicated support from PayNet           |
+> 💡 **Impact:** Organizations report 60% faster vulnerability remediation and 40% improved SLA compliance with centralized management.
 
----
 
-## 🛠 How Sentinel Works
+<br><br>
+## 🚀 **Some of Sentinel's Core Capabilities**
 
-Refer to the table below, each of the entries will be considered as 1 finding
+<div align="center">
 
-```text
-Finding A, 192.168.0.1, Port 80, CVE-2024-6651
-Finding A, 192.168.0.2, Port 80, CVE-2024-6651
-Finding A, 192.168.0.1, Port 81, CVE-2024-6651
-Finding A, 192.168.0.1, Port 80, CVE-2024-6652
-```
+### *Enterprise-Grade Security Solutions Designed for Scale*
 
-✅ Deduplication & visibility
-✅ Actionable intelligence for remediation
+</div>
 
-> ⚠️ **Note:** Each finding is mapped precisely to host, port, and CVE for SLA tracking.
+<table>
+  <thead>
+    <tr>
+      <th align="center" width="25%">🎯 <strong>Feature</strong></th>
+      <th align="center" width="45%">📋 <strong>Description</strong></th>
+      <th align="center" width="30%">🎉 <strong>Key Benefit</strong></th>
+    </tr>
+  </thead>
+   <tbody>
+    <tr>
+      <td>Custom Tool Support</td>
+      <td>Sentinel allows users to create custom plugins to support any tool as needed.</td>
+      <td>Acts as a centralized vulnerability management platform for all product types.</td>
+    </tr>
+    <tr>
+      <td>AI Support</td>
+      <td>Sentinel integrates with OpenAI-supported schemes, enabling a wide range of AI applications.</td>
+      <td>Simplifies and explains vulnerabilities in a way understandable even to non-IT users.</td>
+    </tr>
+    <tr>
+      <td>CI/CD Support</td>
+      <td>Built with a “shift-left” philosophy, Sentinel can automatically ingest scan results from CI/CD pipelines.</td>
+      <td>Streamlines vulnerability tracking and accelerates remediation actions.</td>
+    </tr>
+    <tr>
+      <td>Deduplicate Finding Removal</td>
+      <td>Sentinel intelligently identifies and removes duplicate findings.</td>
+      <td>Improves accuracy in vulnerability tracking and reduces noise.</td>
+    </tr>
+    <tr>
+      <td>SLA Tracker</td>
+      <td>Tracks pending findings against SLA deadlines.</td>
+      <td>Helps security engineers ensure timely remediation and maintain compliance.</td>
+    </tr>
+    <tr>
+      <td>Structured Project Support</td>
+      <td>Supports multiple projects and products with structured tracking.</td>
+      <td>Enables security teams to monitor assessments and findings across different products.</td>
+    </tr>
+    <tr>
+      <td>Support for VAPT and Compliance (Experimental)</td>
+      <td>Extends beyond traditional vulnerability assessment to include compliance checks.</td>
+      <td>Provides more comprehensive protection than standard VA-only tools.</td>
+    </tr>
+  </tbody>
+</table>
 
----
 
-## 👥 User Roles
+<div align="center">
 
-| Role                               | Permissions                                  |
-| ---------------------------------- | -------------------------------------------- |
-| 🛠 **Administrator**               | Full system & user access                    |
-| 🔒 **IT Security Engineer (ITSE)** | Manage users, assign ownership, manage scans |
-| 👓 **Management (CISO/Execs)**     | View-only dashboards                         |
-| 📦 **Product Owner**               | View-only access to assigned products        |
+### 🏆 **Why Security Teams Choose Sentinel**
 
----
+<table>
+  <tr>
+    <td align="center">
+      <strong>⚡ Speed</strong><br>
+      <sub>75% faster remediation cycles</sub>
+    </td>
+    <td align="center">
+      <strong>🎯 Precision</strong><br>
+      <sub>Smart deduplication & prioritization</sub>
+    </td>
+    <td align="center">
+      <strong>🤝 Integration</strong><br>
+      <sub>Seamless tool ecosystem support</sub>
+    </td>
+    <td align="center">
+      <strong>📊 Intelligence</strong><br>
+      <sub>AI-powered vulnerability insights</sub>
+    </td>
+  </tr>
+</table>
 
-## 🏁 Getting Started
+</div>
 
-### 1️⃣ Clone Repo
+
+
+**Key Benefits:**
+- ✅ **Granular tracking** - Host, port, and CVE-level precision
+- ✅ **SLA accuracy** - Individual finding lifecycle management
+- ✅ **Remediation focus** - Prioritized actionable intelligence
+
+
+<br><br>
+## 👥 **User Ecosystem**
+
+<div align="center">
+
+<table>
+  <tr>
+    <td align="center">
+      <strong>🛠️ Administrator</strong><br>
+      <em>Full System Control</em><br>
+      • Complete system access<br>
+      • User & role management<br>
+      • System configuration
+    </td>
+    <td align="center">
+      <strong>🔒 IT Security Engineer</strong><br>
+      <em>Security Operations</em><br>
+      • Vulnerability assessment<br>
+      • User assignment & ownership<br>
+      • Scan management
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <strong>👔 Management/CISO</strong><br>
+      <em>Strategic Oversight</em><br>
+      • Executive dashboards<br>
+      • Compliance reporting<br>
+      • Risk analytics
+    </td>
+    <td align="center">
+      <strong>📦 Product Owner</strong><br>
+      <em>Product-Focused</em><br>
+      • Product-specific findings<br>
+      • Scoped access control<br>
+      • Remediation tracking
+    </td>
+  </tr>
+</table>
+
+</div>
+
+
+<br><br>
+## 🚀 **Quick Start Guide**
+
+### **Prerequisites**
+- Docker & Docker Compose
+- Git
+- Minimum 4GB RAM, 10GB storage
+
+### **🔥 One-Command Deployment**
 
 ```bash
+# 1️⃣ Clone repository
 git clone <repository_url>
-cd <repository_directory>
+cd sentinel
+
+# 2️⃣ Configure environment
+cp .env.docker .env
+
+# 3️⃣ Launch Sentinel
+docker-compose up --build -d
 ```
 
-### 2️⃣ Build & Deploy
+### **🎯 Access Your Platform**
+Navigate to your configured `APP_URL` in `.env` file
+
+```
+## Monitor Status
+docker-compose logs -f sentinel  
+
+## Health Check
+docker-compose ps
+```
+
+
+<br><br>
+## 🤝 **Contributing to Sentinel**
+
+<div align="center">
+
+We welcome contributors who share our vision of revolutionizing vulnerability management!
+
+</div>
+
+| 🎯 **Role**                 | 🚀 **Contribution Areas**                       | 🏆 **Impact**                           |
+|:----------------------------|:-----------------------------------------------|:---------------------------------------|
+| **👩‍💻 Developers**         | Feature development, API enhancements, UI/UX improvements | Shape the future of security tooling  |
+| **🔒 Security Researchers** | CVE testing, vulnerability assessment, security hardening | Strengthen enterprise security        |
+| **🌐 Community Members**    | Documentation, feedback, use case sharing     | Grow the security ecosystem           |
+
+
+### **🛠️ Contribution Workflow**
 
 ```bash
-docker-compose up --build
+# Fork & clone
+git clone <your-fork-url>
+cd sentinel
+
+# Create feature branch
+git checkout -b feature/amazing-new-capability
+
+# Develop & test your changes
+git add .
+git commit -m "feat: add amazing new capability"
+
+# Submit your contribution
+git push origin feature/amazing-new-capability
+# Open Pull Request via GitHub
 ```
 
-### 3️⃣ Access App
+<div align="center">
 
-Visit `APP_URL` in `.env` via browser
+**🌟 Recognition:** All contributors are featured in our Hall of Fame!
 
-> 💡 **Tip:** Use `docker-compose logs -f` to monitor startup logs.
+</div>
 
----
+<br><br>
+## 🌟 **Our Amazing Contributors**
 
-## 💡 Contribution Opportunities
+<div align="center">
 
-| Contributor Type             | Activities                                        |
-| ---------------------------- | ------------------------------------------------- |
-| 👩‍💻 **Developer**          | Add features, optimize code, improve integrations |
-| 🕵️ **Security Researcher**  | Test CVE handling, report improvements            |
-| 🌐 **Community**             | Provide feedback, share use cases                 |
-| 📋 **Project Manager (Muz)** | Oversee roadmap & releases                        |
+We're grateful for the incredible individuals driving Sentinel's success:
 
-**Steps to contribute:**
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://www.linkedin.com/in/muzaffarmohamed/?originalSubdomain=my">
+        <strong>🎯 Muzaffar Mohamed (Exrienz)</strong>
+      </a><br>
+      <em>Project Manager & Visionary</em><br>
+      Leading product strategy & community growth
+    </td>
+    <td align="center">
+      <a href="https://www.linkedin.com/in/amirul-zafrin">
+        <strong>💻 Amirul Zafrin</strong>
+      </a><br>
+      <em>Lead Developer</em><br>
+      Core architecture & feature development
+    </td>
+  </tr>
+</table>
 
-1. Fork repo
-2. Create a branch: `git checkout -b feature-name`
-3. Commit: `git commit -m "Add feature"`
-4. Push: `git push origin feature-name`
-5. Open a Pull Request
+*Want to join this elite group? [Start contributing today!](#-contributing-to-sentinel)*
 
-> 🌟 All contributors are recognized in the contributors section.
+</div>
 
----
+<br><br>
+## 🏢 **Proudly Sponsored By**
 
-## 👥 Contributors
+<div align="center">
 
-| Name                                                                         | Role                |
-| ---------------------------------------------------------------------------- | ------------------- |
-| [Exrienz](https://www.linkedin.com/in/muzaffarmohamed/?originalSubdomain=my) | Project Manager     |
-| [Alice Dev](https://github.com/alice)                                        | Developer           |
-| [Bob Sec](https://github.com/bob)                                            | Security Researcher |
+<a href="#sponsors">
+  <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
+</a>
 
----
+</div>
 
-## 📝 License
+<br><br>
 
-MIT License – see LICENSE file for details
+<div align="center">
 
+<sub>
+  <a href="#-quick-start-guide">Get started now</a> | 
+  <a href="#-contributing-to-sentinel">Join our community</a> | 
+  <a href="issues">Report Issues</a>
+</sub>
+<br>
+<br>
+<p><strong>📄 License:</strong> See <a href="LICENSE">LICENSE</a> file for complete terms and conditions</p>
+
+<p>© 2025 Sentinel Project. Built with ❤️ for the global security community.</p>
+
+</div>

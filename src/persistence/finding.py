@@ -224,6 +224,23 @@ class FindingRepository(BaseRepository[Finding]):
         stmt = self._product_allowed_ids(stmt)
         return await self.pagination(stmt, page)
 
+    async def get_group_by_evidence(self, filters: dict):
+        stmt = select(
+            Finding.evidence,
+            func.max(Finding.status),
+            func.max(Finding.severity),
+            func.array_agg(
+                func.distinct(
+                    func.concat(Finding.host, ":", Finding.port),
+                ),
+                type_=ARRAY(String),
+            ).label("hosts"),
+        ).group_by(Finding.evidence)
+        stmt = self._filters(stmt, filters)
+        stmt = self._permission_filter(stmt)
+        query = await self.session.execute(stmt)
+        return query.all()
+
     async def get_breached_findings_by_severity(
         self, product_id: UUID, severity: SeverityEnum
     ):
@@ -466,7 +483,7 @@ class FindingRepository(BaseRepository[Finding]):
         stmt = (
             update(Finding)
             .where(
-                Finding.status != FnStatusEnum.CLOSED,
+                Finding.status != FnStatusEnum.CLOSED.value,
             )
             .values(data)
         )
@@ -631,15 +648,16 @@ class FindingRepository(BaseRepository[Finding]):
             (
                 select(
                     FindingName.id,
-                    FindingName.name,
-                    FindingName.description,
+                    func.max(FindingName.name).label("name"),
+                    func.max(FindingName.description).label("description"),
                     Finding.severity,
-                    Finding.remediation,
+                    func.max(Finding.remediation).label("remediation"),
                 ).join(Finding)
             )
             .where(
                 Finding.status.not_in(exception_list), Finding.product_id == product_id
             )
+            .group_by(FindingName.id, Finding.severity)
             .order_by(Finding.severity)
         )
         stmt = self._product_allowed_ids(stmt)

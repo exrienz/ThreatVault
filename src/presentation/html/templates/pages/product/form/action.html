@@ -33,6 +33,7 @@
           <div class="form-group" align="left">
             <label for="birthday" class="form-label">Action valid until</label>
             <input type="date" name="delay_untill" class="form-control" placeholder="Target Remediation Date"
+                                                                        min={{now.strftime('%Y-%m-%d')}}
             >
           </div>
           <div class="form-group" align="left">

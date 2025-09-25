@@ -5,6 +5,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+<link rel="stylesheet" href="/assets/extensions/filepond/filepond.css" />
 {% endblock %}
 
 {% block content %}
@@ -58,6 +59,8 @@
           <h4>Aging Finding</h4>
         </div>
         <div class="card-body">
+          <div hx-get="/chart/product?product_id={{product.id}}&update=True" hx-trigger="reload-findings from:body">
+          </div>
           <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
         </div>
       </div>
@@ -131,6 +134,8 @@
 
 <script src="/assets/static/js/pages/form-element-select.js"></script>
 
+<script src="/assets/extensions/filepond/filepond.js"></script>
+
 <script id="update_script_id">
   {% if logs %}
   risk.updateSeries([
@@ -202,5 +207,23 @@
     const url = `/product/${productId}/report?date=${encodeURIComponent(date)}&type_={{product.environment.project.type_}}`;
     window.open(url, "_blank"); // new tab
   }
+
+  const pond = FilePond.create(document.querySelector(".multiple-files-filepond"), {
+    credits: null,
+    allowImagePreview: false,
+    allowMultiple: true,
+    allowFileEncode: false,
+    required: true,
+  })
+  document.querySelector('#upload_fn_id').addEventListener('htmx:beforeRequest', (e) => {
+    pond.getFiles().forEach((fileItem, idx) => {
+      e.detail.requestConfig.formData.append("formFile", fileItem.file);
+    });
+  });
+  document.querySelector('#upload_fn_id').addEventListener('htmx:afterRequest', (event) => {
+    if (event.detail.successful) {
+      pond.removeFiles();
+    }
+  });
 </script>
 {% endblock %}

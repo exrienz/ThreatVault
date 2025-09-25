@@ -1,18 +1,19 @@
 import io
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, StreamingResponse
 
 from src.application.dependencies.service_dependency import (
     FindingServiceDep,
     ProjectManagementServiceDep,
 )
+from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
 router = APIRouter(
-    tags=["Dashboard"],
+    tags=["Dashboard"], dependencies=[Depends(PermissionChecker(["dashboard:view"]))]
 )
 
 

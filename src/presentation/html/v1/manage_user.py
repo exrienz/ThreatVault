@@ -12,7 +12,11 @@ from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
 
-router = APIRouter(prefix="/manage-user", tags=["user"])
+router = APIRouter(
+    prefix="/manage-user",
+    tags=["user"],
+    dependencies=[Depends(PermissionChecker(["manage-user:full"]))],
+)
 
 
 # TODO: move to schemas
@@ -56,7 +60,11 @@ async def get_list_users(
     )
 
 
-@router.get("/user/{user_id}", response_class=HTMLResponse)
+@router.get(
+    "/user/{user_id}",
+    response_class=HTMLResponse,
+    dependencies=[Depends(PermissionChecker(admin_only=True))],
+)
 async def get_user_detail(
     request: Request,
     service: UserServiceDep,

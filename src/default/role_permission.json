@@ -9,6 +9,6 @@
   },
   {
     "role": "Owner",
-    "scopes": ["dashboard:view"]
+    "scopes": ["dashboard:view", "comment:create"]
   }
 ]

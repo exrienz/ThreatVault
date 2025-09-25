@@ -15,10 +15,10 @@
 {% endblock %}
 
 {% block content %}
-{%- set finding_name_info = data[0].finding_name %}
+{%- set finding_name_info = data.finding_name %}
 <div class="page-heading">
   <h3>{{finding_name_info.name}}</h3>
-  Last Scan Date : {{data.0.last_update | datetime_format("%d-%m-%Y")}}
+  Last Scan Date : {{data.last_update | datetime_format("%d-%m-%Y")}}
 </div>
 <div class="page-content">
   <!--Row1-->
@@ -55,17 +55,17 @@
         <div class="card-body">
           <pre class="m-3 p-3 border rounded text-break font-monospace"
             style="white-space: pre-wrap; background-color: #f0f0f0">
-            {% if data.0.remediation -%}
-            {{data.0.remediation.strip()}}
+            {% if data.remediation -%}
+            {{data.remediation.strip()}}
             {% else -%}
-            {{data.0.remediation}}
+            {{data.remediation}}
             {%- endif %}
           </pre>
         </div>
       </div>
       <!-- Help Button Card -->
       {% include "pages/finding/component/ask_ai.html" %}
-      {% for host,findings in findings_dict.items() %}
+      {% for fn_data in finding_hosts %}
       {% include "pages/finding/component/affected_host.html" %}
       {% endfor %}
     </div>

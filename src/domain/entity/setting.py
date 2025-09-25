@@ -37,6 +37,7 @@ class GlobalConfig(Base):
     smtp_port: Mapped[Optional[str]]
     smtp_username: Mapped[Optional[str]]
     smtp_password: Mapped[Optional[str]]
+    smtp_tls: Mapped[Optional[bool]] = mapped_column(server_default="t")
 
     sensitive_hosts: Mapped[Optional[str]]
 

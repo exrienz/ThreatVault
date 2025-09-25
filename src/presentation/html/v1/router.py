@@ -12,6 +12,7 @@ from .host import router as Host
 from .llm_openai import router as OpenAI
 from .manage_api import router as APIManager
 from .manage_owner import router as OwnerManagement
+from .manage_role import router as RoleManagement
 from .manage_user import router as User
 from .management_view import router as MV
 from .plugin_management import router as Plugin
@@ -39,6 +40,7 @@ v1_router_with_auth.include_router(MV)
 v1_router_with_auth.include_router(Chart)
 v1_router_with_auth.include_router(CVE)
 v1_router_with_auth.include_router(OpenAI)
+v1_router_with_auth.include_router(RoleManagement)
 
 v1_router = APIRouter(prefix="")
 v1_router.include_router(Auth)

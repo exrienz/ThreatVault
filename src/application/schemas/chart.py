@@ -22,3 +22,4 @@ class YearlyStatisticFilterSchema(BaseSchema):
 
 class YearlyProductStatisticsSchema(BaseSchema):
     product_id: UUID
+    update: bool = False

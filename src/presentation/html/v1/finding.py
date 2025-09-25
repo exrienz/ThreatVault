@@ -24,30 +24,33 @@ async def get_finding(
     product_service: ProductServiceDep,
     finding_name_id: UUID,
     product_id: UUID | None = None,
+    status: str | None = None,
 ):
     if product_id is None:
         return
 
     product = await product_service.get_by_id(product_id)
 
-    filters = {"finding_name_id": finding_name_id, "product_id": product_id}
-    findings = await service.get_all_by_filter(filters)
-    findings_dict: dict[str, list] = {}
-    for finding in findings:
-        if findings_dict.get(finding.host):
-            findings_dict[finding.host].append(finding)
-        else:
-            findings_dict[finding.host] = [finding]
+    filters = {
+        "finding_name_id": finding_name_id,
+        "product_id": product_id,
+        "status": status,
+    }
+    # findings = await service.get_all_by_filter(filters)
+
+    finding = await service.get_first_by_filters(filters)
+    finding_hosts = await service.get_all_group_by_evidence(filters)
 
     return templates.TemplateResponse(
         request,
         "pages/finding/index.html",
         {
-            "data": findings,
+            "data": finding,
             "product": product,
             "product_id": product_id,
-            "findings_dict": findings_dict,
+            "finding_hosts": finding_hosts,
             "finding_name_id": finding_name_id,
+            "status": status,
         },
     )
 
@@ -72,7 +75,10 @@ async def get_all_comment(
     )
 
 
-@router.post("/{finding_name_id}/comment")
+@router.post(
+    "/{finding_name_id}/comment",
+    dependencies=[Depends(PermissionChecker(["comment:create"]))],
+)
 async def comment_finding(
     request: Request,
     service: CommentServiceDep,
@@ -119,6 +125,7 @@ async def create_remark(
     finding_service: FindingServiceDep,
     finding_name_id: UUID,
     product_id: UUID,
+    status: str,
 ):
     users = await service.get_owners_by_product_id(product_id)
     valid_pic = []
@@ -140,9 +147,13 @@ async def create_remark(
     update_dict = {
         "delay_untill": data.target_date,
         "remark": remarks,
-        "status": FnStatusEnum.EXEMPTION,
+        "status": FnStatusEnum.EXEMPTION.value,
     }
-    filters = {"finding_name_id": finding_name_id, "product_id": product_id}
+    filters = {
+        "finding_name_id": finding_name_id,
+        "product_id": product_id,
+        "status": status,
+    }
     await finding_service.bulk_update(filters, update_dict)
     return templates.TemplateResponse(
         request,

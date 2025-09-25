@@ -110,6 +110,8 @@ class ProductRepository(BaseRepository[Product]):
 
     async def delete_product_access(self, permission: ProductUserAccess):
         await self.session.delete(permission)
+        await self.session.commit()
+        return permission
 
     async def get_hosts(self, product_id: UUID) -> Sequence[str]:
         stmt = select(Finding.host).where(Finding.product_id == product_id).distinct()
