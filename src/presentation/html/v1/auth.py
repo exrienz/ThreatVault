@@ -46,8 +46,8 @@ async def register(
 @router.get("/login")
 async def login_page(request: Request, globalsetting: GlobalServiceDep):
     db_setting = await globalsetting.get()
-    if db_setting is None or not db_setting.login_via_email:
-        raise HTTPException(404)
+    # if db_setting is None or not db_setting.login_via_email:
+    #     raise HTTPException(404)
 
     user = get_current_user_id()
     if user:
@@ -56,7 +56,11 @@ async def login_page(request: Request, globalsetting: GlobalServiceDep):
             "error/loggedIn.html",
         )
 
-    return templates.TemplateResponse(request, "pages/auth/login.html")
+    okta = False
+    if db_setting:
+        okta = db_setting.okta_enabled
+
+    return templates.TemplateResponse(request, "pages/auth/login.html", {"okta": okta})
 
 
 @router.post("/login")
