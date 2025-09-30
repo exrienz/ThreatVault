@@ -124,10 +124,22 @@ fileignoreconfig:
   checksum: 3fa04fa7eae4753b08538fd1f0fc7caa1c49ed0be4ebc34511475ea66be6e5a2
 - filename: public/assets/extensions/filepond/filepond.js
   checksum: 1db7ec1ea928b75cd8a3e425a9ccaefc6e2aa31fc0c3917b290abfae50bc3c93
+<<<<<<< HEAD
 - filename: src/application/utils/jwt.py
   checksum: 96c22c655442c5cd764a7e25154bdb6a3818640dc167cc32cb42b41d520afca3
 - filename: src/application/security/oauth2/openid.py
   checksum: 1899ffc1b379de2436ce9a29e9d90132f534deb567604ec3facee54bf9a47c9c
+<<<<<<< HEAD
 - filename: package-lock.json
   checksum: 536655c2942a2f3e9c45dac1498ed371b083762c0638f00a2ae222aff4b801b7
+=======
+=======
+- filename: tests/factories/user.py
+  checksum: f3ca7ec7b7c06ec9143e13564cb15a0a58bfb16ebb4d2d5e695a70be6a3d5774
+- filename: tests/conftest.py
+  checksum: 2af98d9290a2020264896a7a1c7e9843fc8b1987126afe23c0d9326f360dd515
+- filename: tests/fixtures/authorization.py
+  checksum: 61be578bf44dd757d0843d924928ce19392ce23f8f1223bbfa2f6192d676e7ed
+>>>>>>> 48553f0 (Tests: Init)
+>>>>>>> c7b01a4 (Tests: Init)
 version: ""
