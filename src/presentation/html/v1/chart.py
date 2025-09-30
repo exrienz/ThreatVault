@@ -28,6 +28,7 @@ async def get_project_yearly_stats(
     request: Request,
     service: ProjectManagementServiceDep,
     log_service: LogServiceDep,
+    env_service: EnvServiceDep,
     project_id: UUID,
     req_data: Annotated[YearlyStatsRequestSchema, Query()],
 ):
@@ -37,8 +38,17 @@ async def get_project_yearly_stats(
             status.HTTP_404_NOT_FOUND,
             detail=f"Project with ID({project_id}) does not exists",
         )
+    env = await env_service.get_by_filter(project.id, req_data.env)
+    if env is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"{req_data.env} environment for {project.name} does not exists",
+        )
     filters = YearlyStatisticFilterSchema(
-        project_id=project_id, year=req_data.year, view_type=req_data.view_type
+        # project_id=project_id,
+        year=req_data.year,
+        view_type=req_data.view_type,
+        env_id=env.id,
     )
     chart, *_, labels = await log_service.get_yearly_statistics(filters)
     return templates.TemplateResponse(
