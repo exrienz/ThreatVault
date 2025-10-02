@@ -128,4 +128,6 @@ fileignoreconfig:
   checksum: 96c22c655442c5cd764a7e25154bdb6a3818640dc167cc32cb42b41d520afca3
 - filename: src/application/security/oauth2/openid.py
   checksum: 1899ffc1b379de2436ce9a29e9d90132f534deb567604ec3facee54bf9a47c9c
+- filename: package-lock.json
+  checksum: 536655c2942a2f3e9c45dac1498ed371b083762c0638f00a2ae222aff4b801b7
 version: ""

@@ -45,7 +45,10 @@ class FindingRepository(BaseRepository[Finding]):
         super().__init__(Finding, session, product_ids=product_ids)
 
     def _options(self, stmt: Select):
-        return stmt.options(selectinload(Finding.finding_name))
+        return stmt.options(
+            selectinload(Finding.finding_name),
+            selectinload(Finding.product).selectinload(Product.environment),
+        )
 
     async def get_by_product_id_extended(
         self,
@@ -265,8 +268,10 @@ class FindingRepository(BaseRepository[Finding]):
             .join(FindingName)
             .where(
                 Finding.product_id == product_id,
-                Finding.status.not_in([FnStatusEnum.CLOSED, FnStatusEnum.EXEMPTION]),
-                Finding.severity == severity,
+                Finding.status.not_in(
+                    [FnStatusEnum.CLOSED.value, FnStatusEnum.EXEMPTION.value]
+                ),
+                Finding.severity == severity.value,
                 func.extract("day", Finding.finding_date - today) < sub,
             )
         ).group_by(FindingName.id, FindingName.name, Finding.severity)

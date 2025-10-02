@@ -1,3 +1,6 @@
+{% set now = get_now() %}
+{% set now_utc = get_now(True) %}
+
 <div id="project-name" hx-swap-oob="innerHTML">
   {{project.name}}
 </div>

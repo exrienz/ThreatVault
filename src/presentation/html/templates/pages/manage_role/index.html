@@ -2,7 +2,6 @@
 {% set filename = "/manage-role" %}
 {% extends 'layouts/master.html' %}
 {% block styles %}
-<link rel="stylesheet" href="assets/extensions/choices.js/public/assets/styles/choices.css">
 {% endblock %}
 {% block content %}
 <div class="page-heading">
@@ -32,7 +31,7 @@
               </thead>
               <tbody id="user_table_id" hx-indicator="#spinner">
                 {% for role in roles %}
-                  {% include "pages/manage_role/component/role.html"%}
+                {% include "pages/manage_role/component/role.html"%}
                 {% endfor %}
               </tbody>
             </table>
@@ -42,19 +41,12 @@
     </div>
   </section>
 </div>
-<div id="edit-form"
-     class="modal modal-blur fade"
-     style="display: none"
-     aria-hidden="false"
-     tabindex="-1"
-  >
+<div id="edit-form" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content"></div>
   </div>
 </div>
 {% endblock %}
+
 {% block js %}
-<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="assets/static/js/pages/ui-apexchart.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 {% endblock %}

@@ -82,6 +82,43 @@ async def get_product_yearly_stats(
     )
 
 
+@router.get("/product/risk", response_class=HTMLResponse)
+async def get_product_risk_latest(
+    request: Request,
+    log_service: LogServiceDep,
+    product_id: UUID,
+    update: bool = False,
+):
+    data = await log_service.get_risks(product_id)
+    chart_data = []
+    if data:
+        chart_data = [data.tCritical, data.tHigh, data.tMedium, data.tLow]
+    return templates.TemplateResponse(
+        request,
+        "shared/charts/product_risk.html",
+        {"data": chart_data, "update": update},
+    )
+
+
+@router.get("/host/risk", response_class=HTMLResponse)
+async def get_host_risk_latest(
+    request: Request,
+    service: FindingServiceDep,
+    host: str,
+    update: bool = False,
+):
+    risk_pagination = await service.get_group_by_assets(filters={"host": (host,)})
+    risk = risk_pagination.get("findings")
+    risk_data = risk.data[0] if risk else None
+    if risk_data:
+        risk_data = [risk_data[4], risk_data[3], risk_data[2], risk_data[1]]
+    return templates.TemplateResponse(
+        request,
+        "shared/charts/product_risk.html",
+        {"data": risk_data, "update": update},
+    )
+
+
 @router.get("/env")
 async def get_aging_chart_env(
     request: Request,
@@ -156,7 +193,7 @@ async def get_sla_breach(
     )
     chart_ = data._asdict()
     if chart_.get("CRITICAL") is None:
-        chart_ = {"CRITICAL": 1, "HIGH": 1, "MEDIUM": 1, "LOW": 1}
+        chart_ = {}
     labels = []
     chart_data = []
 

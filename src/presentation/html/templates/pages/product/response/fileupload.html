@@ -1,15 +1,3 @@
-<script id="update_script_id" hx-swap-oob="outerHTML">
-  {% if logs %}
-  risk.updateSeries([
-    {{(logs.tCritical | default(0) / totalSeverity * 100) | round }},
-    {{(logs.tHigh | default(0) / totalSeverity * 100) | round }},
-    {{(logs.tMedium | default(0) / totalSeverity * 100) | round}},
-    {{(logs.tLow | default(0) / totalSeverity * 100) | round}}
-  ])
-  {% endif %}
-
-</script>
-
 <script id="toast-global-id" hx-swap-oob="true">
   ToastCustom("Uploaded: {{filename}}", "success");
 </script>
