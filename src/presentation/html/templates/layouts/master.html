@@ -2,6 +2,8 @@
 {% set permissions = get_user_permissions() %}
 {% set user_info = get_user_info() %}
 {% set is_admin = is_admin() %}
+{% set now = get_now() %}
+{% set now_utc = get_now(True) %}
 
 <html lang="en">
 <head>

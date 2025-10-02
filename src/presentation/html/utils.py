@@ -125,6 +125,12 @@ def score_description(value):
     return "?"
 
 
+def get_now(is_utc: bool = False):
+    if is_utc:
+        return datetime.now(tz=pytz.utc)
+    return datetime.now()
+
+
 templates.env.filters["startsWith"] = startsWith
 templates.env.filters["findingSeverityMap"] = findingSeverityMap
 templates.env.filters["assessmentTypeMap"] = assessmentTypeMap
@@ -139,7 +145,6 @@ templates.env.globals["is_admin"] = is_admin
 templates.env.globals["get_user_info"] = get_current_user
 templates.env.globals["get_user_permissions"] = get_user_permissions
 templates.env.globals["get_sidebar_items"] = get_sidebar_items
-templates.env.globals["now_utc"] = datetime.now(tz=pytz.utc)
-templates.env.globals["now"] = datetime.now()
+templates.env.globals["get_now"] = get_now
 templates.env.globals["version"] = version
 templates.env.filters["timeago"] = timeago
