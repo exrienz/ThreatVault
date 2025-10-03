@@ -44,7 +44,7 @@ class PluginService:
     async def upload_plugin(self, data: dict, file: UploadFile):
         if file.content_type != "text/x-python":
             raise InvalidFile("Python")
-        filepath = f"./public/plugins/{data.get('type', '').lower()}"
+        filepath = f"./plugins/{data.get('type', '').lower()}"
         filepath += f"/{data.get('env', 'VA').lower()}/{data.get('name')}.py"
         with open(filepath, "wb") as f:
             file_data = await file.read()

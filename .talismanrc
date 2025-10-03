@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: src/application/services/product_services.py
   checksum: c81e5a88ba34d0f8134b5b8440579baa913d252d29b1058a696ee3c70f9e2b9f
 - filename: src/presentation/html/templates/pages/auth/register.html
-  checksum: ef6b4441ab8ad723d4cde5d8167dd7bd84c90d611bfb00ed29ad893e07e2e13e
+  checksum: 9d4b18806b929524f218e9df86a6851a0bbda842d58bce953c361bae39eb2aec
 - filename: src/presentation/html/v1/product.py
   checksum: eb18d79932f15f65f488e4cae5d13f53fa7ca587a7dc346a275532487ac7ee7b
   checksum: 576965c48b31c8f0b58576c8070c0a815816fa79ff0db93585701b187f49d0d7
@@ -35,7 +35,7 @@ fileignoreconfig:
 - filename: src/presentation/html/v1/self_service.py
   checksum: 5bd7bb492511bad22ef6c9560d7e4a39b31d18acf760797e209eebc96e45a508
 - filename: src/presentation/html/templates/pages/auth/login.html
-  checksum: 316c376d1cc319619e82ad577573fee5083227ddebbaeaa6bca46a83e166b1b1
+  checksum: d3333494ce644822beb7c7597881a4abdb0860eb78cd9a710bb55e9b0603759e
 - filename: src/persistence/environment.py
   checksum: 0ff5283fc20d3459133826b2daf8077b0f027dcd0ecc0aca05431b98e4fed8df
 - filename: src/presentation/html/templates/error/403.html
@@ -101,7 +101,7 @@ fileignoreconfig:
 - filename: src/persistence/password_reset.py
   checksum: 144fc009b905455ce6b7f00ebcd9bf62ca2041a62821f67f08898df8343609c4
 - filename: src/presentation/html/templates/pages/auth/reset_password/new_password.html
-  checksum: c130a3c6bcd1ce3cbdc409a6eec2718f3fa9e15a74d1e219d73c51c889b812a6
+  checksum: 2c0172988a70b0d86a06d329518e287584d60d0e891e19f3b2cec2b70e10d2c8
 - filename: src/presentation/html/templates/pages/auth/reset_password/email_template.html
   checksum: 0eec8ae2f6699156adfc97ba53874777e2b6c44dbea38eb21beb71e628521e9b
 - filename: src/infrastructure/services/email/smtp.py
