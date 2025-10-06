@@ -131,9 +131,6 @@ var radialGradientOptions = {
           fontSize: "17px",
         },
         value: {
-          formatter: function (val) {
-            return parseInt(val)
-          },
           color: "#111",
           fontSize: "36px",
           show: true,
