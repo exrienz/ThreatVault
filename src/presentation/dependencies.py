@@ -4,6 +4,7 @@ from typing import Annotated
 import pytz
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from src.application.middlewares.user_context import (
     current_user_perm,
@@ -16,6 +17,7 @@ from src.domain.entity.user_access import (
     RolePermission,
 )
 from src.infrastructure.database.config import AsyncSessionFactory
+from src.infrastructure.database.session import get_session
 
 
 async def verify_auth():
@@ -81,7 +83,11 @@ class PermissionChecker:
         self.scopes = set(scopes)
         self.admin_only = admin_only
 
-    async def __call__(self, user: Annotated[dict, Depends(verify_auth)]):
+    async def __call__(
+        self,
+        user: Annotated[dict, Depends(verify_auth)],
+        session: Annotated[AsyncSession, Depends(get_session)],
+    ):
         is_admin = user.get("is_admin", False)
         if self.admin_only:
             if is_admin:
@@ -90,7 +96,7 @@ class PermissionChecker:
             if is_admin or user.get("high_privilege", False):
                 current_user_perm.set(set(["all"]))
                 return set(["all"])
-            permissions = await self._get_permission(user)
+            permissions = await self._get_permission(user, session)
             missing_perm = self.scopes - permissions
             if len(missing_perm) == 0:
                 current_user_perm.set(permissions)
@@ -101,7 +107,7 @@ class PermissionChecker:
             headers={"WWW-Authenticate": f"Bearer scope={' '.join(self.scopes)}"},
         )
 
-    async def _get_permission(self, user: dict) -> set:
+    async def _get_permission(self, user: dict, session: AsyncSession) -> set:
         stmt = (
             select(Permission.scope)
             .join(RolePermission)
@@ -109,7 +115,6 @@ class PermissionChecker:
                 RolePermission.role_id == user.get("role_id"),
             )
         )
-        async with AsyncSessionFactory() as session:
-            query = await session.execute(stmt)
-            res = query.scalars().all()
+        query = await session.execute(stmt)
+        res = query.scalars().all()
         return set(res)
