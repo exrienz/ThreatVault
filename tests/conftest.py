@@ -47,6 +47,11 @@ def anyio_backend():
     return "asyncio"
 
 
+@pytest.fixture
+def request_fixture(request):
+    return request.getfixturevalue(request.param)
+
+
 @pytest_asyncio.fixture(autouse=True)
 async def event_loop():
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -60,7 +65,7 @@ def setup_test_database():
     Base.metadata.create_all(bind=sync_engine)
     generate_users()
     yield
-    # Base.metadata.drop_all(bind=sync_engine)
+    Base.metadata.drop_all(bind=sync_engine)
 
 
 @pytest.fixture(scope="session", autouse=True)

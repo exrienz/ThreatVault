@@ -10,11 +10,11 @@ password = "Password@123"
 password_hash = pwd_context.hash(password)
 
 roles = {
-    "admin": [Role(name="admin", super_admin=True, required_project_access=False), []],
+    "admin": [Role(name="Admin", super_admin=True, required_project_access=False), []],
     "itse": [Role(name="ITSE", required_project_access=False), []],
-    "manager": [Role(name="manager", required_project_access=False), []],
-    "owner": [Role(name="owner"), ["comment:create", "dashboard:view"]],
-    "audit": [Role(name="audit"), ["dashboard:view"]],
+    "manager": [Role(name="Manager", required_project_access=False), []],
+    "owner": [Role(name="Owner"), ["comment:create", "dashboard:view"]],
+    "audit": [Role(name="Audit"), ["dashboard:view"]],
 }
 permission_list = ["dashboard:view", "comment:create"]
 
