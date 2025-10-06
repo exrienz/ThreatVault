@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="asset/logo.png" alt="Sentinel Logo" width="400" style="margin-bottom: 20px;">
+<img src="public/images/logo/logo.png" alt="Sentinel Logo" width="400" style="margin-bottom: 20px;">
 
 ### Next-Generation Vulnerability Management Platform
 
@@ -196,7 +196,7 @@ Navigate to your configured `APP_URL` in `.env` file
 
 ```
 ## Monitor Status
-docker-compose logs -f sentinel  
+docker-compose logs -f sentinel
 
 ## Health Check
 docker-compose ps
@@ -280,7 +280,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
 <div align="center">
 
 <a href="#sponsors">
-  <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
+  <img src="public/images/logo/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
 </a>
 
 </div>
@@ -290,8 +290,8 @@ We're grateful for the incredible individuals driving Sentinel's success:
 <div align="center">
 
 <sub>
-  <a href="#-quick-start-guide">Get started now</a> | 
-  <a href="#-contributing-to-sentinel">Join our community</a> | 
+  <a href="#-quick-start-guide">Get started now</a> |
+  <a href="#-contributing-to-sentinel">Join our community</a> |
   <a href="issues">Report Issues</a>
 </sub>
 <br>

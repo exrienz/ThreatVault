@@ -34,4 +34,3 @@ async def stream_cve_information(
     fn_id: UUID,
 ) -> EventSourceResponse:
     return EventSourceResponse(service.streaming_cve(fn_id))
-    # return EventSourceResponse(service.test("Hello "))

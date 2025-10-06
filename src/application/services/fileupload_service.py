@@ -195,7 +195,7 @@ class FileUploadService(ABC):
     def plugin_import(self, name: str, filename: str) -> ModuleType:
         # ph = pathlib.Path(__file__).cwd()
         # ph = pathlib.Path(__file__).resolve().parent
-        path = f"./public/plugins/{filename}"
+        path = f"./plugins/{filename}"
         spec = importlib.util.spec_from_file_location(name, path)
         if spec is None or spec.loader is None:
             raise
