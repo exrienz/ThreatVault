@@ -1,39 +1,77 @@
-Sentinel License (Non-Commercial Open Source License) v1.0
-==========================================================
+ThreatVault Non-Commercial License v1.0
+---------------------------------------
 
-Copyright (c) 2025 Muzaffar
+Copyright © 2025 ThreatVault. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to use,
-copy, modify, merge, publish, distribute, and/or sublicense the Software for
-**personal, educational, or community (non-commercial) purposes only**, subject to the following conditions:
+This license governs the use of the software known as “ThreatVault” and any related source code, binaries, or materials (collectively, the “Software”).
 
-1. **Non-Commercial Use Only**
-   - The Software may **not** be used, sold, licensed, or distributed for any
-     commercial, for-profit, or business purpose without explicit written
-     permission from the Project Manager (Muzaffar).
+By accessing, copying, or using the Software, you agree to the terms below.
 
-2. **Attribution**
-   - Proper credit must be given to the original authors, Muz and PayNet, in
-     any copy, distribution, or derivative work. A link to the original
-     repository or project website is recommended.
+---------------------------------------------------------------------------
+1. GRANT OF LICENSE
+---------------------------------------------------------------------------
+You are granted a non-exclusive, non-transferable, revocable license to:
+- Use, host, or deploy the Software internally or externally (including on local, on-prem, or cloud servers).
+- Modify the Software for personal, educational, research, nonprofit, or internal business purposes.
+- Share the Software with others, provided this same license remains attached.
 
-3. **Redistribution**
-   - You may redistribute the Software and/or derivative works **only** under
-     the terms of this License and with proper attribution.
+You may NOT:
+- Sell, rent, lease, or monetize the Software or any derivative work.
+- Use the Software as part of a paid product, service, or subscription.
+- Offer hosting or management of the Software as a paid service.
+- Claim ownership or authorship of the Software.
 
-4. **Disclaimer**
-   - The Software is provided "as-is", without warranty of any kind. The
-     authors and sponsors are not responsible for any damages, losses, or
-     liabilities arising from its use.
+--------------------------------------------------------------------------- 
+2. PERMITTED ORGANIZATIONAL USE
+--------------------------------------------------------------------------- 
+Educational institutions, nonprofit organizations, and open-source community projects
+may use, modify, and deploy the Software for non-commercial purposes, including research,
+training, or internal tooling — as long as no direct or indirect monetization occurs.
 
-5. **Contribution**
-   - By contributing to the Software, you agree to license your contributions
-     under this same Non-Commercial Open Source License.
+--------------------------------------------------------------------------- 
+3. OWNERSHIP
+--------------------------------------------------------------------------- 
+The Software and all associated intellectual property remain the property of Muzaffar, the original author.  
+All rights not expressly granted under this license are reserved.
 
----
+--------------------------------------------------------------------------- 
+4. NO WARRANTY
+--------------------------------------------------------------------------- 
+The Software is provided “AS IS”, without warranty of any kind, express or implied.  
+Use at your own risk.
 
-For inquiries about commercial licensing or enterprise use, please contact:
+--------------------------------------------------------------------------- 
+5. LIMITATION OF LIABILITY
+--------------------------------------------------------------------------- 
+Under no circumstances shall the author be liable for any damages, including but not limited to
+data loss, business interruption, or financial loss arising from the use of this Software.
 
-**Project Manager:** Muzaffar   
-Email: exrienz@gmail.com
+--------------------------------------------------------------------------- 
+6. COMMERCIAL USE
+--------------------------------------------------------------------------- 
+Commercial or monetized use of this Software is prohibited unless explicit written permission
+is obtained from the author.
+
+For licensing or partnership inquiries, contact:
+    Author: Muzaffar
+    Email: exrienz@gmail.com
+
+--------------------------------------------------------------------------- 
+7. TRADEMARK NOTICE
+--------------------------------------------------------------------------- 
+“ThreatVault” is an identifying name used by the author.  
+Unauthorized use of this name or related marks for branding, marketing, or paid offerings is prohibited.
+
+--------------------------------------------------------------------------- 
+8. TERMINATION
+--------------------------------------------------------------------------- 
+Violation of any term in this license immediately terminates your right to use or access the Software.
+
+--------------------------------------------------------------------------- 
+9. GOVERNING LAW
+--------------------------------------------------------------------------- 
+This license shall be governed by and construed in accordance with the laws of Malaysia (or your jurisdiction if applicable).
+
+--------------------------------------------------------------------------- 
+END OF LICENSE
+---------------------------------------------------------------------------
