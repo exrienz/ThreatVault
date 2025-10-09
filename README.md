@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="public/images/logo/logo.png" alt="Sentinel Logo" width="400" style="margin-bottom: 20px;">
+<img src="public/assets/static/images/logo/logo.svg" alt="ThreatVault Logo" width="400" style="margin-bottom: 20px;">
 
-### Next-Generation Vulnerability Management Platform
+### Next-Generation Unified Vulnerability and Compliance Management Platform
 
 [![Quality Gate Status](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=alert_status&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Security Rating](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=software_quality_security_rating&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
@@ -10,32 +10,31 @@
 [![Lines of Code](https://sast.code-x.my/api/project_badges/measure?project=sentinel&metric=ncloc&token=sqb_5a886e63b5dedd22d5458c17e86a8293de2a4a0f)](https://sast.code-x.my/dashboard?id=sentinel)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/exrienz/Sentinel)
 
-*Empowering security teams with intelligent vulnerability management, automated workflows, and enterprise-grade reporting*
+*Created by security engineers for security engineers - transforming raw vulnerability data into actionable intelligence*
+
+**[Website](https://threatvault.io/) | [Documentation](https://docs.threatvault.io/)**
 
 </div>
 
-
-
 ## 🎯 **Overview**
 
-**Sentinel** revolutionizes vulnerability management for IT Security Engineers, DevSecOps teams, and Security Management. By centralizing vulnerability findings from **Nessus Pro** and other security tools, Sentinel transforms raw security data into actionable intelligence.
+**ThreatVault** is a next-generation unified vulnerability and compliance management platform designed to centralize and streamline security operations for IT Security Engineers, DevSecOps teams, and Security Management. Built with a FastAPI backend and PostgreSQL database, ThreatVault transforms raw vulnerability data from multiple sources into actionable intelligence through smart deduplication, SLA tracking, and AI-powered explanations.
 
-### ✨ **Why Choose Sentinel?**
+### ✨ **Why Choose ThreatVault?**
 
 <table>
   <tr>
     <td align="center"><strong>🔄</strong><br><strong>Smart Deduplication</strong><br>Eliminates duplicate findings across tools</td>
     <td align="center"><strong>📊</strong><br><strong>SLA Tracking</strong><br>Monitor compliance & performance metrics</td>
-    <td align="center"><strong>🤖</strong><br><strong>Automation</strong><br>Streamlined workflows & reporting</td>
-    <td align="center"><strong>🎯</strong><br><strong>Centralized Dashboards</strong><br>Unified view of security posture</td>
+    <td align="center"><strong>🤖</strong><br><strong>AI Integration</strong><br>Better explanations for non-technical teams</td>
+    <td align="center"><strong>🎯</strong><br><strong>Unified Dashboards</strong><br>VAPT, Compliance & Management views</td>
   </tr>
 </table>
 
-> 💡 **Impact:** Organizations report 60% faster vulnerability remediation and 40% improved SLA compliance with centralized management.
-
+> 💡 **Impact:** Organizations using ThreatVault report 60% faster vulnerability remediation and 40% improved SLA compliance with centralized management.
 
 <br><br>
-## 🚀 **Some of Sentinel's Core Capabilities**
+## 🚀 **Core Capabilities**
 
 <div align="center">
 
@@ -53,47 +52,46 @@
   </thead>
    <tbody>
     <tr>
-      <td>Custom Tool Support</td>
-      <td>Sentinel allows users to create custom plugins to support any tool as needed.</td>
-      <td>Acts as a centralized vulnerability management platform for all product types.</td>
+      <td>Multi-Tool Integration</td>
+      <td>Support for Nessus, OpenVAS, OWASP ZAP, Trivy, and more through a flexible plugin architecture</td>
+      <td>Acts as a centralized platform for all vulnerability data across the DevSecOps lifecycle</td>
     </tr>
     <tr>
-      <td>AI Support</td>
-      <td>Sentinel integrates with OpenAI-supported schemes, enabling a wide range of AI applications.</td>
-      <td>Simplifies and explains vulnerabilities in a way understandable even to non-IT users.</td>
+      <td>AI-Powered Analysis</td>
+      <td>Integration with OpenAI to provide enhanced vulnerability explanations and insights</td>
+      <td>Simplifies complex security issues for better understanding by non-technical stakeholders</td>
     </tr>
     <tr>
-      <td>CI/CD Support</td>
-      <td>Built with a “shift-left” philosophy, Sentinel can automatically ingest scan results from CI/CD pipelines.</td>
-      <td>Streamlines vulnerability tracking and accelerates remediation actions.</td>
+      <td>DevSecOps Ready</td>
+      <td>Built with a "shift-left" philosophy for seamless integration with CI/CD pipelines</td>
+      <td>Streamlines vulnerability tracking and accelerates remediation actions</td>
     </tr>
     <tr>
-      <td>Deduplicate Finding Removal</td>
-      <td>Sentinel intelligently identifies and removes duplicate findings.</td>
-      <td>Improves accuracy in vulnerability tracking and reduces noise.</td>
+      <td>Smart Deduplication</td>
+      <td>Intelligently identifies and removes duplicate findings across multiple tools</td>
+      <td>Improves accuracy in vulnerability tracking and reduces noise</td>
     </tr>
     <tr>
-      <td>SLA Tracker</td>
-      <td>Tracks pending findings against SLA deadlines.</td>
-      <td>Helps security engineers ensure timely remediation and maintain compliance.</td>
+      <td>SLA Management</td>
+      <td>Tracks pending findings against SLA deadlines based on severity levels</td>
+      <td>Ensures timely remediation and maintains compliance standards</td>
     </tr>
     <tr>
-      <td>Structured Project Support</td>
-      <td>Supports multiple projects and products with structured tracking.</td>
-      <td>Enables security teams to monitor assessments and findings across different products.</td>
+      <td>Comprehensive Dashboards</td>
+      <td>Dedicated VAPT, Compliance, and Management dashboards with actionable insights</td>
+      <td>Provides tailored views for different stakeholders across the organization</td>
     </tr>
     <tr>
-      <td>Support for VAPT and Compliance (Experimental)</td>
-      <td>Extends beyond traditional vulnerability assessment to include compliance checks.</td>
-      <td>Provides more comprehensive protection than standard VA-only tools.</td>
+      <td>Role-Based Access Control</td>
+      <td>Granular access management with five distinct user roles</td>
+      <td>Ensures appropriate access levels for different team members and stakeholders</td>
     </tr>
   </tbody>
 </table>
 
-
 <div align="center">
 
-### 🏆 **Why Security Teams Choose Sentinel**
+### 🏆 **Why Security Teams Choose ThreatVault**
 
 <table>
   <tr>
@@ -118,16 +116,13 @@
 
 </div>
 
-
-
 **Key Benefits:**
 - ✅ **Granular tracking** - Host, port, and CVE-level precision
 - ✅ **SLA accuracy** - Individual finding lifecycle management
 - ✅ **Remediation focus** - Prioritized actionable intelligence
 
-
 <br><br>
-## 👥 **User Ecosystem**
+## 👥 **User Roles & Access**
 
 <div align="center">
 
@@ -141,33 +136,41 @@
       • System configuration
     </td>
     <td align="center">
-      <strong>🔒 IT Security Engineer</strong><br>
+      <strong>🔒 IT Security Engineer (ITSE)</strong><br>
       <em>Security Operations</em><br>
-      • Vulnerability assessment<br>
-      • User assignment & ownership<br>
-      • Scan management
+      • User access approval<br>
+      • Role & project assignment<br>
+      • Scan result management
     </td>
   </tr>
   <tr>
     <td align="center">
-      <strong>👔 Management/CISO</strong><br>
+      <strong>👔 Management</strong><br>
       <em>Strategic Oversight</em><br>
+      • Read-only access to all products<br>
       • Executive dashboards<br>
-      • Compliance reporting<br>
-      • Risk analytics
+      • Compliance reporting
     </td>
     <td align="center">
       <strong>📦 Product Owner</strong><br>
       <em>Product-Focused</em><br>
-      • Product-specific findings<br>
-      • Scoped access control<br>
-      • Remediation tracking
+      • Access to granted projects<br>
+      • Remediation tracking<br>
+      • Product-specific findings
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <strong>🔍 Audit</strong><br>
+      <em>Compliance Oversight (Under Development)</em><br>
+      • Audit trail access<br>
+      • Compliance verification<br>
+      • Reporting capabilities
     </td>
   </tr>
 </table>
 
 </div>
-
 
 <br><br>
 ## 🚀 **Quick Start Guide**
@@ -182,29 +185,90 @@
 ```bash
 # 1️⃣ Clone repository
 git clone <repository_url>
-cd sentinel
+cd threatvault
 
 # 2️⃣ Configure environment
 cp .env.docker .env
 
-# 3️⃣ Launch Sentinel
+# 3️⃣ Launch ThreatVault
 docker-compose up --build -d
 ```
 
 ### **🎯 Access Your Platform**
-Navigate to your configured `APP_URL` in `.env` file
+Navigate to the APP_URL configured in your .env file
 
-```
-## Monitor Status
-docker-compose logs -f sentinel
+### **📊 Monitoring**
 
-## Health Check
+```bash
+# View application logs
+docker-compose logs -f threatvault
+
+# Check health status
 docker-compose ps
 ```
 
+<br><br>
+## 💻 **Technology Stack**
+
+<table>
+  <tr>
+    <td><strong>Backend</strong></td>
+    <td>
+      • FastAPI (Python web framework)<br>
+      • PostgreSQL 17.0 (database)<br>
+      • Alembic (DB migrations/versioning)<br>
+      • SQLAlchemy (async ORM)<br>
+      • Polars & Pandas (data manipulation)
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Frontend</strong></td>
+    <td>
+      • Server-side HTML templates<br>
+      • Bootstrap (styling)<br>
+      • HTMX 2.0.4 (dynamic UI, SSE)<br>
+      • jQuery (DOM manipulation)<br>
+      • DataTables (data tables)<br>
+      • ApexCharts (visualizations)<br>
+      • SweetAlert2 (alerts)<br>
+      • Choices.js (select inputs)
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Infrastructure</strong></td>
+    <td>
+      • Docker (containerization)<br>
+      • Docker Compose (orchestration)<br>
+      • SessionMiddleware & CORS middleware (API/session management)
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Security</strong></td>
+    <td>
+      • JWT + OAuth2 (authentication)<br>
+      • Role-based access control (RBAC)
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Integrations</strong></td>
+    <td>
+      • OpenAI API (AI vulnerability analysis)<br>
+      • xhtml2pdf (PDF generation)
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Architecture</strong></td>
+    <td>
+      • Layered separation: presentation, application, domain, persistence<br>
+      • Static assets served from /assets endpoint<br>
+      • Automatic DB initialization and scheduler on startup<br>
+      • Server-Sent Events (SSE) for real-time updates
+    </td>
+  </tr>
+</table>
 
 <br><br>
-## 🤝 **Contributing to Sentinel**
+## 🤝 **Contributing to ThreatVault**
 
 <div align="center">
 
@@ -224,7 +288,7 @@ We welcome contributors who share our vision of revolutionizing vulnerability ma
 ```bash
 # Fork & clone
 git clone <your-fork-url>
-cd sentinel
+cd threatvault
 
 # Create feature branch
 git checkout -b feature/amazing-new-capability
@@ -249,7 +313,7 @@ git push origin feature/amazing-new-capability
 
 <div align="center">
 
-We're grateful for the incredible individuals driving Sentinel's success:
+We're grateful for the incredible individuals driving ThreatVault's success:
 
 <table>
   <tr>
@@ -270,7 +334,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
   </tr>
 </table>
 
-*Want to join this elite group? [Start contributing today!](#-contributing-to-sentinel)*
+*Want to join this elite group? [Start contributing today!](#-contributing-to-threatvault)*
 
 </div>
 
@@ -280,7 +344,7 @@ We're grateful for the incredible individuals driving Sentinel's success:
 <div align="center">
 
 <a href="#sponsors">
-  <img src="public/images/logo/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
+  <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
 </a>
 
 </div>
@@ -290,14 +354,14 @@ We're grateful for the incredible individuals driving Sentinel's success:
 <div align="center">
 
 <sub>
-  <a href="#-quick-start-guide">Get started now</a> |
-  <a href="#-contributing-to-sentinel">Join our community</a> |
+  <a href="#-quick-start-guide">Get started now</a> | 
+  <a href="#-contributing-to-threatvault">Join our community</a> | 
   <a href="issues">Report Issues</a>
 </sub>
 <br>
 <br>
 <p><strong>📄 License:</strong> See <a href="LICENSE">LICENSE</a> file for complete terms and conditions</p>
 
-<p>© 2025 Sentinel Project. Built with ❤️ for the global security community.</p>
+<p>© 2025 ThreatVault Project. Built with ❤️ for the global security community.</p>
 
 </div>
