@@ -33,17 +33,26 @@ def startup_db():
 def create_default_roles():
     logger.info("Creating Default Role")
     with SyncSessionFactory() as session:
-        stmt = select(func.count(Role.id))
-        roles = session.execute(stmt).scalar_one()
-        if roles == 0:
-            role_list = [Role(**data) for data in default_roles]
-            session.add_all(role_list)
-            session.commit()
+        for data in default_roles:
+            role_name = data.get("name")
+            exists = session.scalar(select(Role).where(Role.name == role_name))
+
+            if exists:
+                exists.super_admin = data.get("super_admin", False)
+                exists.required_project_access = data.get(
+                    "required_project_access", True
+                )
+            else:
+                session.add(Role(**data))
+
+        session.commit()
+
     logger.info("Default Role Created")
 
 
 def creating_default_permission():
     logger.info("Creating Default Permissions")
+    # TODO: UPDATE
     with SyncSessionFactory() as session:
         stmt = select(func.count(Permission.id))
         perm = session.execute(stmt).scalar_one()
@@ -59,17 +68,31 @@ def create_role_permissions():
     with SyncSessionFactory() as session:
         stmt = select(func.count(RolePermission.id))
         perm = session.execute(stmt).scalar_one()
-        if perm == 0:
-            for data in default_role_permission:
-                role_str = data.get("role")
-                role_stmt = select(Role.id).where(Role.name == role_str)
-                perm_stmt = select(Permission.id).where(
-                    Permission.scope.in_(data.get("scopes", []))
+        if perm != 0:
+            return
+
+        for data in default_role_permission:
+            role_name = data.get("role")
+            scopes = data.get("scopes")
+
+            role_id = session.scalar(select(Role.id).where(Role.name == role_name))
+            if not role_id:
+                continue
+
+            perm_ids = session.scalars(
+                select(Permission.id).where(Permission.scope.in_(scopes))
+            ).all()
+
+            for perm_id in perm_ids:
+                exists = session.scalar(
+                    select(RolePermission.id).where(
+                        RolePermission.role_id == role_id,
+                        RolePermission.permission_id == perm_id,
+                    )
                 )
-                role = session.scalar(role_stmt)
-                perm_ids = session.scalars(perm_stmt)
-                for perm_id in perm_ids:
-                    session.add(RolePermission(role_id=role, permission_id=perm_id))
+
+                if not exists:
+                    session.add(RolePermission(role_id=role_id, permission_id=perm_id))
             session.commit()
     logger.info("Default Permission Assigned")
 

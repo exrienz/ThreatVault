@@ -40,11 +40,20 @@
                     <select id="project_select_id" class="form-select" hx-get="/project-management/environments"
                       hx-target="#env_select_id" hx-swap="innerHTML" name="project_id">
                       <option selected="">Choose Project</option>
-                      {% for project in projects %}
-                      <option value={{ project.id }}>
-                        {{ project.name }}
-                      </option>
-                      {% endfor %}
+                      <optgroup label="VAPT">
+                        {% for project in vapts %}
+                        <option value={{ project.id }}>
+                          {{ project.name }}
+                        </option>
+                        {% endfor %}
+                      </optgroup>
+                      <optgroup label="Compliance">
+                        {% for project in compliances %}
+                        <option value={{ project.id }}>
+                          {{ project.name }}
+                        </option>
+                        {% endfor %}
+                      </optgroup>
                     </select>
                   </div>
                   <div class="col-md-3">
@@ -77,8 +86,23 @@
           <div class="card-body">
             <p>The following is a list of projects, products, and their respective owners.</p>
             <br />
-            <div class="accordion accordion-flush" id="accordionProjectList">
-              {% include "pages/manage_owner/component/projectAccordion.html" %}
+            <div class="row">
+              <div class="col-6 border p-2">
+                <h5>VAPT</h5>
+                <div class="accordion accordion-flush" id="accordionVAPT">
+                  {% with projects=vapts,parent_id="accordionVAPT" %}
+                  {% include "pages/manage_owner/component/projectAccordion.html" %}
+                  {% endwith %}
+                </div>
+              </div>
+              <div class="col-6 border p-2">
+                <h5>Compliance</h5>
+                <div class="accordion accordion-flush" id="accordionCompliance">
+                  {% with projects=compliances,parent_id="accordionCompliance" %}
+                  {% include "pages/manage_owner/component/projectAccordion.html" %}
+                  {% endwith %}
+                </div>
+              </div>
             </div>
           </div>
         </div>

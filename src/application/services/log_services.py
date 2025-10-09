@@ -220,3 +220,6 @@ class LogService:
 
     async def get_by_date_filter(self, product_id: UUID, year: int, month: int):
         return await self.repository.get_by_date_filter(product_id, year, month)
+
+    async def get_risks(self, product_id: UUID) -> Log:
+        return await self.repository.get_by_product_id(product_id)

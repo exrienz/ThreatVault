@@ -4,7 +4,9 @@
 {% extends 'layouts/master.html' %}
 
 {% block styles %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
+<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />-->
+<link rel="stylesheet" href="/assets/css/filepond.css" />
+<link rel="stylesheet" href="/assets/css/choices.css" />
 {% endblock %}
 
 {% block content %}
@@ -48,7 +50,12 @@
           <h4>Vulnerability Chart</h4>
         </div>
         <div class="card-body">
-          <div id="risk"></div><br>
+          <div hx-get="/chart/product/risk?product_id={{product.id}}&update=True"
+            hx-trigger="reload-findings from:body">
+          </div>
+          <div hx-get="/chart/product/risk?product_id={{product.id}}" hx-trigger="load"></div>
+          <div id="risk">
+          </div><br>
         </div>
       </div>
     </div>
@@ -58,6 +65,8 @@
           <h4>Aging Finding</h4>
         </div>
         <div class="card-body">
+          <div hx-get="/chart/product?product_id={{product.id}}&update=True" hx-trigger="reload-findings from:body">
+          </div>
           <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
         </div>
       </div>
@@ -124,83 +133,41 @@
 {% endblock %}
 
 {% block js %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<script src="/assets/extensions/choices.js/public/assets/scripts/choices.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
 
-<script src="/assets/static/js/pages/form-element-select.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>-->
 
-<script id="update_script_id">
-  {% if logs %}
-  risk.updateSeries([
-    {{(logs.tCritical | default(0) / totalSeverity * 100) | round }},
-    {{(logs.tHigh | default(0) / totalSeverity * 100) | round }},
-    {{(logs.tMedium | default(0) / totalSeverity * 100) | round}},
-    {{(logs.tLow | default(0) / totalSeverity * 100) | round}}
-  ])
-  {% endif %}
-</script>
-<script>
-  var el = document.querySelector("#hosts");
-  var hostChoices = new Choices(el, {removeItems: true, removeItemButton: true});
-  function mapHostChoice(value, idx, el) {
-    return {value: value, label: value}
-  }
-  function setChoices(hosts, finding_name_id, current_status) {
-    mapped = hosts.map(mapHostChoice);
-    hostChoices.setChoices(mapped, "value", "label", true);
+<!--<script src="/assets/static/js/pages/form-element-select.js"></script>-->
 
-    fm = document.querySelector("#fn_name_action_id")
-    fm.setAttribute("value", `${finding_name_id}`)
+<script src="/assets/js/choices.js" type="module"></script>
+<script src="/assets/js/filepond.js"></script>
 
-    fn_status = document.querySelector("#current_status")
-    fm_status.setAttribute("value", `${current_status}`)
-  }
-</script>
+<script id="finding-filter-script-id"></script>
 
-<script id="finding-filter-script-id">
-  var statusChoiceEl = document.querySelector("#status-choices");
-  var statusChoices = new Choices(statusChoiceEl, {
-    removeItems: true,
-    removeItemButton: true
-  });
-
-  var severityChoiceEl = document.querySelector("#severity-choices");
-  var severityChoices = new Choices(severityChoiceEl, {
-    removeItems: true,
-    removeItemButton: true
-  });
-
-  var assetsChoiceEl = document.querySelector("#assets-choices");
-  var assetsChoices = new Choices(assetsChoiceEl, {
-    removeItems: true,
-    removeItemButton: true
-  });
-
-  var sourceChoiceEl = document.querySelector("#source-choices");
-  var sourceChoices = new Choices(sourceChoiceEl, {
-    removeItems: true,
-    removeItemButton: true
-  });
-
-  var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices];
-
-  function clearChoices() {
-    chLists.forEach(clearChoiceMap);
-  }
-
-  function clearChoiceMap(value, idx, array) {
-    value.removeActiveItems();
-  }
-
-</script>
-
+<script src="/assets/components/js/pages/product.js" defer></script>
 <script>
   function downloadReport(productId) {
     const date = document.getElementById("report-date").value;
     const url = `/product/${productId}/report?date=${encodeURIComponent(date)}&type_={{product.environment.project.type_}}`;
     window.open(url, "_blank"); // new tab
   }
+
+  const pond = FilePond.create(document.querySelector(".multiple-files-filepond"), {
+    credits: null,
+    allowImagePreview: false,
+    allowMultiple: true,
+    allowFileEncode: false,
+    required: true,
+  })
+  document.querySelector('#upload_fn_id').addEventListener('htmx:beforeRequest', (e) => {
+    pond.getFiles().forEach((fileItem, idx) => {
+      e.detail.requestConfig.formData.append("formFile", fileItem.file);
+    });
+  });
+  document.querySelector('#upload_fn_id').addEventListener('htmx:afterRequest', (event) => {
+    if (event.detail.successful) {
+      pond.removeFiles();
+    }
+  });
 </script>
 {% endblock %}

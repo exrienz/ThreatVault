@@ -1,0 +1,52 @@
+{% set title = "Manage Role" %}
+{% set filename = "/manage-role" %}
+{% extends 'layouts/master.html' %}
+{% block styles %}
+{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <h3>Role Configuration Dashboard</h3>
+</div>
+<div class="page-content">
+  <!--Row-->
+  <!-- Row -->
+  <section class="row">
+    <div class="row">
+      <!-- Middle side columns -->
+      <div class="col-12 col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4>Role List</h4>
+          </div>
+          <div class="card-body">
+            <!-- Table with stripped rows -->
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Role Name</th>
+                  <th>Required Project Access</th>
+                  <th>Permissions</th>
+                  <th>Manage</th>
+                </tr>
+              </thead>
+              <tbody id="user_table_id" hx-indicator="#spinner">
+                {% for role in roles %}
+                {% include "pages/manage_role/component/role.html"%}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<div id="edit-form" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

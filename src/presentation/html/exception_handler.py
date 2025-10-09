@@ -1,6 +1,6 @@
 import openai
 from fastapi import HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from jwt import ExpiredSignatureError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -50,6 +50,9 @@ async def inactiveUser(request: Request, exc: InactiveUser):
 
 
 async def httpException(request: Request, exc: HTTPException):
+    path = request.url.path
+    if exc.status_code == 403 and path == "/":
+        return RedirectResponse(str(request.base_url) + "management-view/vapt")
     if exc.status_code in [401, 403, 404, 500]:
         return templates.TemplateResponse(
             request,

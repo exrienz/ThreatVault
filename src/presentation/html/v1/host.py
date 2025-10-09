@@ -27,6 +27,7 @@ async def get_host_finding_by_product_id(
     if risk_data:
         total_severity = sum(risk_data[1:-1])
 
+    finding = await service.get_first_by_filters({"host": host})
     return templates.TemplateResponse(
         request,
         "pages/host/index.html",
@@ -34,6 +35,7 @@ async def get_host_finding_by_product_id(
             "host": host,
             "logs": risk_data,
             "totalSeverity": total_severity,
+            "finding": finding,
         },
     )
 

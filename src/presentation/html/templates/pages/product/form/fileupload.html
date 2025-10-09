@@ -34,10 +34,6 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="form-group" hx-disinherit="hx-post">
-                <label for="formFile" class="form-label">File Upload</label>
-                <input class="form-control form-control" name="formFile" type="file" />
-            </div>
             <br />
             <div class="form-group">
                 <ul class="list-unstyled mb-0">
@@ -85,8 +81,16 @@
                 </ul>
             </div>
         </div>
-        <div class="form-group mt-3 text-end">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
+    </div>
+    <div class="row mt-3">
+      <div class="form-group" hx-disinherit="hx-post">
+        <label for="formFile" class="form-label">File Upload</label>
+        <input class="multiple-files-filepond" type="file" multiple>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group mt-3 text-end">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
     </div>
 </form>

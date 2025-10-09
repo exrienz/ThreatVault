@@ -1,0 +1,27 @@
+{% set cannot_update_list = cannot_update or [] %}
+<tr id="row_{{role.id}}">
+  <td>{{role.name}}</td>
+  <td>{{role.required_project_access}}</td>
+  <td>
+    {% if role.permissions %}
+    <ul>
+      {% for permission in role.permissions %}
+      <li>{{ permission }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </td>
+  <td>
+    {% if role.name not in cannot_update_list %}
+    <button
+      hx-get="/manage-role/edit-form/{{role.id}}"
+      hx-target="#edit-form"
+      hx-trigger="click"
+      data-bs-toggle="modal"
+      data-bs-target="#edit-form"
+      class="btn btn-primary">
+      Edit
+    </button>
+    {% endif %}
+  </td>
+</tr>

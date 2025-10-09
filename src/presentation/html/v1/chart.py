@@ -28,6 +28,7 @@ async def get_project_yearly_stats(
     request: Request,
     service: ProjectManagementServiceDep,
     log_service: LogServiceDep,
+    env_service: EnvServiceDep,
     project_id: UUID,
     req_data: Annotated[YearlyStatsRequestSchema, Query()],
 ):
@@ -37,8 +38,17 @@ async def get_project_yearly_stats(
             status.HTTP_404_NOT_FOUND,
             detail=f"Project with ID({project_id}) does not exists",
         )
+    env = await env_service.get_by_filter(project.id, req_data.env)
+    if env is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"{req_data.env} environment for {project.name} does not exists",
+        )
     filters = YearlyStatisticFilterSchema(
-        project_id=project_id, year=req_data.year, view_type=req_data.view_type
+        # project_id=project_id,
+        year=req_data.year,
+        view_type=req_data.view_type,
+        env_id=env.id,
     )
     chart, *_, labels = await log_service.get_yearly_statistics(filters)
     return templates.TemplateResponse(
@@ -67,7 +77,45 @@ async def get_product_yearly_stats(
             "chart": chart,
             "labels": labels,
             "env": "product",
+            "update": req_data.update,
         },
+    )
+
+
+@router.get("/product/risk", response_class=HTMLResponse)
+async def get_product_risk_latest(
+    request: Request,
+    log_service: LogServiceDep,
+    product_id: UUID,
+    update: bool = False,
+):
+    data = await log_service.get_risks(product_id)
+    chart_data = []
+    if data:
+        chart_data = [data.tCritical, data.tHigh, data.tMedium, data.tLow]
+    return templates.TemplateResponse(
+        request,
+        "shared/charts/product_risk.html",
+        {"data": chart_data, "update": update},
+    )
+
+
+@router.get("/host/risk", response_class=HTMLResponse)
+async def get_host_risk_latest(
+    request: Request,
+    service: FindingServiceDep,
+    host: str,
+    update: bool = False,
+):
+    risk_pagination = await service.get_group_by_assets(filters={"host": (host,)})
+    risk = risk_pagination.get("findings")
+    risk_data = risk.data[0] if risk else None
+    if risk_data:
+        risk_data = [risk_data[4], risk_data[3], risk_data[2], risk_data[1]]
+    return templates.TemplateResponse(
+        request,
+        "shared/charts/product_risk.html",
+        {"data": risk_data, "update": update},
     )
 
 
@@ -145,7 +193,7 @@ async def get_sla_breach(
     )
     chart_ = data._asdict()
     if chart_.get("CRITICAL") is None:
-        chart_ = {"CRITICAL": 1, "HIGH": 1, "MEDIUM": 1, "LOW": 1}
+        chart_ = {}
     labels = []
     chart_data = []
 

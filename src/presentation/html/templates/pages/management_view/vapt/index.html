@@ -2,10 +2,10 @@
 {% set menuKey = "/management-view" %}
 {% set sidebarname = project_type %}
 {% extends 'layouts/master.html' %}
-{% block styles %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
 
+{% block styles %}
 {% endblock %}
+
 {% block content %}
 <div class="page-heading">
   <h3>{{project_type}} - Management View</h3>
@@ -53,8 +53,5 @@
 </div>
 {% endblock %}
 {% block js %}
-<script src="/assets/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="/assets/static/js/pages/ui-apexchart.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script id="overall-chart-js"></script>
 {% endblock %}

@@ -90,12 +90,12 @@ class FileUploadService(ABC):
     def __init__(
         self,
         session: AsyncSession,
-        file: UploadFile,
+        files: list[UploadFile],
         product_id: UUID,
         data: FindingUploadSchema,
     ):
         self.session: AsyncSession = session
-        self.file = file
+        self.files = files
         self.plugin_id = data.plugin
         self.scan_date = data.scan_date.replace(
             hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.utc
@@ -129,12 +129,20 @@ class FileUploadService(ABC):
             )
 
     async def file_validation(self):
-        if self.file.content_type is None or self.file.filename is None:
-            raise InvalidInput("Invalid file. File metadata seems missing")
-
-        file_type = self.file.content_type.split("/")[-1]
-        if file_type != "csv":
-            raise InvalidInput("Invalid file type. Currently we only support (csv)")
+        invalid_file_types = []
+        for file in self.files:
+            if file.content_type is None or file.filename is None:
+                raise InvalidInput("Invalid file. File metadata seems missing")
+            file_type = file.content_type.split("/")[-1]
+            if file_type != "csv":
+                invalid_file_types.append(file.filename)
+        if invalid_file_types:
+            raise InvalidInput(
+                f"""
+                Invalid file type. Currently we only support (csv)
+                Invalid files: {invalid_file_types}
+                """
+            )
 
     async def get_plugin(self):
         stmt = select(Plugin).where(Plugin.id == self.plugin_id)
@@ -149,16 +157,24 @@ class FileUploadService(ABC):
         return self.plugin
 
     async def run_plugin(self) -> pl.LazyFrame:
-        csv_file = await self.file.read()
-        if self.plugin is None:
-            self.plugin = await self.get_plugin()
+        lazyframes: list[pl.LazyFrame] = []
+        for file in self.files:
+            csv_file = await file.read()
+            if self.plugin is None:
+                self.plugin = await self.get_plugin()
 
-        lf = self.plugin.process(csv_file)
-        if isinstance(lf, pl.DataFrame):
-            lf = lf.lazy()
-        if isinstance(lf, pd.DataFrame):
-            lf = pl.from_pandas(lf).lazy()
-        self.finding_lf = lf
+            lf = self.plugin.process(csv_file)
+            if isinstance(lf, pl.DataFrame):
+                lf = lf.lazy()
+            if isinstance(lf, pd.DataFrame):
+                lf = pl.from_pandas(lf).lazy()
+            lazyframes.append(lf)
+        if not lazyframes:
+            self.finding_lf = pl.LazyFrame()
+        elif len(lazyframes) == 1:
+            self.finding_lf = lazyframes[0]
+        else:
+            self.finding_lf = pl.concat(lazyframes, how="vertical")
         return self.finding_lf
 
     async def remove_uploaded_new_finding(self):
@@ -179,7 +195,7 @@ class FileUploadService(ABC):
     def plugin_import(self, name: str, filename: str) -> ModuleType:
         # ph = pathlib.Path(__file__).cwd()
         # ph = pathlib.Path(__file__).resolve().parent
-        path = f"./public/plugins/{filename}"
+        path = f"./plugins/{filename}"
         spec = importlib.util.spec_from_file_location(name, path)
         if spec is None or spec.loader is None:
             raise
@@ -606,12 +622,12 @@ class UploadFileServiceGeneral:
     def __init__(
         self,
         session: AsyncSession,
-        file: UploadFile,
+        files: list[UploadFile],
         product_id: UUID,
         data: FindingUploadSchema,
     ):
         self.session = session
-        self.file = file
+        self.files = files
         self.product_id = product_id
         self.data = data
 
@@ -626,11 +642,11 @@ class UploadFileServiceGeneral:
         project_type = query.scalar_one()
         if project_type == "HA":
             uploader = HAUploadService(
-                self.session, self.file, self.product_id, self.data
+                self.session, self.files, self.product_id, self.data
             )
         else:
             uploader = VAUploadService(
-                self.session, self.file, self.product_id, self.data
+                self.session, self.files, self.product_id, self.data
             )
         try:
             await uploader.upload()
@@ -649,10 +665,10 @@ class UploadFileServiceGeneral:
         project_type = query.scalar_one()
         if project_type == "HA":
             uploader = HAUploadService(
-                self.session, self.file, self.product_id, self.data
+                self.session, self.files, self.product_id, self.data
             )
         else:
             uploader = VAUploadService(
-                self.session, self.file, self.product_id, self.data
+                self.session, self.files, self.product_id, self.data
             )
         return uploader

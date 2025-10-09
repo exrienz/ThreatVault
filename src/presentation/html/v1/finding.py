@@ -36,22 +36,19 @@ async def get_finding(
         "product_id": product_id,
         "status": status,
     }
-    findings = await service.get_all_by_filter(filters)
-    findings_dict: dict[str, list] = {}
-    for finding in findings:
-        if findings_dict.get(finding.host):
-            findings_dict[finding.host].append(finding)
-        else:
-            findings_dict[finding.host] = [finding]
+    # findings = await service.get_all_by_filter(filters)
+
+    finding = await service.get_first_by_filters(filters)
+    finding_hosts = await service.get_all_group_by_evidence(filters)
 
     return templates.TemplateResponse(
         request,
         "pages/finding/index.html",
         {
-            "data": findings,
+            "data": finding,
             "product": product,
             "product_id": product_id,
-            "findings_dict": findings_dict,
+            "finding_hosts": finding_hosts,
             "finding_name_id": finding_name_id,
             "status": status,
         },
@@ -78,7 +75,10 @@ async def get_all_comment(
     )
 
 
-@router.post("/{finding_name_id}/comment")
+@router.post(
+    "/{finding_name_id}/comment",
+    dependencies=[Depends(PermissionChecker(["comment:create"]))],
+)
 async def comment_finding(
     request: Request,
     service: CommentServiceDep,

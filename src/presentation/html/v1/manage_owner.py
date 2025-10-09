@@ -28,6 +28,8 @@ async def get_index_page(
     product_service: ProductServiceDep,
 ):
     projects = await project_service.get_project_extended()
+    vapt_project = set(project for project in projects if project.type_ == "VA")
+    compliance_project = set(project for project in projects if project.type_ == "HA")
     users = await user_service.get_all(
         filters={"role": "Owner", "active": True}, pagination=False
     )
@@ -38,6 +40,8 @@ async def get_index_page(
         "pages/manage_owner/index.html",
         {
             "projects": projects,
+            "vapts": vapt_project,
+            "compliances": compliance_project,
             "users": users,
             "owners": products_by_id,
         },
@@ -52,10 +56,17 @@ async def manage_owner(
     user_id: Annotated[UUID, Form()],
     granted: Annotated[bool, Form()] = True,
 ):
-    access = await service.manage_product_access(product_id, user_id, granted)
+    access, product, user = await service.manage_product_access(
+        product_id, user_id, granted
+    )
     return templates.TemplateResponse(
         request,
         "pages/manage_owner/response/toggle_access.html",
-        {"access": access, "granted": granted},
+        {
+            "access": access,
+            "granted": granted,
+            "product": product,
+            "user": user,
+        },
         headers={"HX-Trigger": "resetOwnerForm"},
     )

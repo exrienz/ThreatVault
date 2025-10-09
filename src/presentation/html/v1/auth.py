@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, Request
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.application.dependencies import AuthServiceDep, GlobalServiceDep
@@ -10,6 +11,10 @@ from src.application.schemas.auth import (
     UserLoginSchema,
     UserRegisterSchema,
 )
+from src.application.security.oauth2.openid import OpenIDConnectService, oauth
+from src.application.utils.jwt import generate_access_token
+from src.infrastructure.database import get_session
+from src.persistence.auth import AuthRepository
 
 from ..utils import templates
 
@@ -41,8 +46,8 @@ async def register(
 @router.get("/login")
 async def login_page(request: Request, globalsetting: GlobalServiceDep):
     db_setting = await globalsetting.get()
-    if db_setting is None or not db_setting.login_via_email:
-        raise HTTPException(404)
+    # if db_setting is None or not db_setting.login_via_email:
+    #     raise HTTPException(404)
 
     user = get_current_user_id()
     if user:
@@ -51,7 +56,11 @@ async def login_page(request: Request, globalsetting: GlobalServiceDep):
             "error/loggedIn.html",
         )
 
-    return templates.TemplateResponse(request, "pages/auth/login.html")
+    okta = False
+    if db_setting:
+        okta = db_setting.okta_enabled
+
+    return templates.TemplateResponse(request, "pages/auth/login.html", {"okta": okta})
 
 
 @router.post("/login")
@@ -70,6 +79,43 @@ async def login(
         },
     )
     response.set_cookie("Authorization", f"Bearer {token}")
+    return response
+
+
+# TODO: Extend support
+@router.get("/login/openid")
+async def login_via_openid(
+    request: Request,
+    service: Annotated[OpenIDConnectService, Depends()],
+):
+    url = request.url_for("callback")
+    await service.configure()
+    return await oauth.okta.authorize_redirect(request, url)
+
+
+# TODO: Extend support
+@router.route("/login/callback", methods=["GET", "POST"])
+async def callback(request: Request):
+    okta = oauth.create_client("okta")
+    token = await okta.authorize_access_token(request)
+
+    userinfo = token.get("userinfo", {})
+    email = userinfo.get("email")
+
+    if email is None:
+        raise
+
+    user = None
+    async for session in get_session():
+        repo = AuthRepository(session)
+        user = await repo.get_by_filter({"email": email})
+
+    if user is None or not user.active:
+        raise
+
+    access_token = generate_access_token(user)
+    response = RedirectResponse("/")
+    response.set_cookie("Authorization", f"Bearer {access_token}")
     return response
 
 

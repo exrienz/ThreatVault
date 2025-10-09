@@ -258,7 +258,7 @@ class LogRepository(BaseRepository[Log]):
             return 1
         return 0
 
-    async def get_by_product_id(self, product_id: UUID):
+    async def get_by_product_id(self, product_id: UUID) -> Log:
         await self.calculate_score_simple(product_id)
         subquery = (
             select(func.max(Log.log_date).label("log_date"))

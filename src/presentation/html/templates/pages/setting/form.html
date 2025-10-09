@@ -99,7 +99,6 @@
                     </div>
                 </div>
                 <hr />
-                {#
                 <h6 class="card-title">OKTA Config</h6>
                 <div class="mb-1">
                     <div class="input-group mb-3">
@@ -148,7 +147,6 @@
                                class="form-control">
                     </div>
                 </div>
-                #}
             </div>
         </div>
     </div>
@@ -187,6 +185,17 @@
                                value="{{ data.smtp_password }}"
                                class="form-control">
                     </div>
+                    <div class="mb-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Enable TLS</span>
+                            <div class="input-group-text">
+                                <input class="form-check-input"
+                                       name="smtp_tls"
+                                       type="checkbox"
+                                       {% if data.smtp_tls %}checked{% endif %}>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -207,7 +216,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">LLM API-Key</span>
-                    <input type="text"
+                    <input type="password"
                            name="llm_api_key"
                            value="{{ data.llm_api_key }}"
                            class="form-control">
@@ -236,6 +245,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">Sensitive Hosts</h5>
+                <span>To specify multiple hosts, separate each address with a comma (e.g., xx.xx.xx.xx,xx.xx.xx.xx).</span>
             </div>
             <div class="card-body">
                 <div class="input-group mb-3">

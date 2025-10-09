@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import Depends
 
-from src.domain.entity import Product, ProductUserAccess
+from src.domain.entity import Product
 from src.domain.entity.user_access import User
 from src.persistence import (
     EnvRepository,
@@ -54,10 +54,13 @@ class ProductService:
 
     async def manage_product_access(
         self, product_id: UUID, user_id: UUID, granted: bool = True
-    ) -> ProductUserAccess | None:
-        return await self.productRepository.manage_product_access(
+    ):
+        access = await self.productRepository.manage_product_access(
             product_id, user_id, granted
         )
+        product = await self.productRepository.get_by_id(product_id)
+        user = await self.userRepository.get_by_id(user_id)
+        return access, product, user
 
     async def get_products_with_owner(self):
         role = await self.roleRepository.get_by_name("Owner")

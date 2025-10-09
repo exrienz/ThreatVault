@@ -1,0 +1,12 @@
+<script>
+  {%if update %}
+  risk.updateSeries({{data}})
+  {% else %}
+  riskPie.series = {{data}};
+  let risk = new ApexCharts(
+    document.getElementById("risk"),
+    riskPie
+  )
+  risk.render()
+  {% endif %}
+</script>

@@ -5,7 +5,8 @@
 {% block content %}
 <div class="page-heading d-flex justify-content-between">
   <h3>{{project.name }} Dashboard</h3>
-  <a class="btn btn-success" href="/project/{{ project.id }}/export" download="{{ project.name }}-active-findings.csv">
+  <a id="export-btn" class="btn btn-success" href="/project/{{ project.id }}/export"
+    download="{{ project.name }}-active-findings.csv">
     Export Active Findings
   </a>
 </div>
@@ -62,4 +63,20 @@
 </div>
 {% endblock %}
 {% block js %}
+<script>
+  const btn = document.getElementById("export-btn");
+
+  btn.addEventListener("click", function () {
+    btn.classList.add("disabled");
+    btn.style.pointerEvents = "none";
+    btn.textContent = "Please wait...";
+
+    // re-enable after 5s
+    setTimeout(() => {
+      btn.classList.remove("disabled");
+      btn.style.pointerEvents = "auto";
+      btn.textContent = "Export Active Findings";
+    }, 5000);
+  });
+</script>
 {% endblock %}

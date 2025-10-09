@@ -6,7 +6,7 @@ from sqlalchemy import select
 from src.domain.entity import Plugin
 from src.infrastructure.database import SyncSessionFactory
 
-p = Path("./public/plugins/builtin")
+p = Path("./plugins/builtin")
 
 
 def upload_builtin_plugin(logger: Logger):
