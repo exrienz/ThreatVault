@@ -11,6 +11,9 @@
       {{source[plugin_id | string ]}}
       {% endfor%}
     </td>
+    <td class="text-bold-500">
+      {{ finding.label | default('', true) }}
+    </td>
     {% if product_type == 'VA' %}
     <td class="text-bold-500">{{ finding.status | title }}</td>
     {% else %}

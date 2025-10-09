@@ -1,0 +1,6 @@
+fileignoreconfig:
+- filename: alembic/versions/4dd4742a1a86_update_finding_index_06.py
+  checksum: 6b8b1d36496c7d708c0fe497a1d0fbf4d3cc084d55052ae9e1333dc09659fc06
+- filename: public/components/js/pages/select_label.js
+  checksum: 9511139ddf122151265e502434e58e49e1bb58658382f936c74cf0ffb36626f5
+version: ""

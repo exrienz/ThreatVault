@@ -20,6 +20,12 @@ var statusChoices = new Choices(statusChoiceEl, {
   removeItemButton: true
 });
 
+var labelChoiceEl = document.querySelector("#label-choices");
+var labelChoices = new Choices(labelChoiceEl, {
+  removeItems: true,
+  removeItemButton: true
+});
+
 var severityChoiceEl = document.querySelector("#severity-choices");
 var severityChoices = new Choices(severityChoiceEl, {
   removeItems: true,
@@ -38,7 +44,7 @@ var sourceChoices = new Choices(sourceChoiceEl, {
   removeItemButton: true
 });
 
-var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices];
+var chLists = [statusChoices, severityChoices, assetsChoices, sourceChoices, labelChoices];
 
 function clearChoices() {
   chLists.forEach(clearChoiceMap);

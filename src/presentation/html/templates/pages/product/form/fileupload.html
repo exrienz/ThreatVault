@@ -32,6 +32,28 @@
                     {% endfor %}
                 </select>
             </div>
+            <br />
+            <label for="label" class="form-label">Label</label>
+            <select id="label"
+                    name="label"
+                    class="choices form-select select-one"
+                    >
+                    {% for label in labels %}
+                    <option value={% if label %}{{label}}{%else%}""{%endif%}>
+                    {% if label %}{{label}}{%else%}{%endif%}
+                    </option>
+              {% endfor %}
+            </select>
+            <small class="form-text text-muted">
+              Having trouble adding a label?
+              <a href="#" id="showLabelInput" class="text-decoration-none">Click here</a>
+            </small>
+            <div id="new_label" style="display: none;">
+              <input type="text" name="new_label" class="form-control" placeholder="Enter new label..."/>
+              <small class="form-text text-muted">
+                If this is not empty, this will be chosen instead of selected label.
+              </small>
+            </div>
         </div>
         <div class="col-md-6">
             <br />
@@ -56,14 +78,15 @@
                                        id="sync_update"
                                        disabled
                                        />
+                                {#
                                 <label class="form-check-label">
                                     <p>
                                         Check to allow other projects to update this project's
                                         status.
                                     </p>
                                 </label>
+                                #}
                             </div>
-                            {# TODO: overwrite functionality
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
                                        class="form-check-input form-check-danger"
@@ -75,7 +98,6 @@
                                     </p>
                                 </label>
                             </div>
-                            #}
                         </div>
                     </li>
                 </ul>

@@ -55,6 +55,7 @@ async def get_product(
     service: ProductServiceDep,
     log_service: LogServiceDep,
     plugin_service: PluginServiceDep,
+    finding_service: FindingServiceDep,
     product_id: UUID,
 ):
     product = await service.get_by_id(product_id)
@@ -63,9 +64,11 @@ async def get_product(
         raise HTTPException(404, "Project is not exists!")
     logs = await log_service.get_by_product_id(product_id)
     report_dates = await log_service.get_available_date_by_product(product_id)
+    # TODO: Optimize, split fileupload view
     plugins = await plugin_service.get_all_activated(
         {"env": product.environment.project.type_}
     )
+    labels = await finding_service.get_labels(product_id)
     tSeverity = 1
     if logs:
         tSeverity = logs.tCritical + logs.tHigh + logs.tMedium + logs.tLow
@@ -80,6 +83,7 @@ async def get_product(
             "plugins": plugins,
             "host_list": hosts,
             "report_dates": report_dates,
+            "labels": labels,
         },
     )
 
@@ -110,12 +114,14 @@ async def get_findings(
     status: Annotated[list[str] | None, Query()] = None,
     severity_filter: Annotated[list[str] | None, Query()] = None,
     plugin_id: Annotated[list[UUID] | None, Query()] = None,
+    label: Annotated[list[str] | None, Query()] = None,
 ):
     filters = {
         "plugin_id": plugin_id,
         "status": status,
         "severity": severity_filter,
         "host": host,
+        "label": label,
     }
 
     fn_dict = {
@@ -200,18 +206,22 @@ async def upload_file(
     process_new_finding: Annotated[bool, Form()] = False,
     sync_update: Annotated[bool, Form()] = False,
     overwrite: Annotated[bool, Form()] = False,
+    label: Annotated[str | None, Form()] = None,
+    new_label: Annotated[str | None, Form()] = None,
 ):
     """
     TODO:
         - All the error handling
         - Sync Update
     """
+    label = (new_label or label or "").strip() or None
     data_dict = {
         "scan_date": scan_date,
         "plugin": plugin,
         "process_new_finding": process_new_finding,
         "sync_update": sync_update,
         "overwrite": overwrite,
+        "label": label,
     }
     data = FindingUploadSchema(**data_dict)
     uploader = UploadFileServiceGeneral(session, formFile, product_id, data)

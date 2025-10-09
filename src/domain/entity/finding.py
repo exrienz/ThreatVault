@@ -53,6 +53,7 @@ class Finding(Base):
             "port",
             "plugin_id",
             "product_id",
+            "label",
             unique=True,
             postgresql_where=or_(
                 Column("status") != VAStatusEnum.CLOSED.value,

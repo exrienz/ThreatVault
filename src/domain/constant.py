@@ -50,4 +50,6 @@ class HAStatusEnum(Enum):
 
 
 class PluginFunction(Protocol):
-    def process(self, file: bytes) -> pl.LazyFrame | pl.DataFrame | pd.DataFrame: ...
+    def process(
+        self, file: bytes, file_type: str
+    ) -> pl.LazyFrame | pl.DataFrame | pd.DataFrame: ...

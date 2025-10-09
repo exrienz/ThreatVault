@@ -145,6 +145,7 @@
 <script id="finding-filter-script-id"></script>
 
 <script src="/assets/components/js/pages/product.js" defer></script>
+<script src="/assets/components/js/pages/select_label.js" defer></script>
 <script>
   function downloadReport(productId) {
     const date = document.getElementById("report-date").value;
@@ -167,6 +168,21 @@
   document.querySelector('#upload_fn_id').addEventListener('htmx:afterRequest', (event) => {
     if (event.detail.successful) {
       pond.removeFiles();
+    }
+  });
+</script>
+
+<script>
+  document.getElementById("showLabelInput").addEventListener("click", function (e) {
+    e.preventDefault(); // prevent page jump
+    const input = document.getElementById("new_label");
+
+    // Toggle visibility
+    if (input.style.display === "none") {
+      input.style.display = "block";
+      input.focus(); // optional: focus immediately
+    } else {
+      input.style.display = "none";
     }
   });
 </script>
