@@ -40,6 +40,7 @@ class HAStatusEnum(Enum):
     WARNING = "WARNING"
 
 
+# TODO: Default Role
 # class RoleEnum(Enum):
 #     Admin = "Admin"
 #     ITSE = "ITSE"
@@ -47,6 +48,11 @@ class HAStatusEnum(Enum):
 #     Audit = "Audit"
 #     Owner = "Owner"
 #     Custom = "Custom"
+
+
+class ApiKeyTypeEnum(Enum):
+    Global = "global"
+    Product = "product"
 
 
 class PluginFunction(Protocol):
