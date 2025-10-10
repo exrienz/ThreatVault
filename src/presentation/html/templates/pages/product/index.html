@@ -27,108 +27,126 @@
   <!--Row2-->
   {% if "finding:action" in permissions or "all" in permissions %}
   <section class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h4>Upload New Scan</h4>
+    <div class="accordion" id="optionsAccordion">
+      <div class="accordion-item card">
+        <h2 class="accordion-header card-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+            Options
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse card-body" data-bs-parent="#optionsAccordion">
+          {% include "pages/product/form/fileupload.html" %}
+          <hr>
+          {%include "pages/product/component/advancedUpload.html"%}
+          <hr>
+          {%include "pages/product/component/advancedSetting.html"%}
         </div>
-        <div class="card-body">{% include "pages/product/form/fileupload.html" %}</div>
-        <hr>
-        {%include "pages/product/component/advancedUpload.html"%}
-        <hr>
-        {%include "pages/product/component/advancedSetting.html"%}
       </div>
     </div>
-  </section>
-  {% endif %}
-  <!--EO Row2-->
-  <!--Row3-->
-  <section class="row">
-    <div class="col-4">
-      <div class="card">
-        <div class="card-header">
-          <h4>Vulnerability Chart</h4>
+    {#
+    <div class="card">
+      <div class="card-header">
+        <h4>Options</h4>
+      </div>
+      <div class="card-body"></div>
+      {% include "pages/product/form/fileupload.html" %}
+      <hr>
+      {%include "pages/product/component/advancedUpload.html"%}
+      <hr>
+      {%include "pages/product/component/advancedSetting.html"%}
+    </div>
+    #}
+</div>
+</section>
+{% endif %}
+<!--EO Row2-->
+<!--Row3-->
+<section class="row">
+  <div class="col-4">
+    <div class="card">
+      <div class="card-header">
+        <h4>Vulnerability Chart</h4>
+      </div>
+      <div class="card-body">
+        <div hx-get="/chart/product/risk?product_id={{product.id}}&update=True" hx-trigger="reload-findings from:body">
         </div>
-        <div class="card-body">
-          <div hx-get="/chart/product/risk?product_id={{product.id}}&update=True"
-            hx-trigger="reload-findings from:body">
+        <div hx-get="/chart/product/risk?product_id={{product.id}}" hx-trigger="load"></div>
+        <div id="risk">
+        </div><br>
+      </div>
+    </div>
+  </div>
+  <div class="col-8">
+    <div class="card">
+      <div class="card-header">
+        <h4>Aging Finding</h4>
+      </div>
+      <div class="card-body">
+        <div hx-get="/chart/product?product_id={{product.id}}&update=True" hx-trigger="reload-findings from:body">
+        </div>
+        <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!--EO Row3-->
+<!--Row4-->
+<section class="row">
+  <!-- Card 1 -->
+  {% include "pages/product/component/viewOptions.html" %}
+  <!-- Card 2 -->
+  <div class="col-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="col-12">
+          <h6>Download Report</h6>
+          <div class="input-group mb-3">
+            <select class="form-select" name="date" id="report-date">
+              {% for date_option in report_dates %}
+              <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01">
+                {{ '{:02d}'.format(date_option.month | int) }}-{{ date_option.year }}
+              </option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-primary" onclick="downloadReport('{{ product.id }}')">
+              Download
+            </button>
           </div>
-          <div hx-get="/chart/product/risk?product_id={{product.id}}" hx-trigger="load"></div>
-          <div id="risk">
-          </div><br>
         </div>
       </div>
     </div>
-    <div class="col-8">
-      <div class="card">
-        <div class="card-header">
-          <h4>Aging Finding</h4>
-        </div>
-        <div class="card-body">
-          <div hx-get="/chart/product?product_id={{product.id}}&update=True" hx-trigger="reload-findings from:body">
-          </div>
-          <div id="product-year-chart" hx-get="/chart/product?product_id={{product.id}}" hx-trigger="load"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!--EO Row3-->
-  <!--Row4-->
-  <section class="row">
-    <!-- Card 1 -->
-    {% include "pages/product/component/viewOptions.html" %}
-    <!-- Card 2 -->
-    <div class="col-6">
-      <div class="card">
-        <div class="card-body">
-          <div class="col-12">
-            <h6>Download Report</h6>
-            <div class="input-group mb-3">
-              <select class="form-select" name="date" id="report-date">
-                {% for date_option in report_dates %}
-                <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01">
-                  {{ '{:02d}'.format(date_option.month | int) }}-{{ date_option.year }}
-                </option>
-                {% endfor %}
-              </select>
-              <button class="btn btn-primary" onclick="downloadReport('{{ product.id }}')">
-                Download
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!--EO Row4-->
-  <!--Row3-->
-  <section class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between">
-          <h4>Findings</h4>
-          <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
-            {#
-            hx-get="{{ product.id }}/finding-filters" hx-target="#finding-filter-script-id" hx-trigger="click">
-            #}
+  </div>
+</section>
+<!--EO Row4-->
+<!--Row3-->
+<section class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+        <h4>Findings</h4>
+        <a class="btn icon btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+          {#
+          hx-get="{{ product.id }}/finding-filters" hx-target="#finding-filter-script-id" hx-trigger="click">
+          #}
 
-            <i class="bi bi-filter"></i>
-            Filter
+          <i class="bi bi-filter"></i>
+          Filter
 
-          </a>
-          <div id="filterModal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
-            {% include "pages/product/component/findingFilterModal.html"%}
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive" id="tableDivID">
-            {% include "pages/product/component/tables/index.html" %}
-          </div>
-          {% include "pages/product/form/action.html" %}
+        </a>
+        <div id="filterModal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+          {% include "pages/product/component/findingFilterModal.html"%}
         </div>
       </div>
-  </section>
-  <!--EO Row3-->
+      <div class="card-body">
+        <div class="table-responsive" id="tableDivID">
+          {% include "pages/product/component/tables/index.html" %}
+        </div>
+        {% include "pages/product/form/action.html" %}
+      </div>
+    </div>
+</section>
+<!--EO Row3-->
 </div>
 {% endblock %}
 
