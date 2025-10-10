@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/assets/static/images/logo/logo.svg" alt="ThreatVault Logo" width="400" style="margin-bottom: 20px;">
+<img src="public/images/logo/logo.svg" alt="ThreatVault Logo" width="400" style="margin-bottom: 20px;">
 
 ### Next-Generation Unified Vulnerability and Compliance Management Platform
 
