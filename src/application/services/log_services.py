@@ -49,10 +49,17 @@ class LogService:
                 filters.month = today.month
         if filters.env_id is None:
             raise
-
-        data = await self.repository.get_products_by_env(
+        available_date = await self.repository.get_latest_available_date(
             filters.env_id, filters.year, filters.month
         )
+        if available_date:
+            data = await self.repository.get_products_by_env(
+                filters.env_id, available_date.year, available_date.month
+            )
+        else:
+            data = await self.repository.get_products_by_env(
+                filters.env_id, filters.year, filters.month
+            )
 
         data_dct = {row.product_id: row for row in data}
         labels = await self.repository._get_statistics_labels(
@@ -91,6 +98,9 @@ class LogService:
     async def get_available_date_by_env(self, env_id: UUID):
         return await self.repository.get_date_options(env_id)
 
+    async def get_first_date_track_by_env(self, env_id: UUID):
+        return await self.repository.get_first_date(env_id)
+
     async def get_available_date_by_product(self, product_id: UUID):
         return await self.repository.get_date_options(product_id=product_id)
 
@@ -103,20 +113,33 @@ class LogService:
         return await self.repository.statistics(product_id, year)
 
     def _yearly_dict_process(
-        self, chart_data: Sequence, labels: list[str], prefix: str = ""
+        self,
+        chart_data: Sequence,
+        labels: list[str],
+        prefix: str = "",
+        truncate_month: int | None = None,
     ) -> dict:
         if not labels:
             raise
-        dct = {label: [0] * 12 for label in labels}
+        dct: dict[str, list[int | None]] = {label: [None] * 12 for label in labels}
         for c in chart_data:
             mnt = int(c.month) - 1
             for label in labels:
                 dct[label][mnt] = getattr(c, f"{prefix}{label}")
+
+        for values in dct.values():
+            for i, val in enumerate(values):
+                if i == 0 and val is None:
+                    values[0] = 0
+                elif truncate_month and i > truncate_month - 1:
+                    values[i] = 0
+                elif val is None:
+                    values[i] = values[i - 1]
         return dct
 
     async def get_yearly_statistics(self, filters: YearlyStatisticFilterSchema):
+        today = datetime.now()
         if filters.year is None:
-            today = datetime.now()
             filters.year = today.year
 
         chart_data = await self.repository.statistics_by_environment(
@@ -130,7 +153,15 @@ class LogService:
         labels = await self.repository._get_statistics_labels(
             filters.view_type, filters.project_id, filters.env_id
         )
-        chart = self._yearly_dict_process(chart_data, labels)
+
+        truncate_month = None
+        if today.year == filters.year:
+            truncate_month = today.month
+        chart = self._yearly_dict_process(
+            chart_data,
+            labels,
+            truncate_month=truncate_month,
+        )
         chart_lst = []
         labels = []
         for k, v in chart.items():
@@ -146,8 +177,8 @@ class LogService:
     async def get_product_yearly_statistics(
         self, filters: YearlyProductStatisticsSchema
     ):
+        today = datetime.now()
         if filters.year is None:
-            today = datetime.now()
             filters.year = today.year
 
         chart_data = await self.repository.get_yearly_log_by_product_ids(
@@ -157,7 +188,12 @@ class LogService:
         labels = await self.repository._get_statistics_labels(
             filters.view_type, product_id=filters.product_id
         )
-        chart = self._yearly_dict_process(chart_data, labels, "t")
+
+        truncate_month = None
+        if today.year == filters.year:
+            truncate_month = today.month
+
+        chart = self._yearly_dict_process(chart_data, labels, "t", truncate_month)
         chart_lst = []
         labels = []
         for k, v in chart.items():

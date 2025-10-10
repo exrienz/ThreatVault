@@ -1,0 +1,6 @@
+fileignoreconfig:
+- filename: src/presentation/api/dependencies.py
+  checksum: 148cf15a4156e886dd56ab067e520441bd96bd80f49159a8a57e41495a259784
+- filename: src/presentation/api/exception_handler.py
+  checksum: 8bb04215506227b2ea88eee43820ab5628e201f02d9139a4521547a6fa4243cc
+version: ""

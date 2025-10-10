@@ -40,6 +40,7 @@ class HAStatusEnum(Enum):
     WARNING = "WARNING"
 
 
+# TODO: Default Role
 # class RoleEnum(Enum):
 #     Admin = "Admin"
 #     ITSE = "ITSE"
@@ -49,5 +50,12 @@ class HAStatusEnum(Enum):
 #     Custom = "Custom"
 
 
+class ApiKeyTypeEnum(Enum):
+    Global = "global"
+    Product = "product"
+
+
 class PluginFunction(Protocol):
-    def process(self, file: bytes) -> pl.LazyFrame | pl.DataFrame | pd.DataFrame: ...
+    def process(
+        self, file: bytes, file_type: str
+    ) -> pl.LazyFrame | pl.DataFrame | pd.DataFrame: ...

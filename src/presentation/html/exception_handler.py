@@ -17,7 +17,7 @@ from src.application.exception.error import (
 from .utils import templates
 
 
-async def unauthorize(request: Request, exc: UnauthorizedError):
+def unauthorize(request: Request, exc: UnauthorizedError):
     return templates.TemplateResponse(
         request,
         "error/401.html",
@@ -25,7 +25,7 @@ async def unauthorize(request: Request, exc: UnauthorizedError):
     )
 
 
-async def invalidAuthentication(request: Request, exc: InvalidAuthentication):
+def invalidAuthentication(request: Request, exc: InvalidAuthentication):
     return templates.TemplateResponse(
         request,
         "error/alert.html",
@@ -37,7 +37,7 @@ async def invalidAuthentication(request: Request, exc: InvalidAuthentication):
     )
 
 
-async def inactiveUser(request: Request, exc: InactiveUser):
+def inactiveUser(request: Request, exc: InactiveUser):
     return templates.TemplateResponse(
         request,
         "error/alert.html",
@@ -49,7 +49,7 @@ async def inactiveUser(request: Request, exc: InactiveUser):
     )
 
 
-async def httpException(request: Request, exc: HTTPException):
+def httpException(request: Request, exc: HTTPException):
     path = request.url.path
     if exc.status_code == 403 and path == "/":
         return RedirectResponse(str(request.base_url) + "management-view/vapt")
@@ -63,7 +63,7 @@ async def httpException(request: Request, exc: HTTPException):
     return JSONResponse(content=str(exc.detail), status_code=exc.status_code)
 
 
-async def schema_invalid_handler(request: Request, exc: SchemaException):
+def schema_invalid_handler(request: Request, exc: SchemaException):
     return templates.TemplateResponse(
         request,
         "error/alert.html",
@@ -75,7 +75,7 @@ async def schema_invalid_handler(request: Request, exc: SchemaException):
     )
 
 
-async def invalid_file_upload(request: Request, exc: InvalidFile):
+def invalid_file_upload(request: Request, exc: InvalidFile):
     return templates.TemplateResponse(
         request,
         "error/toast.html",
@@ -84,7 +84,7 @@ async def invalid_file_upload(request: Request, exc: InvalidFile):
     )
 
 
-async def invalid_input(request: Request, exc: InvalidInput):
+def invalid_input(request: Request, exc: InvalidInput):
     return templates.TemplateResponse(
         request,
         "error/toast.html",
@@ -93,18 +93,18 @@ async def invalid_input(request: Request, exc: InvalidInput):
     )
 
 
-async def jwt_expired_handler(request: Request, exc: ExpiredSignatureError):
+def jwt_expired_handler(request: Request, exc: ExpiredSignatureError):
     return templates.TemplateResponse(
         request,
         "error/session_expired.html",
     )
 
 
-async def llm_error(request: Request, exc: openai.BadRequestError):
+def llm_error(request: Request, exc: openai.BadRequestError):
     return JSONResponse(exc.body.get("message"), exc.status_code)
 
 
-async def llm_custom_error(request: Request, exc: LLMException):
+def llm_custom_error(request: Request, exc: LLMException):
     return JSONResponse(exc.msg, 400)
 
 

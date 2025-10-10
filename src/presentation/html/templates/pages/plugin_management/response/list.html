@@ -1,5 +1,6 @@
 {% for plugin in plugins %}
     <tr>
+        <td>{{ plugin.id }}</td>
         <td>{{ plugin.name }}</td>
         <td>{{ plugin.type | title }}</td>
         <td>{{ plugin.env }}</td>

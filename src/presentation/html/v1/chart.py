@@ -133,7 +133,7 @@ async def get_aging_chart_env(
     if env is None:
         raise
     project_type = env.project.type_
-    date_options = await service.get_available_date_by_env(req_data.env_id)
+    date_start = await service.get_first_date_track_by_env(req_data.env_id)
 
     data = await service.get_products_by_env(req_data)
     products = await productService.get_by_env_id(req_data.env_id)
@@ -145,9 +145,9 @@ async def get_aging_chart_env(
             **data,
             "env": env,
             "products": products,
-            "date_options": date_options,
             "view": req_data.view_type,
             "project_type": project_type,
+            "start_dt_opts": date_start,
         },
     )
 

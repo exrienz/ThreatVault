@@ -21,7 +21,7 @@
   {% for project in projects %}
   gradients['{{project.id}}'] = new ApexCharts(
     document.querySelector("#gradient-{{project.id}}"),
-    {...radialGradientOptions, series: [{{project.complete_percentage}}]}
+    {...radialGradientOptions, series: [{{project.complete_percentage}}], labels: ['Remediation Progress']}
   )
   gradients['{{project.id}}'].render()
   {% endfor %}

@@ -106,6 +106,7 @@ class FileUploadService(ABC):
         self.process_new_finding = data.process_new_finding
         self.overwrite = data.overwrite
         self.plugin: PluginFunction | ModuleType | None = None
+        self.label = data.label
 
     async def scan_date_validation(self):
         future_date = self.scan_date > datetime.now(tz=pytz.utc).replace(
@@ -159,11 +160,12 @@ class FileUploadService(ABC):
     async def run_plugin(self) -> pl.LazyFrame:
         lazyframes: list[pl.LazyFrame] = []
         for file in self.files:
-            csv_file = await file.read()
+            file_bytes = await file.read()
             if self.plugin is None:
                 self.plugin = await self.get_plugin()
-
-            lf = self.plugin.process(csv_file)
+            if file.content_type is None:
+                raise InvalidInput("File content_type does not exists!")
+            lf = self.plugin.process(file_bytes, file.content_type)
             if isinstance(lf, pl.DataFrame):
                 lf = lf.lazy()
             if isinstance(lf, pd.DataFrame):
@@ -315,13 +317,14 @@ class VAUploadService(FileUploadService):
             last_update=pl.lit(self.scan_date),
             plugin_id=pl.lit(self.plugin_id),
             product_id=pl.lit(str(self.product_id)),
+            label=pl.lit(self.label),
         )
 
         self.finding_lf = self.finding_lf.select(
             pl.exclude("cve", "risk", "name", "description")
         )
         self.finding_lf = self.finding_lf.unique(
-            subset=["finding_name_id", "port", "host"]
+            subset=["finding_name_id", "port", "host", "label"]
         )
 
     async def process(self):
@@ -344,9 +347,10 @@ class VAUploadService(FileUploadService):
                         "port",
                         "plugin_id",
                         "product_id",
+                        "label",
                     ),
                     idx_where=(Finding.status != VAStatusEnum.CLOSED.value),
-                    no_update_cols=["finding_date", "finding_name_id"],
+                    no_update_cols=["finding_date", "finding_name_id", "label"],
                     update_dict={"status": VAStatusEnum.OPEN.value},
                 )
             },
@@ -377,6 +381,7 @@ class VAUploadService(FileUploadService):
                 Finding.status != VAStatusEnum.CLOSED.value,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
+                Finding.label == self.label,
             )
             .values(
                 status=VAStatusEnum.CLOSED.value,
@@ -413,6 +418,7 @@ class VAUploadService(FileUploadService):
                 Finding.finding_date == subquery_max.c.latest_date,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
+                Finding.label == self.label,
             )
             .values(
                 internal_remark=(
@@ -436,6 +442,7 @@ class VAUploadService(FileUploadService):
                 Finding.status == FnStatusEnum.CLOSED.value,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
+                Finding.label == self.label,
             )
             .values(reopen=True)
         )
@@ -500,6 +507,7 @@ class HAUploadService(FileUploadService):
                 Finding.status != HAStatusEnum.PASSED.value,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
+                Finding.label == self.label,
             )
             .values(
                 status=HAStatusEnum.PASSED.value,
@@ -533,9 +541,10 @@ class HAUploadService(FileUploadService):
                         "port",
                         "plugin_id",
                         "product_id",
+                        "label",
                     ),
                     idx_where=(Finding.status != HAStatusEnum.PASSED.value),
-                    no_update_cols=["finding_date", "finding_name_id"],
+                    no_update_cols=["finding_date", "finding_name_id", "label"],
                 )
             },
         )
@@ -569,6 +578,7 @@ class HAUploadService(FileUploadService):
             last_update=pl.lit(self.scan_date),
             plugin_id=pl.lit(self.plugin_id),
             product_id=pl.lit(str(self.product_id)),
+            label=pl.lit(self.label),
         )
 
         self.finding_lf = self.finding_lf.select(

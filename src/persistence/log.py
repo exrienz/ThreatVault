@@ -5,7 +5,18 @@ from uuid import UUID
 import polars as pl
 import pytz
 from fastapi import Depends
-from sqlalchemy import Float, Integer, Row, Select, Subquery, and_, case, func, select
+from sqlalchemy import (
+    Float,
+    Integer,
+    Row,
+    Select,
+    Subquery,
+    and_,
+    case,
+    cast,
+    func,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -82,6 +93,8 @@ class LogRepository(BaseRepository[Log]):
             .where(Finding.product_id == product_id)
         )
         status_calc = pl.read_database(status_stmt, connection=sync_engine).lazy()
+        print("status calc")
+        print(status_calc.collect())
 
         severity_stmt = (
             select(
@@ -333,6 +346,20 @@ class LogRepository(BaseRepository[Log]):
         query = await self.session.execute(stmt)
         return query.all()
 
+    async def get_latest_available_date(self, env_id: UUID, year: int, month: int):
+        s_month = cast(func.extract("month", Log.log_date), Integer).label("month")
+        s_year = cast(func.extract("year", Log.log_date), Integer).label("year")
+
+        stmt = (
+            select(s_month, s_year)
+            .join(Product)
+            .where(Product.environment_id == env_id, s_month <= month, s_year <= year)
+            .order_by(Log.created_at.desc())
+            .limit(1)
+        )
+        query = await self.session.execute(stmt)
+        return query.first()
+
     def _select_project_list_va(self, sub: Subquery):
         t_new = func.sum(sub.c.tNew)
         t_open = func.sum(sub.c.tOpen)
@@ -487,6 +514,7 @@ class LogRepository(BaseRepository[Log]):
             for label in labels
         ]
 
+        # month_cte = select(func.generate_series(1, 12).label("month")).cte("months")
         slct = (
             sub.c.environment_id,
             sub.c.month,
@@ -512,6 +540,15 @@ class LogRepository(BaseRepository[Log]):
 
         if month:
             stmt = stmt.where(sub.c.month == month)
+
+        # data_cte = stmt.cte()
+
+        # stmt = select(
+        #     data_cte.c.environment_id,
+        #     month_cte.c.month,
+        #     func.coalesce(data_cte.c.total,
+        #                   func.lag(data_cte.c.total)
+        # )
         query = await self.session.execute(stmt)
         return query.all()
 
@@ -537,6 +574,26 @@ class LogRepository(BaseRepository[Log]):
             stmt = stmt.where(Log.product_id == product_id)
         query = await self.session.execute(stmt)
         return query.all()
+
+    async def get_first_date(
+        self, env_id: UUID | None = None, product_id: UUID | None = None
+    ):
+        stmt = (
+            select(
+                cast(func.extract("year", Log.log_date), Integer).label("year"),
+                cast(func.extract("month", Log.log_date), Integer).label("month"),
+            )
+            .order_by(Log.log_date)
+            .limit(1)
+        )
+        if env_id:
+            stmt = stmt.join(Product)
+            stmt = stmt.where(Product.environment_id == env_id)
+
+        if product_id:
+            stmt = stmt.where(Log.product_id == product_id)
+        query = await self.session.execute(stmt)
+        return query.first()
 
     async def compare_stats(self, filters: dict):
         product_ids: list[UUID] = filters.get("product_ids", [])

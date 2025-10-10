@@ -1,5 +1,7 @@
+from collections.abc import Sequence
 from datetime import datetime
 from typing import Annotated
+from uuid import UUID
 
 import pytz
 from fastapi import Depends, HTTPException, status
@@ -10,13 +12,13 @@ from src.application.middlewares.user_context import (
     current_user_perm,
     get_current_user,
 )
+from src.domain.constant import ApiKeyTypeEnum
 from src.domain.entity.project_management import Environment, Product
 from src.domain.entity.user_access import (
     Permission,
     ProductUserAccess,
     RolePermission,
 )
-from src.infrastructure.database.config import AsyncSessionFactory
 from src.infrastructure.database.session import get_session
 
 
@@ -35,7 +37,11 @@ async def verify_auth():
 def _expiration_handler(user_info: dict):
     expiration_seconds = user_info.get("exp")
     if expiration_seconds is None:
-        raise
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Expired Session",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     dt = datetime.fromtimestamp(float(expiration_seconds), tz=pytz.utc)
     now = datetime.now(pytz.utc)
@@ -48,32 +54,50 @@ def _expiration_handler(user_info: dict):
         )
 
 
-async def get_allowed_product_ids(user: Annotated[dict, Depends(verify_auth)]):
+async def get_allowed_product_ids(
+    user: Annotated[dict, Depends(verify_auth)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> Sequence[UUID] | None:
     if not user.get("required_project_access", True):
         return None
-    async with AsyncSessionFactory() as session:
-        stmt = (
-            select(Product.id)
-            .join(ProductUserAccess)
-            .where(ProductUserAccess.user_id == user.get("userid"))
-        )
-        query = await session.execute(stmt)
-        return query.scalars().all()
+    if token_type := user.get("token_type"):
+        if token_type == ApiKeyTypeEnum.Global.value:
+            return None
+        product_id = user.get("service_product_id")
+        if product_id is None:
+            return []
+        return [product_id]
+    stmt = (
+        select(Product.id)
+        .join(ProductUserAccess)
+        .where(ProductUserAccess.user_id == user.get("userid"))
+    )
+    query = await session.execute(stmt)
+    return query.scalars().all()
 
 
-async def get_allowed_project_ids(user: Annotated[dict, Depends(verify_auth)]):
+async def get_allowed_project_ids(
+    user: Annotated[dict, Depends(verify_auth)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> Sequence[UUID] | None:
     if not user.get("required_project_access", True):
         return None
-    async with AsyncSessionFactory() as session:
-        stmt = (
-            select(Environment.project_id)
-            .select_from(ProductUserAccess)
-            .join(Product, Product.id == ProductUserAccess.product_id)
-            .join(Environment, Environment.id == Product.environment_id)
-            .where(ProductUserAccess.user_id == user.get("userid"))
-        )
-        query = await session.execute(stmt)
-        return query.scalars().all()
+    if token_type := user.get("token_type"):
+        if token_type == ApiKeyTypeEnum.Global:
+            return None
+        project_id = user.get("service_project_id")
+        if project_id is None:
+            return []
+        return [project_id]
+    stmt = (
+        select(Environment.project_id)
+        .select_from(ProductUserAccess)
+        .join(Product, Product.id == ProductUserAccess.product_id)
+        .join(Environment, Environment.id == Product.environment_id)
+        .where(ProductUserAccess.user_id == user.get("userid"))
+    )
+    query = await session.execute(stmt)
+    return query.scalars().all()
 
 
 class PermissionChecker:

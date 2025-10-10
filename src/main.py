@@ -1,15 +1,20 @@
+import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
+from src.application.exception.exception_handlers import GlobalExceptionHandler
 from src.application.utils import scheduler, startup_db
-from src.presentation.html.exception_handler import exception_handlers
 from src.routes import router
 
 from .config import settings
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 
 @asynccontextmanager
@@ -18,16 +23,28 @@ async def lifespan(app: FastAPI):
     scheduler.scheduler.start()
     await scheduler.scheduler_tasks()
     for job in scheduler.scheduler.get_jobs():
-        print(job)
+        logger.info(f"Scheduled Job -> {job}")
     yield
     scheduler.scheduler.shutdown()
 
 
 app = FastAPI(
     title="Sentinel",
-    exception_handlers=exception_handlers,
     lifespan=lifespan,
 )
+
+exception_handler = GlobalExceptionHandler()
+
+
+@app.exception_handler(HTTPException)
+def general_exception_handler(request: Request, exc: HTTPException):
+    return exception_handler(request, exc)
+
+
+@app.exception_handler(Exception)
+def general_exception_handler_(request: Request, exc: Exception):
+    return exception_handler(request, exc)
+
 
 app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY)
 
