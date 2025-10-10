@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, or_
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, func, or_
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import DateTime
 
@@ -53,7 +53,7 @@ class Finding(Base):
             "port",
             "plugin_id",
             "product_id",
-            "label",
+            func.coalesce(Column("label"), "__NULL__"),
             unique=True,
             postgresql_where=or_(
                 Column("status") != VAStatusEnum.CLOSED.value,

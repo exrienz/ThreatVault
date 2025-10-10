@@ -10,7 +10,7 @@ import pandas as pd
 import polars as pl
 import pytz
 from fastapi import UploadFile
-from sqlalchemy import Date, cast, delete, func, select, update
+from sqlalchemy import Column, Date, cast, delete, func, select, update
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects._typing import (
     _OnConflictConstraintT,
@@ -255,8 +255,14 @@ class VAUploadService(FileUploadService):
         query = (
             select(Finding.port, Finding.host, FindingName.name)
             .join(FindingName)
-            .where(Finding.product_id == self.product_id)
+            .where(
+                Finding.product_id == self.product_id,
+            )
         )
+        if self.label:
+            query = query.where(Finding.label == self.label)
+        else:
+            query = query.where(Finding.label.is_(None))
         df = pl.read_database(query, connection=sync_engine).lazy()
         fmt_expression = (
             pl.col("host", "name").cast(pl.String),
@@ -347,7 +353,7 @@ class VAUploadService(FileUploadService):
                         "port",
                         "plugin_id",
                         "product_id",
-                        "label",
+                        func.coalesce(Column("label"), "__NULL__"),
                     ),
                     idx_where=(Finding.status != VAStatusEnum.CLOSED.value),
                     no_update_cols=["finding_date", "finding_name_id", "label"],
@@ -370,6 +376,10 @@ class VAUploadService(FileUploadService):
             )
             .values(status=VAStatusEnum.NEW.value)
         )
+        if self.label:
+            stmt = stmt.where(Finding.label == self.label)
+        else:
+            stmt = stmt.where(Finding.label.is_(None))
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -381,7 +391,6 @@ class VAUploadService(FileUploadService):
                 Finding.status != VAStatusEnum.CLOSED.value,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
-                Finding.label == self.label,
             )
             .values(
                 status=VAStatusEnum.CLOSED.value,
@@ -392,6 +401,10 @@ class VAUploadService(FileUploadService):
                 ),
             )
         )
+        if self.label:
+            stmt = stmt.where(Finding.label == self.label)
+        else:
+            stmt = stmt.where(Finding.label.is_(None))
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -418,7 +431,6 @@ class VAUploadService(FileUploadService):
                 Finding.finding_date == subquery_max.c.latest_date,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
-                Finding.label == self.label,
             )
             .values(
                 internal_remark=(
@@ -431,6 +443,10 @@ class VAUploadService(FileUploadService):
                 )
             )
         )
+        if self.label:
+            stmt_new = stmt_new.where(Finding.label == self.label)
+        else:
+            stmt_new = stmt_new.where(Finding.label.is_(None))
 
         stmt_old = (
             update(Finding)
@@ -442,10 +458,13 @@ class VAUploadService(FileUploadService):
                 Finding.status == FnStatusEnum.CLOSED.value,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
-                Finding.label == self.label,
             )
             .values(reopen=True)
         )
+        if self.label:
+            stmt_old = stmt_old.where(Finding.label == self.label)
+        else:
+            stmt_old = stmt_old.where(Finding.label.is_(None))
         await self.session.execute(stmt_new)
         await self.session.execute(stmt_old)
         await self.session.commit()
@@ -507,7 +526,6 @@ class HAUploadService(FileUploadService):
                 Finding.status != HAStatusEnum.PASSED.value,
                 Finding.plugin_id == self.plugin_id,
                 Finding.product_id == self.product_id,
-                Finding.label == self.label,
             )
             .values(
                 status=HAStatusEnum.PASSED.value,
@@ -518,6 +536,10 @@ class HAUploadService(FileUploadService):
                 ),
             )
         )
+        if self.label:
+            stmt = stmt.where(Finding.label == self.label)
+        else:
+            stmt = stmt.where(Finding.label.is_(None))
         await self.session.execute(stmt)
         await self.session.commit()
 
