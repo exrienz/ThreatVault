@@ -364,4 +364,6 @@ We're grateful for the incredible individuals driving ThreatVault's success:
 
 <p>© 2025 ThreatVault Project. Built with ❤️ for the global security community.</p>
 
+<p><strong>⚠️ Disclaimer:</strong> This project is not affiliated with, endorsed by, or related in any way to Palo Alto Networks' ThreatVault. ThreatVault as presented here is an independent open-source project with no connection to any commercial product or service with a similar name.</p>
+
 </div>
