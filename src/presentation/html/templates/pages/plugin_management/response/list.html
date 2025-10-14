@@ -19,6 +19,11 @@
                hx-trigger="click"
                data-bs-toggle="modal"
                data-bs-target="#verify"><i class="fas fa-solid fa-pen"></i></a>
+            {% if plugin.type == 'custom' %}
+            <a hx-delete="{{ plugin.id }}"
+               hx-confirm="Delete: {{plugin.name}} for {{plugin.env}}."
+               ><i class="fas fa-solid fa-trash"></i></a>
+            {% endif %}
         </td>
     </tr>
 {% endfor %}

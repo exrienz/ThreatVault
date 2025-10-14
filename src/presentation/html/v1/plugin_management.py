@@ -114,7 +114,7 @@ async def plugin_verification(
     return templates.TemplateResponse(
         request,
         "pages/plugin_management/response/verify.html",
-        {"verified": True},
+        {"verified": True, "plugin_info": plugin_info},
         headers=headers,
     )
 
@@ -142,9 +142,26 @@ async def edit_plugin(
     file: Annotated[UploadFile | None, File()] = None,
 ):
     data = {"description": description, "config": config, "is_active": active}
-    await service.update(plugin_id, data, file)
+    plugin_info = await service.update(plugin_id, data, file)
     return templates.TemplateResponse(
         request,
-        "empty.html",
+        "pages/plugin_management/response/update.html",
+        {"plugin_info": plugin_info},
+        headers={"HX-Trigger": "reload-plugin-list"},
+    )
+
+
+@router.delete("/{plugin_id}", response_class=HTMLResponse)
+async def delete_plugin(
+    request: Request,
+    plugin_id: UUID,
+    service: PluginServiceDep,
+):
+    plugin_info = await service.get_by_id(plugin_id)
+    await service.delete(plugin_id)
+    return templates.TemplateResponse(
+        request,
+        "pages/plugin_management/response/delete.html",
+        {"plugin_info": plugin_info},
         headers={"HX-Trigger": "reload-plugin-list"},
     )

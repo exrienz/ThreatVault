@@ -2,9 +2,9 @@
     <td class="text-bold-500">
       <a href="/finding/{{ finding.finding_name_id }}?product_id={{product_id}}&status={{finding.status}}">
             {{ finding.name }} &nbsp;
-            {% if finding.severity.value == "CRITICAL" %}
+            {% if cves[finding.finding_name_id] %}
                 <i class="fas fa-biohazard" title="High-Priority" style="color: red"></i>&nbsp;</a>
-        {% endif %}
+            {% endif %}
     </td>
     <td class="text-bold-500">
       {%for plugin_id in finding.plugin_ids%}
