@@ -514,6 +514,16 @@ class VAUploadService(FileUploadService):
 
         lf_schema = self.finding_lf.collect_schema()
         if not sorted(lf_schema.items()) == sorted(df_schema.items()):
+            self.finding_lf = self.finding_lf.with_columns(
+                [
+                    pl.col(col).cast(dtype)
+                    for col, dtype in df_schema.items()
+                    if col in self.finding_lf.columns
+                ]
+            )
+
+        lf_schema = self.finding_lf.collect_schema()
+        if not sorted(lf_schema.items()) == sorted(df_schema.items()):
             raise InvalidInput("Plugin didn't match the file uploaded!")
 
 
