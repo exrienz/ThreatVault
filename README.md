@@ -349,7 +349,6 @@ We're grateful for the incredible individuals driving ThreatVault's success:
 
 </div>
 
-<br><br>
 
 <div align="center">
 
