@@ -1,6 +1,4 @@
 fileignoreconfig:
-- filename: src/domain/entity/finding.py
-  checksum: c36e87297d702b9fec8e9ee9d2ea290b5ecd0ed16e646a6e20febdc83c2bf21b
-- filename: alembic/versions/ee281ad6c28f_update_finding_index_label_null_07.py
-  checksum: fb6324b2ce3424b11ab5be2e1dec4eb8b2ccb19109ffb6fa67bb32c7fabc755a
+- filename: src/application/services/openai_services.py
+  checksum: 81b375c9c69a64affc2f978b3f8fbb57a80da23e6dd4a1dda17d7051c03d5a45
 version: ""
