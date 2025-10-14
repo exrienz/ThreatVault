@@ -33,6 +33,17 @@ class PluginService:
             raise
         data["name"] = file.filename.split(".")[0]
         data["type"] = "custom"
+        plugin = await self.get_by_filter(
+            {
+                "name": data.get("name"),
+                "type": "custom",
+                "env": data.get("env", "VA").upper(),
+            }
+        )
+        if plugin:
+            raise InvalidFile(
+                f"Filename: {data.get('name')} with type {data.get('env')} already exists"  # noqa: E501
+            )
         await self.upload_plugin(data, file)
         return await self.repository.create(data)
 
@@ -42,8 +53,10 @@ class PluginService:
             await self.upload_plugin(plugin.__dict__, file)
 
     async def upload_plugin(self, data: dict, file: UploadFile):
-        if file.content_type != "text/x-python":
-            raise InvalidFile("Python")
+        if file.filename is None:
+            raise InvalidFile("Missing Filename")
+        if not file.filename.endswith(".py"):
+            raise InvalidFile("Required .py")
         filepath = f"./plugins/{data.get('type', '').lower()}"
         filepath += f"/{data.get('env', 'VA').lower()}/{data.get('name')}.py"
         with open(filepath, "wb") as f:

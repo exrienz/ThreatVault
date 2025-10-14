@@ -1,7 +1,9 @@
 import polars as pl
 
 
-def process(file: bytes) -> pl.LazyFrame:
+def process(file: bytes, file_type: str) -> pl.LazyFrame:
+    if file_type != "text/csv":
+        raise ValueError(f"File type not supported: {file_type}")
     return (
         pl.scan_csv(file)
         .select(pl.all().name.map(lambda x: "_".join(x.lower().split(" "))))
