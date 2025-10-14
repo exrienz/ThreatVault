@@ -344,7 +344,7 @@ We're grateful for the incredible individuals driving ThreatVault's success:
 <div align="center">
 
 <a href="#sponsors">
-  <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
+  <img src="public/images/logo/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
 </a>
 
 </div>
