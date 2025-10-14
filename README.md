@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/assets/static/images/logo/logo.svg" alt="ThreatVault Logo" width="400" style="margin-bottom: 20px;">
+<img src="public/images/logo/logo.svg" alt="ThreatVault Logo" width="400" style="margin-bottom: 20px;">
 
 ### Next-Generation Unified Vulnerability and Compliance Management Platform
 
@@ -344,12 +344,11 @@ We're grateful for the incredible individuals driving ThreatVault's success:
 <div align="center">
 
 <a href="#sponsors">
-  <img src="asset/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
+  <img src="public/images/logo/paynet.png" alt="PayNet Malaysia" width="200" style="margin: 20px;">
 </a>
 
 </div>
 
-<br><br>
 
 <div align="center">
 
@@ -363,5 +362,7 @@ We're grateful for the incredible individuals driving ThreatVault's success:
 <p><strong>📄 License:</strong> See <a href="LICENSE">LICENSE</a> file for complete terms and conditions</p>
 
 <p>© 2025 ThreatVault Project. Built with ❤️ for the global security community.</p>
+
+<p><strong>⚠️ Disclaimer:</strong> This project is not affiliated with, endorsed by, or related in any way to Palo Alto Networks' ThreatVault. ThreatVault as presented here is an independent open-source project with no connection to any commercial product or service with a similar name.</p>
 
 </div>

@@ -110,8 +110,9 @@ class FindingRepository(BaseRepository[Finding]):
                     Finding.severity,
                     Finding.status,
                     Finding.remark,
+                    Finding.label,
                     # func.max(Finding.remark).label("remark"),
-                    func.max(Finding.finding_date),
+                    func.max(Finding.finding_date).label("finding_date"),
                     func.array_agg(
                         func.distinct(Finding.plugin_id), type_=ARRAY(SQL_UUID)
                     ).label("plugin_ids"),
@@ -120,7 +121,13 @@ class FindingRepository(BaseRepository[Finding]):
                     ).label("hosts"),
                 ).join(FindingName)
             )
-            .group_by(FindingName.id, Finding.severity, Finding.status, Finding.remark)
+            .group_by(
+                FindingName.id,
+                Finding.severity,
+                Finding.status,
+                Finding.remark,
+                Finding.label,
+            )
             .order_by(Finding.severity)
         )
         if product_id:
@@ -130,6 +137,14 @@ class FindingRepository(BaseRepository[Finding]):
         if filters:
             for k, v in filters.items():
                 if not v:
+                    continue
+                if k == "label" and "None" in v:
+                    set_v = set(v)
+                    set_v.discard("None")
+                    v = list(set_v)
+                    stmt = stmt.where(
+                        or_(getattr(Finding, k).in_(v), getattr(Finding, k).is_(None))
+                    )
                     continue
                 stmt = stmt.where(getattr(Finding, k).in_(v))
         stmt = self._product_allowed_ids(stmt)
@@ -166,6 +181,14 @@ class FindingRepository(BaseRepository[Finding]):
         if filters:
             for k, v in filters.items():
                 if not v:
+                    continue
+                if k == "label" and "None" in v:
+                    set_v = set(v)
+                    set_v.discard("None")
+                    v = list(set_v)
+                    stmt = stmt.where(
+                        or_(getattr(Finding, k).in_(v), getattr(Finding, k).is_(None))
+                    )
                     continue
                 stmt = stmt.where(getattr(Finding, k).in_(v))
 
@@ -692,3 +715,8 @@ class FindingRepository(BaseRepository[Finding]):
                 evidences_dict[ev.finding_name_id] = [ev]
 
         return findings, evidences_dict
+
+    async def get_labels(self, product_id: UUID):
+        stmt = select(Finding.label).where(Finding.product_id == product_id)
+        query = await self.session.execute(stmt)
+        return query.unique().scalars().all()

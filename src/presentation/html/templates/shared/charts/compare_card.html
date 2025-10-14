@@ -1,3 +1,4 @@
+{% set now = get_now() %}
 <div class="card">
   <div class="card-header">
     <h4>
@@ -8,12 +9,16 @@
     <div class="input-group mb-3">
       <select class="form-select" name="date_str" hx-get="/chart/env?env_id={{env.id}}">
         <option selected disabled>Select Date...</option>
-        {% for date_option in date_options %}
-        <option value="{{ date_option.year }}-{{ '{:02d}'.format(date_option.month | int) }}-01" {% if
-          date_option.month==month and date_option.year==year %} selected {%endif%}>
-          {{ '{:02d}'.format(date_option.month | int) }}-{{ date_option.year }}
-        </option>
-        {% endfor %}
+        {%for y in range(now.year, start_dt_opts.year -1, -1)%}
+          {% set m_start = now.month if y == now.year else 12 %}
+          {% set m_end = start_dt_opts.month if y == start_dt_opts.year else 1 %}
+          {% for m in range(m_start, m_end - 1, -1) %}
+            <option value="{{ y }}-{{ '%02d'|format(m) }}-01"
+              {% if y == year and m == month %} selected {% endif %}>
+              {{ '%02d'|format(m) }}-{{ y }}
+            </option>
+          {% endfor %}
+        {%endfor%}
       </select>
       <label class="input-group-text" for="inputGroupSelect01">Options</label>
     </div>

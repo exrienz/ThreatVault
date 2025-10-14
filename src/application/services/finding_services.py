@@ -150,8 +150,8 @@ class FindingService:
         sla = await self.global_repository.get()
         sla_mapping = {}
         for finding in res.data:
-            severity = finding[2]
-            finding_date: datetime = finding[5]
+            severity = finding.severity
+            finding_date: datetime = finding.finding_date
             try:
                 sla_val = getattr(sla, "sla_" + severity.value.lower())
             except:  #  noqa: E722
@@ -203,3 +203,6 @@ class FindingService:
 
     async def report_findings(self, product_id: UUID):
         return await self.repository.report_finding_generation(product_id)
+
+    async def get_labels(self, product_id: UUID):
+        return await self.repository.get_labels(product_id)

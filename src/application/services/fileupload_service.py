@@ -10,7 +10,7 @@ import pandas as pd
 import polars as pl
 import pytz
 from fastapi import UploadFile
-from sqlalchemy import Date, cast, delete, func, select, update
+from sqlalchemy import Column, Date, cast, delete, func, select, update
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects._typing import (
     _OnConflictConstraintT,
@@ -106,6 +106,7 @@ class FileUploadService(ABC):
         self.process_new_finding = data.process_new_finding
         self.overwrite = data.overwrite
         self.plugin: PluginFunction | ModuleType | None = None
+        self.label = data.label
 
     async def scan_date_validation(self):
         future_date = self.scan_date > datetime.now(tz=pytz.utc).replace(
@@ -159,11 +160,12 @@ class FileUploadService(ABC):
     async def run_plugin(self) -> pl.LazyFrame:
         lazyframes: list[pl.LazyFrame] = []
         for file in self.files:
-            csv_file = await file.read()
+            file_bytes = await file.read()
             if self.plugin is None:
                 self.plugin = await self.get_plugin()
-
-            lf = self.plugin.process(csv_file)
+            if file.content_type is None:
+                raise InvalidInput("File content_type does not exists!")
+            lf = self.plugin.process(file_bytes, file.content_type)
             if isinstance(lf, pl.DataFrame):
                 lf = lf.lazy()
             if isinstance(lf, pd.DataFrame):
@@ -253,8 +255,14 @@ class VAUploadService(FileUploadService):
         query = (
             select(Finding.port, Finding.host, FindingName.name)
             .join(FindingName)
-            .where(Finding.product_id == self.product_id)
+            .where(
+                Finding.product_id == self.product_id,
+            )
         )
+        if self.label:
+            query = query.where(Finding.label == self.label)
+        else:
+            query = query.where(Finding.label.is_(None))
         df = pl.read_database(query, connection=sync_engine).lazy()
         fmt_expression = (
             pl.col("host", "name").cast(pl.String),
@@ -315,13 +323,14 @@ class VAUploadService(FileUploadService):
             last_update=pl.lit(self.scan_date),
             plugin_id=pl.lit(self.plugin_id),
             product_id=pl.lit(str(self.product_id)),
+            label=pl.lit(self.label),
         )
 
         self.finding_lf = self.finding_lf.select(
             pl.exclude("cve", "risk", "name", "description")
         )
         self.finding_lf = self.finding_lf.unique(
-            subset=["finding_name_id", "port", "host"]
+            subset=["finding_name_id", "port", "host", "label"]
         )
 
     async def process(self):
@@ -344,9 +353,10 @@ class VAUploadService(FileUploadService):
                         "port",
                         "plugin_id",
                         "product_id",
+                        func.coalesce(Column("label"), "__NULL__"),
                     ),
                     idx_where=(Finding.status != VAStatusEnum.CLOSED.value),
-                    no_update_cols=["finding_date", "finding_name_id"],
+                    no_update_cols=["finding_date", "finding_name_id", "label"],
                     update_dict={"status": VAStatusEnum.OPEN.value},
                 )
             },
@@ -366,6 +376,10 @@ class VAUploadService(FileUploadService):
             )
             .values(status=VAStatusEnum.NEW.value)
         )
+        if self.label:
+            stmt = stmt.where(Finding.label == self.label)
+        else:
+            stmt = stmt.where(Finding.label.is_(None))
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -387,6 +401,10 @@ class VAUploadService(FileUploadService):
                 ),
             )
         )
+        if self.label:
+            stmt = stmt.where(Finding.label == self.label)
+        else:
+            stmt = stmt.where(Finding.label.is_(None))
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -425,6 +443,10 @@ class VAUploadService(FileUploadService):
                 )
             )
         )
+        if self.label:
+            stmt_new = stmt_new.where(Finding.label == self.label)
+        else:
+            stmt_new = stmt_new.where(Finding.label.is_(None))
 
         stmt_old = (
             update(Finding)
@@ -439,6 +461,10 @@ class VAUploadService(FileUploadService):
             )
             .values(reopen=True)
         )
+        if self.label:
+            stmt_old = stmt_old.where(Finding.label == self.label)
+        else:
+            stmt_old = stmt_old.where(Finding.label.is_(None))
         await self.session.execute(stmt_new)
         await self.session.execute(stmt_old)
         await self.session.commit()
@@ -510,6 +536,10 @@ class HAUploadService(FileUploadService):
                 ),
             )
         )
+        if self.label:
+            stmt = stmt.where(Finding.label == self.label)
+        else:
+            stmt = stmt.where(Finding.label.is_(None))
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -533,9 +563,10 @@ class HAUploadService(FileUploadService):
                         "port",
                         "plugin_id",
                         "product_id",
+                        "label",
                     ),
                     idx_where=(Finding.status != HAStatusEnum.PASSED.value),
-                    no_update_cols=["finding_date", "finding_name_id"],
+                    no_update_cols=["finding_date", "finding_name_id", "label"],
                 )
             },
         )
@@ -569,6 +600,7 @@ class HAUploadService(FileUploadService):
             last_update=pl.lit(self.scan_date),
             plugin_id=pl.lit(self.plugin_id),
             product_id=pl.lit(str(self.product_id)),
+            label=pl.lit(self.label),
         )
 
         self.finding_lf = self.finding_lf.select(
