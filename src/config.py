@@ -1,8 +1,8 @@
 import json
+import os
 import re
 from datetime import timedelta
 
-import httpx
 from pydantic import AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -28,21 +28,11 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-if "://" not in settings.HTTP_PROXY:
-    settings.HTTP_PROXY = f"http://{settings.HTTP_PROXY}"
+if settings.HTTP_PROXY and "://" not in settings.HTTP_PROXY:
+    os.environ["HTTP_PROXY"] = f"http://{settings.HTTP_PROXY}"
 
-if "://" not in settings.HTTPS_PROXY:
-    settings.HTTPS_PROXY = f"https://{settings.HTTPS_PROXY}"
-
-proxy_mounts = {
-    "http://": httpx.HTTPTransport(proxy=settings.HTTP_PROXY),
-    "https://": httpx.HTTPTransport(proxy=settings.HTTPS_PROXY),
-}
-
-async_proxy_mounts = {
-    "http://": httpx.AsyncHTTPTransport(proxy=settings.HTTP_PROXY),
-    "https://": httpx.AsyncHTTPTransport(proxy=settings.HTTPS_PROXY),
-}
+if settings.HTTPS_PROXY and "://" not in settings.HTTPS_PROXY:
+    os.environ["HTTPS_PROXY"] = f"https://{settings.HTTPS_PROXY}"
 
 default_roles = []
 with open("src/default/roles.json") as file:
