@@ -8,6 +8,8 @@ from pydantic import PositiveInt
 
 from src.application.dependencies import RoleServiceDep, UserServiceDep
 from src.application.schemas import UserUpdateSchema
+from src.application.schemas.auth import ExternalUserRegisterSchema
+from src.application.security.oauth2.okta_sync_users import OKTAExternalService
 from src.presentation.dependencies import PermissionChecker
 
 from ..utils import templates
@@ -38,10 +40,11 @@ def list_users_req(
 @router.get("/", response_class=HTMLResponse)
 async def get_users(
     request: Request,
+    role_service: RoleServiceDep,
 ):
+    roles = await role_service.get_all()
     return templates.TemplateResponse(
-        request,
-        "pages/manage_user/index.html",
+        request, "pages/manage_user/index.html", {"roles": roles}
     )
 
 
@@ -57,6 +60,49 @@ async def get_list_users(
         request,
         "pages/manage_user/response/list.html",
         {"users": users, "query": json.dumps(filters)},
+    )
+
+
+@router.get("/list/external", response_class=HTMLResponse)
+async def get_list_external_users(
+    request: Request,
+    service: UserServiceDep,
+    okta_service: Annotated[OKTAExternalService, Depends()],
+    filters: Annotated[dict, Depends(list_users_req)],
+    page: PositiveInt = 1,
+):
+    data = await okta_service.get_users(filters.get("email"), page)
+    users = data.get("users")
+    emails = {usr.get("email") for usr in users}
+    existing_user = await service.get_by_emails(list(emails))
+    exists = {}
+    for usr in existing_user:
+        exists[usr.email] = usr
+    return templates.TemplateResponse(
+        request,
+        "pages/manage_user/response/oidc_list.html",
+        {"data": data, "page": page, "existing_user": exists},
+    )
+
+
+@router.post(
+    "/user/external",
+    response_class=HTMLResponse,
+    dependencies=[Depends(PermissionChecker(admin_only=True))],
+)
+async def add_from_external(
+    request: Request,
+    service: UserServiceDep,
+    data: Annotated[ExternalUserRegisterSchema, Form()],
+):
+    data_dict = data.model_dump()
+    data_dict["active"] = True
+    await service.create(data_dict)
+    user = await service.get_by_emails([data.email])
+    return templates.TemplateResponse(
+        request,
+        "pages/manage_user/response/oidc_add.html",
+        {"user": user[0]},
     )
 
 

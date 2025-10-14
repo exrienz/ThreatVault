@@ -1,8 +1,10 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import Cookie, Depends, HTTPException
 from pydantic import PositiveInt
 
+from src.application.exception.error import SchemaException
 from src.application.middlewares.user_context import get_current_user_id
 from src.domain.entity import Product, User
 from src.persistence import ProjectRepository, UserRepository
@@ -39,8 +41,16 @@ class UserService:
             raise
         return await self.repository.get_one_by_id(user_id)
 
+    async def get_by_emails(self, emails: list[str]) -> Sequence[User]:
+        return await self.repository.get_all_by_filter_sequence(
+            {User.email.in_: emails}
+        )
+
     # create schema
     async def create(self, data: dict) -> User:
+        user = await self.repository.get_by_filter({"email": data.get("email")})
+        if user:
+            raise SchemaException(f"User with {data.get('email')} already exists!")
         return await self.repository.create(data)
 
     async def create_bulk(self, data: list[dict]):

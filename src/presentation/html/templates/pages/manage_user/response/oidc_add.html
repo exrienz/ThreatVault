@@ -1,0 +1,11 @@
+<script id="toast-global-id" hx-swap-oob="true">
+  ToastCustom(`Add user: {{user.username}}!`, "success");
+</script>
+
+<td id="{{user.email}}_status" hx-swap-oob="innerHTML">Active<td>
+
+<td id="{{user.email}}_role" hx-swap-oob="innerHTML">{{ user.role.name }}<td>
+
+<td id="{{user.email}}_manage" hx-swap-oob="innerHTML">
+  <a href="user/{{ user.id }}"><i class="fas fa-solid fa-user-pen"></i></a>
+</td>

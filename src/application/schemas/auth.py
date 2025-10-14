@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, EmailStr, model_validator
 from typing_extensions import Self
 
@@ -17,6 +19,12 @@ class UserRegisterSchema(BaseModel):
         if self.password != self.password_confirm:
             raise SchemaException("Passwords do not match")
         return self
+
+
+class ExternalUserRegisterSchema(BaseModel):
+    email: EmailStr
+    username: str
+    role_id: UUID
 
 
 class UserLoginSchema(BaseModel):

@@ -10,7 +10,6 @@ from src.application.exception.error import (
     SchemaException,
 )
 from src.application.utils.jwt import generate_access_token
-from src.config import proxy_mounts
 from src.domain.entity import User
 from src.infrastructure.services.email.send import EmailClient
 from src.infrastructure.services.email.smtp import SMTPSender
@@ -44,7 +43,7 @@ class AuthService:
         return await self.repository.register(data_dict)
 
     async def authenticate(self, data: UserLoginSchema) -> str:
-        user = await self.repository.get_by_filter({"username": data.username})
+        user = await self.repository.check_user_exists(data.username, data.username)
         if not user:
             raise InvalidAuthentication
         if user.password is None or not self.verify_password(
@@ -74,7 +73,7 @@ class AuthService:
             config.smtp_port,
             config.smtp_username,
             config.smtp_password,
-            proxy_mounts,
+            None,
             config.smtp_tls or False,
         )
 
