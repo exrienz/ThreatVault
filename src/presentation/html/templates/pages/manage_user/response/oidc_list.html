@@ -1,0 +1,39 @@
+{% for user in data.users %}
+    {%set exist_user = existing_user.get(user.email) -%}
+    <tr>
+        <td>{{ loop.index + data.start }}</td>
+        <td>{{ user.nickname }}</td>
+        <td>{{ user.email }}</td>
+        <td id="{{user.email}}_status">
+          {{ 'Active' if exist_user and exist_user.active else 'Inactive' }}
+        </td>
+        <td id="{{user.email}}_role">
+          {{ exist_user.role.name if exist_user else 'No Role' }}
+        </td>
+        {%if exist_user %}
+        <td>
+            <a href="user/{{ exist_user.id }}"><i class="fas fa-solid fa-user-pen"></i></a>
+        </td>
+        {% else %}
+        <td id="{{user.email}}_manage">
+              <a hx-trigger="click"
+               data-bs-toggle="modal"
+               data-bs-target="#oidc_modal"
+               data-user-email="{{user.email}}"
+               data-user-name="{{user.nickname}}"
+               class="btn btn-primary"><i class="fas fa-solid fa-plus"></i></a>
+        </td>
+        {% endif %}
+    </tr>
+{% endfor %}
+{% if data.total > data.limit + data.start %}
+    <tr hx-get="list/external?page={{page + 1}}"
+        hx-indicator="#spinner"
+        hx-trigger="revealed"
+        hx-include="#user_search_input"
+        hx-swap="outerHTML">
+        <td colspan="6">
+            <div id="spinner" class="htmx-indicator">Loading...</div>
+        </td>
+    </tr>
+{% endif %}
