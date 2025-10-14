@@ -18,15 +18,22 @@
       </div>
       <div class="col-12 col-md-12">
         <div class="card">
-          <div class="card-header">
+          <div class="card-header d-flex justify-content-between">
             <h4>User List</h4>
+            <a class="btn icon btn-primary" hx-get="list/external" hx-swap="innerHTML" hx-target="#user_table_id"
+              hx-include="#user_search_input" hx-indicator="#external-spinner,#hide-spinner" hx-disabled-elt="this">
+              <span id="hide-spinner" class="hide-during-request">Search External</span>
+              <span id="external-spinner" class="htmx-indicator">
+                <i class="fa fa-spinner fa-spin"></i>
+              </span>
+            </a>
           </div>
           <div class="card-body">
             <!-- Table with stripped rows -->
             <table class="table">
               <thead>
                 <tr>
-                  <th>User ID</th>
+                  <th>No.</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Status</th>
@@ -53,7 +60,18 @@
     </div>
   </section>
 </div>
+{% include "pages/manage_user/form/add_oidc.html" %}
 {% endblock %}
-
 {% block js %}
+<script>
+  document.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget; // The button that triggered the modal
+    const userName = button.getAttribute('data-user-name');
+    const userEmail = button.getAttribute('data-user-email');
+
+    const modal = document.getElementById('oidc_modal');
+    modal.querySelector('#oidc_username').value = userName;
+    modal.querySelector('#oidc_email').value = userEmail;
+  });
+</script>
 {% endblock %}

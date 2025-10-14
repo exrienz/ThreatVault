@@ -1,4 +1,4 @@
 fileignoreconfig:
-- filename: src/application/services/openai_services.py
-  checksum: 81b375c9c69a64affc2f978b3f8fbb57a80da23e6dd4a1dda17d7051c03d5a45
+- filename: src/application/security/oauth2/okta_sync_users.py
+  checksum: dd1e62546b949ee4fa9558348ec887b93a1b4c1192bf1c5ea2e7ef109e7d863f
 version: ""

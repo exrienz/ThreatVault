@@ -1,0 +1,68 @@
+<div id="oidc_modal"
+     class="modal modal-blur fade"
+     style="display: none"
+     aria-hidden="false"
+     tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+       role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add User</h4>
+        <button type="button"
+                class="close"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="24"
+               height="24"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               class="feather feather-x">
+            <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form hx-post="user/external" hx-swap="none">
+          <div class="form-group">
+            <label for="username" class="form-label">Name [Read Only]</label>
+            <input type="text"
+                   id="oidc_username"
+                   name="username"
+                   readonly
+                   class="form-control"
+                   placeholder="Your Name">
+
+          </div>
+          <div class="form-group">
+            <label for="email" class="form-label">Email [Read Only]</label>
+            <input type="text"
+                   readonly
+                   id="oidc_email"
+                   name="email"
+                   class="form-control"
+                   placeholder="Your Email">
+          </div>
+
+          <div class="form-group">
+            <label for="role" class="form-label">Role</label>
+            <select name="role_id" id="role" class="form-control">
+              {% for role in roles %}
+              <option value="{{ role.id }}" {%if role.name == 'Owner' %}selected{% endif %}>
+              {{ role.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group modal-footer">
+            <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

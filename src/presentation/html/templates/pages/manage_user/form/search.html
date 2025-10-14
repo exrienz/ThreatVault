@@ -1,4 +1,5 @@
 <div class="row"
+     id="user_search_input"
      hx-get="list"
      hx-trigger="input changed delay:500ms from:#userSearchID, input changed delay:500ms from:#roleSearchID, change from:#statusSearchID"
      hx-vals="js:{email: document.querySelector('#userSearchID').value, role: document.querySelector('#roleSearchID').value, active: document.querySelector('#statusSearchID').value}"

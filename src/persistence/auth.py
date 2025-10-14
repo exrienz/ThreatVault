@@ -3,6 +3,7 @@ from sqlalchemy import Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from src.application.exception.error import SchemaException
 from src.domain.entity import Role, User
 from src.infrastructure.database import get_session
 from src.persistence.base import BaseRepository
@@ -37,13 +38,17 @@ class AuthRepository(BaseRepository[User]):
         data["active"] = active
 
     async def register_validation(self, username: str, email: str):
+        user = await self.check_user_exists(username, email)
+        if user:
+            raise SchemaException("User already exists! Use different email/username!")
+
+    async def check_user_exists(self, username: str, email: str) -> User | None:
         stmt = select(User).where(
             or_(User.username.ilike(username), User.email.ilike(email))
         )
+        stmt = self._options(stmt)
         query = await self.session.execute(stmt)
-        user = query.scalars().first()
-        if user:
-            raise
+        return query.scalars().first()
 
     def _options(self, stmt: Select):
         return stmt.options(selectinload(User.role))
