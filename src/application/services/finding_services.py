@@ -8,7 +8,7 @@ from fastapi import Depends
 from src.application.schemas.finding import FindingActionInternalSchema
 from src.application.schemas.management_view import PriorityAPISchema
 from src.domain.constant import FnStatusEnum, SeverityEnum
-from src.domain.entity.finding import Finding
+from src.domain.entity.finding import CVE, Finding
 from src.persistence import (
     FindingNameRepository,
     FindingRepository,
@@ -17,6 +17,7 @@ from src.persistence import (
     PluginRepository,
 )
 from src.persistence.base import Pagination
+from src.persistence.cve import CVERepository
 from src.persistence.log import LogRepository
 
 
@@ -30,6 +31,7 @@ class FindingService:
         global_repository: GlobalRepository = Depends(),
         plugin_repository: PluginRepository = Depends(),
         log_repository: LogRepository = Depends(),
+        cve_repository: CVERepository = Depends(),
     ):
         self.repository = repository
         self.findingname_repository = findingname_repository
@@ -37,6 +39,7 @@ class FindingService:
         self.global_repository = global_repository
         self.plugin_repository = plugin_repository
         self.log_repository = log_repository
+        self.cve_repository = cve_repository
 
     async def get_by_product_id(self, product_id: UUID):
         return await self.repository.get_by_product_id_extended(product_id)
@@ -122,6 +125,13 @@ class FindingService:
 
         if include_sla:
             data["sla"] = await self._include_sla(res)
+
+        fn_ids = {fn.finding_name_id for fn in res.data}
+        cves_db = await self.cve_repository.get_all_by_filter_sequence(
+            {CVE.finding_name_id.in_: fn_ids, CVE.priority.in_: ["1+", "1"]}
+        )
+        cves = {cve.finding_name_id: cve.priority for cve in cves_db}
+        data["cves"] = cves
         return data
 
     async def get_group_by_asset_details(

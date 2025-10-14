@@ -1,1 +1,6 @@
 <span>{{ verified }}</span>
+{% if verified %}
+<script id="toast-global-id" hx-swap-oob="true">
+  ToastCustom(`Plugin Verified: {{plugin_info.name}}`, "success");
+</script>
+{% endif %}
