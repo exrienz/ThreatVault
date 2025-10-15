@@ -179,6 +179,11 @@ class Log(Base):
     bMedium: Mapped[int] = mapped_column(default=0)
     bLow: Mapped[int] = mapped_column(default=0)
 
+    bCritical_fn: Mapped[Optional[int]] = mapped_column(default=0)
+    bHigh_fn: Mapped[Optional[int]] = mapped_column(default=0)
+    bMedium_fn: Mapped[Optional[int]] = mapped_column(default=0)
+    bLow_fn: Mapped[Optional[int]] = mapped_column(default=0)
+
     score: Mapped[Optional[int]]
 
     log_date: Mapped[datetime] = mapped_column(DateTime(True))
