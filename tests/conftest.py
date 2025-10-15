@@ -12,6 +12,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from src.domain.entity import Base
 from src.infrastructure.database.session import get_session
 from src.main import app
+from tests.factories.product import (
+    EnvironmentFactory,
+    ProductFactory,
+    ProjectFactory,
+    ProductUserAccessFactory,
+)
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 from tests.fixtures.authorization import (  # noqa: F401
@@ -90,7 +96,7 @@ def generate_users():
 async def session_fixture():
     # async_session = async_sessionmaker(bind=engine)
 
-    async_session = async_sessionmaker(bind=engine)
+    async_session = async_sessionmaker(bind=engine, expire_on_commit=False)
     async with async_session() as session:
         await session.begin()
         yield session
@@ -144,3 +150,7 @@ async def async_client():
 def set_session_for_factories(session: Session):
     RoleFactory._meta.sqlalchemy_session = session
     UserFactory._meta.sqlalchemy_session = session
+    ProductFactory._meta.sqlalchemy_session = session
+    ProjectFactory._meta.sqlalchemy_session = session
+    EnvironmentFactory._meta.sqlalchemy_session = session
+    ProductUserAccessFactory._meta.sqlalchemy_session = session

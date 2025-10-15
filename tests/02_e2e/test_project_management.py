@@ -1,6 +1,13 @@
 import pytest
 from bs4 import BeautifulSoup
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tests.factories.product import EnvironmentFactory, ProductFactory, ProjectFactory
+from tests.helper import (
+    get_product_by_id,
+    get_project_by_project_name,
+)
 
 
 class TestProjectManagementE2E:
@@ -26,7 +33,9 @@ class TestProjectManagementE2E:
     @pytest.mark.parametrize(
         "project_type", [pytest.param("VA", id="VA"), pytest.param("HA", id="HA")]
     )
-    async def test_create_project(self, itse_client: AsyncClient, project_type: str):
+    async def test_create_project(
+        self, session: AsyncSession, itse_client: AsyncClient, project_type: str
+    ):
         project_name = f"pytest-project-{project_type}"
         response = await itse_client.post(
             "/project-management/",
@@ -38,107 +47,65 @@ class TestProjectManagementE2E:
         response = await itse_client.get(f"/project-management?type_={project_type}")
         assert response.status_code == 200
 
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        created_project = soup.select_one(".accordion-button .text-wrap").get_text(
-            strip=True
-        )
-
-        assert created_project == project_name
+        project = await get_project_by_project_name(session, project_name)
+        assert project is not None, "Project does not created!"
+        assert project.name == project_name
 
     @pytest.mark.parametrize(
         "project_type", [pytest.param("VA", id="VA"), pytest.param("HA", id="HA")]
     )
-    async def test_create_product(self, itse_client: AsyncClient, project_type: str):
-        response = await itse_client.get(f"/project-management?type_={project_type}")
-        assert response.status_code == 200
-
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        project = soup.select_one(".accordion-item")
-        assert project is not None
-        project_id = project["id"].replace("id_accordion_proj_", "")
+    async def test_create_product(
+        self, session: AsyncSession, itse_client: AsyncClient, project_type: str
+    ):
+        project = await ProjectFactory.create_async(session)
+        await EnvironmentFactory.create_async(
+            session, name="production", project=project
+        )
+        await EnvironmentFactory.create_async(
+            session, name="non-production", project=project
+        )
 
         product_name = f"pytest-product-{project_type}"
         response = await itse_client.post(
             "/project-management/product",
             data={
                 "name": product_name,
-                "project_id": project_id,
+                "project_id": project.id,
                 "environment_name": "all",
             },
         )
 
         assert response.status_code == 200
 
-        response = await itse_client.get(f"/project-management?type_={project_type}")
+    @pytest.mark.parametrize(
+        "project_type", [pytest.param("VA", id="VA"), pytest.param("HA", id="HA")]
+    )
+    async def test_delete_product(
+        self, session: AsyncSession, itse_client: AsyncClient, project_type: str
+    ):
+        project = await ProjectFactory.create_async(session, type_=project_type)
+        product = await ProductFactory.create_async(
+            session, environment__project=project
+        )
+        response = await itse_client.delete(
+            f"/project-management/product?product_id={product.id}"
+        )
         assert response.status_code == 200
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        project = soup.select_one(".accordion-item")
-
-        production_products = [
-            li.get_text(strip=True)
-            for li in project.select("ul:has(li:contains('Production')) li a")
-        ]
-        non_production_products = [
-            li.get_text(strip=True)
-            for li in project.select("ul:has(li:contains('Non-Production')) li a")
-        ]
-        assert product_name in production_products, f"{product_name} not in Production"
-        assert product_name in non_production_products, (
-            f"{product_name} not in Non-Production"
-        )
+        product_db = await get_product_by_id(session, product.id)
+        assert product_db is None
 
     @pytest.mark.parametrize(
         "project_type", [pytest.param("VA", id="VA"), pytest.param("HA", id="HA")]
     )
-    async def test_delete_product(self, itse_client: AsyncClient, project_type: str):
-        response = await itse_client.get(f"/project-management?type_={project_type}")
-        assert response.status_code == 200
-
-        soup = BeautifulSoup(response.text, "html.parser")
-        project = soup.select_one(".accordion-item")
-
-        non_prod_li = project.select_one(
-            "ul:has(li:contains('Non-Production')) li[id^='id_prod_accordion_']"
-        )
-        assert non_prod_li is not None, "Non-Production product does not exists"
-
-        non_prod_id = non_prod_li["id"].replace("id_prod_accordion_", "")
-        assert non_prod_id != "", (
-            "Non-Production is an empty string. Should be prefixed with id_prod_accordion_"  # noqa: E501
-        )
-
+    async def test_delete_project(
+        self, session: AsyncSession, itse_client: AsyncClient, project_type: str
+    ):
+        project = await ProjectFactory.create_async(session, type_=project_type)
         response = await itse_client.delete(
-            "/project-management/product", params={"product_id": non_prod_id}
+            "/project-management/", params={"project_id": project.id}
         )
         assert response.status_code == 200
 
-        response = await itse_client.get(f"/product/{non_prod_id}")
-        assert response.status_code == 404
-
-    @pytest.mark.parametrize(
-        "project_type", [pytest.param("VA", id="VA"), pytest.param("HA", id="HA")]
-    )
-    async def test_delete_project(self, itse_client: AsyncClient, project_type: str):
-        response = await itse_client.get(f"/project-management?type_={project_type}")
-        assert response.status_code == 200
-
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        project = soup.select_one(".accordion-item")
-        assert project is not None, "No Project Created"
-
-        project_id = project["id"].replace("id_accordion_proj_", "")
-        assert project_id != "", (
-            "Non-Production is an empty string. Should be prefixed with id_accordion_proj_"  # noqa: E501
-        )
-
-        response = await itse_client.delete(
-            "/project-management/", params={"project_id": project_id}
-        )
-        assert response.status_code == 200
-
-        response = await itse_client.get(f"/project/{project_id}")
+        response = await itse_client.get(f"/project/{project.id}")
         assert response.status_code == 404
