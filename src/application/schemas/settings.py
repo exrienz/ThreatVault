@@ -8,10 +8,10 @@ class GlobalConfigSchema(BaseModel):
     site_domain: Optional[str] = None
     site_logo_url: Optional[str] = None
 
-    sla_critical: Optional[int]
-    sla_high: Optional[int]
-    sla_medium: Optional[int]
-    sla_low: Optional[int]
+    sla_critical: Optional[int] = 30
+    sla_high: Optional[int] = 60
+    sla_medium: Optional[int] = 90
+    sla_low: Optional[int] = 120
 
     login_via_email: Optional[bool] = False
 
@@ -20,14 +20,14 @@ class GlobalConfigSchema(BaseModel):
     okta_client_id: Optional[str] = None
     okta_client_secret: Optional[str] = None
 
-    smtp_server: Optional[str]
-    smtp_port: Optional[str]
-    smtp_username: Optional[str]
-    smtp_password: Optional[str]
+    smtp_server: Optional[str] = None
+    smtp_port: Optional[str] = None
+    smtp_username: Optional[str] = None
+    smtp_password: Optional[str] = None
     smtp_tls: Optional[bool] = False
 
-    sensitive_hosts: Optional[str]
+    sensitive_hosts: Optional[str] = None
 
-    llm_url: Optional[str]
-    llm_api_key: Optional[str]
-    llm_model: Optional[str]
+    llm_url: Optional[str] = None
+    llm_api_key: Optional[str] = None
+    llm_model: Optional[str] = None

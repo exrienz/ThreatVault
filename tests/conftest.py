@@ -4,14 +4,21 @@ import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import NullPool, create_engine, text
+from sqlalchemy import NullPool, create_engine, func, select, text
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.domain.entity import Base
+from src.domain.entity.setting import GlobalConfig
 from src.infrastructure.database.session import get_session
 from src.main import app
+from tests.factories.product import (
+    EnvironmentFactory,
+    ProductFactory,
+    ProjectFactory,
+    ProductUserAccessFactory,
+)
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 from tests.fixtures.authorization import (  # noqa: F401
@@ -22,6 +29,8 @@ from tests.fixtures.authorization import (  # noqa: F401
     manager_client,
     owner_client,
 )
+
+from tests.fixtures.plugin import create_plugins
 
 TEST_DATABASE = "sentineltest"
 conn_uri = f"postgresql+asyncpg://root:secret@localhost:5432/{TEST_DATABASE}"
@@ -64,6 +73,8 @@ def setup_test_database():
     create_table()
     Base.metadata.create_all(bind=sync_engine)
     generate_users()
+    generate_config()
+    generate_plugins()
     yield
     Base.metadata.drop_all(bind=sync_engine)
 
@@ -86,11 +97,34 @@ def generate_users():
             session.close()
 
 
+def generate_plugins():
+    with sessionmaker(bind=sync_engine)() as session:
+        try:
+            create_plugins(session)
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+
+def generate_config():
+    with sessionmaker(bind=sync_engine)() as session:
+        default = {
+            "sla_critical": 30,
+            "sla_high": 60,
+            "sla_medium": 90,
+            "sla_low": 120,
+        }
+        session.add(GlobalConfig(**default))
+        session.commit()
+
+
 @pytest_asyncio.fixture(name="session")
 async def session_fixture():
     # async_session = async_sessionmaker(bind=engine)
 
-    async_session = async_sessionmaker(bind=engine)
+    async_session = async_sessionmaker(bind=engine, expire_on_commit=False)
     async with async_session() as session:
         await session.begin()
         yield session
@@ -135,7 +169,8 @@ async def session_override():
 @pytest_asyncio.fixture(autouse=True)
 async def async_client():
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://localhost"
+        transport=ASGITransport(app=app, raise_app_exceptions=False),
+        base_url="http://localhost",
     ) as client:
         yield client
 
@@ -144,3 +179,7 @@ async def async_client():
 def set_session_for_factories(session: Session):
     RoleFactory._meta.sqlalchemy_session = session
     UserFactory._meta.sqlalchemy_session = session
+    ProductFactory._meta.sqlalchemy_session = session
+    ProjectFactory._meta.sqlalchemy_session = session
+    EnvironmentFactory._meta.sqlalchemy_session = session
+    ProductUserAccessFactory._meta.sqlalchemy_session = session

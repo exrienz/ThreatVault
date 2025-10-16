@@ -4,6 +4,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.persistence.user import UserRepository
+from tests.helper import get_user_by_role
 
 
 class TestUserManagementE2E:
@@ -95,13 +96,12 @@ class TestUserManagementE2E:
     async def test_admin_manage_user(
         self, session: AsyncSession, admin_client: AsyncClient
     ):
-        repo = UserRepository(session)
-
-        manager = await repo.get_first_by_filter(
+        manager = await UserRepository(session).get_first_by_filter(
             {"username": "manager"}, ["created_at"]
         )
         if manager is None:
             pytest.skip("User named manager didn't exists!")
+        manager_id = manager.id
         response = await admin_client.get(f"/manage-user/user/{manager.id}")
         assert response.status_code == 200
 
@@ -111,18 +111,11 @@ class TestUserManagementE2E:
         )
         assert response.status_code == 200
 
-        # TODO check manager status
-        response = await admin_client.get(f"/manage-user/user/{manager.id}")
-        assert response.status_code == 200
+        session.expire_all()
+        manager = await UserRepository(session).get_by_id(manager_id)
 
-        html = response.text
-        soup = BeautifulSoup(html, "html.parser")
-
-        select = soup.find("select", {"id": "status"})
-        selected_option = select.find("option", selected=True)
-
-        assert selected_option is not None, "No option selected"
-        assert selected_option["value"] == "false"
+        assert manager is not None
+        assert not manager.active
 
         # Reset
         response = await admin_client.put(

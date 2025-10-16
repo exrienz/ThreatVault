@@ -573,7 +573,7 @@ class HAUploadService(FileUploadService):
                         "port",
                         "plugin_id",
                         "product_id",
-                        "label",
+                        func.coalesce(Column("label"), "__NULL__"),
                     ),
                     idx_where=(Finding.status != HAStatusEnum.PASSED.value),
                     no_update_cols=["finding_date", "finding_name_id", "label"],
