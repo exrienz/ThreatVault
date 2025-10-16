@@ -1,5 +1,4 @@
 import pytest
-from bs4 import BeautifulSoup
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 

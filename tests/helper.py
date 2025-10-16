@@ -1,3 +1,4 @@
+import re
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
@@ -29,3 +30,10 @@ async def get_product_by_id(
 ) -> Product | None:
     stmt = select(Product).where(Product.id == product_id)
     return await session.scalar(stmt)
+
+
+def toastMatcher(html: str):
+    match = re.search(r"ToastCustom\(`(.*?)`,\s*\".*?\"\)", html)
+    if match:
+        return match.group(1)
+    return None
