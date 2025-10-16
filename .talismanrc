@@ -1,4 +1,4 @@
 fileignoreconfig:
-- filename: src/application/security/oauth2/okta_sync_users.py
-  checksum: dd1e62546b949ee4fa9558348ec887b93a1b4c1192bf1c5ea2e7ef109e7d863f
+- filename: src/persistence/log.py
+  checksum: 7598538da1b862ce96dbd34539546587b158fdef87b3423c98df688f975f641f
 version: ""

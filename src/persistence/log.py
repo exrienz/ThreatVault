@@ -93,8 +93,6 @@ class LogRepository(BaseRepository[Log]):
             .where(Finding.product_id == product_id)
         )
         status_calc = pl.read_database(status_stmt, connection=sync_engine).lazy()
-        print("status calc")
-        print(status_calc.collect())
 
         severity_stmt = (
             select(
@@ -229,6 +227,58 @@ class LogRepository(BaseRepository[Log]):
             .select_from(Finding)
             .join(FindingName)
         ).where(Finding.product_id == product_id)
+        query = await self.session.execute(stmt)
+        data = query.one_or_none()
+        breach_data = {}
+        if data:
+            breach_data = data._asdict()
+
+        fn_breach = await self.calculate_breach_per_finding_name(product_id, scan_date)
+
+        breach_data.update(fn_breach)
+        return breach_data
+
+    async def calculate_breach_per_finding_name(
+        self, product_id: UUID, scan_date: datetime
+    ) -> dict:
+        """
+        This will calculate breach by sorting the scan_date, and take the
+        oldest active breach as reference.
+        """
+        status_excludes = ["CLOSED", "OTHERS", "PASSED", "EXEMPTION"]
+        sla_count = []
+
+        sub = (
+            select(
+                Finding,
+                func.min(Finding.finding_date)
+                .over(partition_by=Finding.finding_name_id)
+                .label("first_date"),
+            )
+            .where(
+                Finding.product_id == product_id, Finding.status.not_in(status_excludes)
+            )
+            .subquery()
+        )
+
+        for status in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
+            sub_c_status = GlobalConfig.sla_critical.label(status)
+            sub_stmt = func.count(
+                case(
+                    (
+                        and_(
+                            sub.c.severity == status,
+                            func.date_part("day", scan_date - sub.c.first_date)
+                            > sub_c_status,
+                        ),
+                        1,
+                    )
+                )
+            ).label(f"b{status.title()}_fn")
+            sla_count.append(sub_stmt)
+        stmt = select(
+            *sla_count,
+        )
         query = await self.session.execute(stmt)
         data = query.one_or_none()
         if data:
