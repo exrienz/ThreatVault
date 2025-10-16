@@ -18,7 +18,7 @@ from ..utils import templates
 router = APIRouter(
     prefix="/setting/plugin",
     tags=["plugin-config"],
-    dependencies=[Depends(PermissionChecker(["manage-plugin:full"]))],
+    dependencies=[Depends(PermissionChecker(admin_only=True))],
 )
 
 
