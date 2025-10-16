@@ -40,6 +40,8 @@ async def get_finding(
 
     finding = await service.get_first_by_filters(filters)
     finding_hosts = await service.get_all_group_by_evidence(filters)
+    host_breaches = await service.get_hosts_breaches(filters)
+    breach_dict = {br.host_port: br.breach for br in host_breaches}
 
     return templates.TemplateResponse(
         request,
@@ -51,6 +53,7 @@ async def get_finding(
             "finding_hosts": finding_hosts,
             "finding_name_id": finding_name_id,
             "status": status,
+            "breach_dict": breach_dict,
         },
     )
 

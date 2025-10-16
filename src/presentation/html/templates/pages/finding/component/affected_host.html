@@ -5,7 +5,12 @@
             <br />
             <br />
             {% for host in fn_data.hosts %}
-            </b><span class="badge bg-secondary mr-1">{{ host }}</span>
+            </b>
+            <span class="badge bg-secondary mr-1">{{ host }}
+              <span class="badge rounded-pill bg-white text-dark">
+                {{ breach_dict[host] if host in breach_dict else 'x' }}
+              </span>
+            </span>
         {% endfor %}
     </div>
     <div class="card-body">
