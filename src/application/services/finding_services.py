@@ -4,6 +4,7 @@ from uuid import UUID
 
 import pytz
 from fastapi import Depends
+from sqlalchemy import Row
 
 from src.application.schemas.finding import FindingActionInternalSchema
 from src.application.schemas.management_view import PriorityAPISchema
@@ -58,8 +59,11 @@ class FindingService:
     async def get_all_by_filter(self, filters: dict) -> Sequence[Finding]:
         return await self.repository.get_all_by_filter_sequence(filters)
 
-    async def get_all_group_by_evidence(self, filters: dict) -> Sequence[Finding]:
+    async def get_all_group_by_evidence(self, filters: dict) -> Sequence[Row]:
         return await self.repository.get_group_by_evidence(filters)
+
+    async def get_hosts_breaches(self, filters: dict):
+        return await self.repository.get_hosts_breach(filters)
 
     async def get_sla_breach_chart_data(
         self, project_id: UUID, filters: dict, page: int = 1
@@ -154,7 +158,16 @@ class FindingService:
             product_id, severity
         )
         sla = await self.global_repository.get_sla_by_severity(severity)
-        return {"findings": res, "sla": sla}
+        host_sla = await self.repository.get_hosts_breach(
+            {"severity": severity, "product_id": product_id}
+        )
+        fn_host_breach = {}
+        for host in host_sla:
+            fn_id = host.finding_name_id
+            if fn_id not in fn_host_breach:
+                fn_host_breach[fn_id] = {}
+            fn_host_breach[fn_id][host.host] = host.breach
+        return {"findings": res, "sla": sla, "host_fn_breach": fn_host_breach}
 
     async def _include_sla(self, res: Pagination):
         sla = await self.global_repository.get()

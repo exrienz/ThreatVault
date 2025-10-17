@@ -8,7 +8,7 @@
           <tr>
             <td>
               <b>{{finding.name}}
-                <br>Solution:</b>{{finding.remediation}}
+                <br>Solution: </b>{{finding.remediation}}
             </td>
           </tr>
         </thead>
@@ -16,8 +16,13 @@
           <tr>
             <td>
               <small class="text-muted">Affected Host: <br>
-                {%for host in finding.hosts%}
-                <a href="/host?host={{host}}">{{host}}</a>
+                {% for host, breach in host_fn_breach.get(finding.finding_name_id, {}).items() %}
+                <a href="/host?host={{host}}">
+                  {{host}}
+                <span class="badge rounded-pill bg-white text-dark">
+                  {{breach}}
+                </span>
+                </a>
                 {% if not loop.last %}
                   |
                 {%endif%}

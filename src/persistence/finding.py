@@ -7,11 +7,14 @@ import polars as pl
 from fastapi import Depends
 from sqlalchemy import (
     ARRAY,
+    Integer,
+    Row,
     Select,
     String,
     and_,
     case,
     cast,
+    column,
     func,
     or_,
     select,
@@ -112,7 +115,7 @@ class FindingRepository(BaseRepository[Finding]):
                     Finding.remark,
                     Finding.label,
                     # func.max(Finding.remark).label("remark"),
-                    func.max(Finding.finding_date).label("finding_date"),
+                    func.min(Finding.finding_date).label("finding_date"),
                     func.array_agg(
                         func.distinct(Finding.plugin_id), type_=ARRAY(SQL_UUID)
                     ).label("plugin_ids"),
@@ -250,7 +253,7 @@ class FindingRepository(BaseRepository[Finding]):
         stmt = self._product_allowed_ids(stmt)
         return await self.pagination(stmt, page)
 
-    async def get_group_by_evidence(self, filters: dict):
+    async def get_group_by_evidence(self, filters: dict) -> Sequence[Row]:
         stmt = select(
             Finding.evidence,
             func.max(Finding.status),
@@ -267,6 +270,64 @@ class FindingRepository(BaseRepository[Finding]):
         query = await self.session.execute(stmt)
         return query.all()
 
+    async def get_hosts_breach(self, filters: dict) -> Sequence[Row]:
+        sub = select(
+            GlobalConfig.sla_critical.label("CRITICAL"),
+            GlobalConfig.sla_high.label("HIGH"),
+            GlobalConfig.sla_medium.label("MEDIUM"),
+            GlobalConfig.sla_low.label("LOW"),
+        ).subquery()
+
+        breach_day = func.date_part(
+            "day", datetime.now() - func.min(Finding.finding_date)
+        )
+
+        stmt = select(
+            Finding.host,
+            Finding.port,
+            Finding.finding_name_id,
+            Finding.severity,
+            func.concat(Finding.host, ":", Finding.port).label("host_port"),
+            breach_day.label("breach_day"),
+        ).group_by(
+            Finding.host, Finding.port, Finding.severity, Finding.finding_name_id
+        )
+        stmt = self._filters(stmt, filters)
+        stmt = self._permission_filter(stmt)
+
+        sub_stmt = stmt.subquery()
+
+        stmt = (
+            select(
+                sub_stmt,
+                case(
+                    (
+                        sub_stmt.c.severity == "CRITICAL",
+                        sub.c.CRITICAL - sub_stmt.c.breach_day,
+                    ),
+                    (
+                        sub_stmt.c.severity == "HIGH",
+                        sub.c.HIGH - sub_stmt.c.breach_day,
+                    ),
+                    (
+                        sub_stmt.c.severity == "MEDIUM",
+                        sub.c.MEDIUM - sub_stmt.c.breach_day,
+                    ),
+                    (
+                        sub_stmt.c.severity == "LOW",
+                        sub.c.LOW - sub_stmt.c.breach_day,
+                    ),
+                    else_=None,
+                )
+                .cast(Integer)
+                .label("breach"),
+            )
+            .select_from(sub_stmt)
+            .order_by(column("breach"))
+        )
+        query = await self.session.execute(stmt)
+        return query.all()
+
     async def get_breached_findings_by_severity(
         self, product_id: UUID, severity: SeverityEnum
     ):
@@ -274,31 +335,35 @@ class FindingRepository(BaseRepository[Finding]):
             GlobalConfig.__table__.c[f"sla_{severity.value.lower()}"]
         ).scalar_subquery()
         today = datetime.now()
+
         stmt = (
-            select(
-                FindingName.id.label("finding_name_id"),
+            (
+                select(
+                    FindingName.id.label("finding_name_id"),
+                    FindingName.name,
+                    Finding.severity,
+                    func.max(Finding.remediation).label("remediation"),
+                )
+                .join(FindingName)
+                .where(
+                    Finding.product_id == product_id,
+                    Finding.status.not_in(
+                        [
+                            FnStatusEnum.CLOSED.value,
+                            FnStatusEnum.EXEMPTION.value,
+                            HAStatusEnum.PASSED.value,
+                        ]
+                    ),
+                    Finding.severity == severity.value,
+                )
+            )
+            .group_by(
+                FindingName.id,
                 FindingName.name,
                 Finding.severity,
-                func.max(Finding.remediation).label("remediation"),
-                func.array_agg(func.distinct(Finding.host), type_=ARRAY(String)).label(
-                    "hosts"
-                ),
-                func.extract("day", func.max(Finding.finding_date) - today).label(
-                    "date"
-                ),
-                sub.label("sla"),
             )
-            .join(FindingName)
-            .where(
-                Finding.product_id == product_id,
-                Finding.status.not_in(
-                    [FnStatusEnum.CLOSED.value, FnStatusEnum.EXEMPTION.value]
-                ),
-                Finding.severity == severity.value,
-                func.extract("day", Finding.finding_date - today) < sub,
-            )
-        ).group_by(FindingName.id, FindingName.name, Finding.severity)
-
+            .having(func.extract("day", func.min(Finding.finding_date) - today) < sub)
+        )
         stmt = self._product_allowed_ids(stmt)
         query = await self.session.execute(stmt)
         return query.all()

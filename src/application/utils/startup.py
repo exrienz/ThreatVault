@@ -103,10 +103,10 @@ def default_global_setting():
         config = session.execute(stmt).scalar_one()
         if config == 0:
             default = {
-                "sla_critical": 120,
-                "sla_high": 90,
-                "sla_medium": 60,
-                "sla_low": 30,
+                "sla_critical": 30,
+                "sla_high": 60,
+                "sla_medium": 90,
+                "sla_low": 120,
             }
             session.add(GlobalConfig(**default))
             session.commit()
